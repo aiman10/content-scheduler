@@ -37,6 +37,16 @@
                   Download Calendar
                 </button>
               </p>
+              <div class="bookmark-container">
+                <i
+                  class="fas fa-bookmark"
+                  (click)="toggleBookmark()"
+                  [ngClass]="{
+                    bookmarked: isBookmarked,
+                    'white-icon': !isBookmarked
+                  }"
+                ></i>
+              </div>
             </div>
           </div>
         </article>

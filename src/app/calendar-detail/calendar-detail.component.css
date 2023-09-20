@@ -1,3 +1,5 @@
+@import "~font-awesome/css/font-awesome.css";
+
 .custom-image {
   width: 80px; /* Adjust to your preferred width */
   height: 80px; /* Adjust to your preferred height */
@@ -5,4 +7,19 @@
 
 .text-center {
   text-align: center;
+}
+
+.media-content {
+  position: relative; /* Position relative for bookmark-container */
+}
+
+.bookmark-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 5px; /* Adjust top margin for spacing */
+}
+
+.white-icon {
+  border-color: rgb(185, 183, 183);
 }

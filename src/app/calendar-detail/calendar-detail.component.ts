@@ -10,6 +10,8 @@ import { IFilm, Result } from '../filmresult';
 })
 export class CalendarDetailComponent implements OnInit {
   selectedYear!: number;
+  isBookmarked = false;
+
   years: number[] = Array.from(
     { length: 61 }, // Change the length to cover a larger range of years
     (_, i) => new Date().getFullYear() - 60 + i
@@ -37,6 +39,17 @@ export class CalendarDetailComponent implements OnInit {
     });
 
     //console.log(this.result);
+  }
+
+  toggleBookmark() {
+    this.isBookmarked = !this.isBookmarked;
+    if (this.isBookmarked) {
+      // Handle bookmarking action
+      // You can add your code to save the bookmarked status here
+    } else {
+      // Handle unbookmarking action
+      // You can add your code to remove the bookmarked status here
+    }
   }
 
   onDateChange() {
