@@ -16,7 +16,7 @@
                   'https://image.tmdb.org/t/p/original' + movie.poster_path
                 "
                 alt="{{ movie.title }}"
-                style="max-width: 85%; max-height: 110%"
+                style="max-width: 90%; max-height: 115%"
               />
             </figure>
           </div>
@@ -32,6 +32,10 @@
                 <br />
                 {{ movie.release_date }}
                 <br />
+                <br />
+                <button (click)="downloadICSCalendar(movie)" class="button">
+                  Download Calendar
+                </button>
               </p>
             </div>
           </div>

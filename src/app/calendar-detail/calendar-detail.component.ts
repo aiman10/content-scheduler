@@ -54,4 +54,58 @@ export class CalendarDetailComponent implements OnInit {
       this.getFilms(this.result.page + 1);
     }
   }
+  downloadICSCalendar(film: IFilm) {
+    // Generate the ICS content
+    const icsContent = this.generateICSCalendar(film);
+
+    // Create a Blob with the ICS content
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+
+    // Create a download link
+    const downloadLink = document.createElement('a');
+    downloadLink.href = window.URL.createObjectURL(blob);
+    downloadLink.setAttribute('download', `${film.title}.ics`);
+
+    // Trigger the download
+    downloadLink.click();
+  }
+
+  generateICSCalendar(film: IFilm): string {
+    const eventDate = new Date(this.date);
+    const eventYear = eventDate.getFullYear();
+    const eventMonth = (eventDate.getMonth() + 1).toString().padStart(2, '0');
+    const eventDay = eventDate.getDate().toString().padStart(2, '0');
+
+    // Format the date to YYYYMMDD
+    const formattedDate = `${eventYear}${eventMonth}${eventDay}`;
+
+    // Event details
+    const eventName = film.title;
+
+    // Generate a UID (you should generate a unique one for each event)
+    const uid = '1234567890';
+
+    // Get the current date and time in UTC format
+    const dtstamp = new Date()
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\.\d{3}Z/, 'Z');
+
+    // Generate the ICS event for a single film
+    const icsContent = `
+    BEGIN:VCALENDAR
+    VERSION:2.0
+    PRODID:My Angular Calendar App
+    BEGIN:VEVENT
+    DTSTAMP:${dtstamp}
+    DTSTART:${formattedDate}T000000Z
+    DTEND:${formattedDate}T235959Z
+    SUMMARY:${eventName}
+    UID:${uid}
+    END:VEVENT
+    END:VCALENDAR
+  `;
+
+    return icsContent;
+  }
 }
