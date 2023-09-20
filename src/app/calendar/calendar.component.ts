@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CalendarEvent, CalendarMonthViewDay } from 'angular-calendar';
 import * as moment from 'moment';
 
@@ -26,11 +27,11 @@ export class CalendarComponent implements OnInit {
     'December',
   ];
   years: number[] = Array.from(
-    { length: 10 },
-    (_, i) => new Date().getFullYear() + i - 5
+    { length: 61 }, // Change the length to cover a larger range of years
+    (_, i) => new Date().getFullYear() - 60 + i
   );
 
-  constructor() {
+  constructor(private router: Router) {
     const currentDate = new Date();
     this.selectedMonth = currentDate.getMonth();
     this.selectedYear = currentDate.getFullYear();
@@ -90,7 +91,15 @@ export class CalendarComponent implements OnInit {
   }
 
   onDayClick(day: number): void {
-    // Handle the click event for a day on the calendar
-    console.log('Clicked day', day);
+    const selectedDate = new Date(
+      this.selectedYear,
+      this.selectedMonth,
+      day + 1
+    );
+    const formattedDate = selectedDate.toISOString().slice(0, 10);
+
+    // Log the full date
+
+    this.router.navigate(['/detail/', formattedDate]);
   }
 }

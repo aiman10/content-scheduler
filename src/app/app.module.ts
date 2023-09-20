@@ -7,14 +7,47 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/moment';
 import * as moment from 'moment';
+import { CalendarDetailComponent } from './calendar-detail/calendar-detail.component';
+import { RouterModule } from '@angular/router';
 
 export function momentAdapterFactory() {
   return adapterFactory(moment);
-};
+}
 
 @NgModule({
-  declarations: [AppComponent, CalendarComponent],
-  imports: [BrowserModule, HttpClientModule, FormsModule, BrowserModule, CalendarModule.forRoot({ provide: DateAdapter, useFactory: momentAdapterFactory })],
+  declarations: [AppComponent, CalendarComponent, CalendarDetailComponent],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    FormsModule,
+    BrowserModule,
+    //AngularIcalModule,
+    RouterModule.forRoot(
+      [
+        {
+          path: 'home',
+          component: CalendarComponent,
+        },
+        {
+          path: 'detail/:date',
+          component: CalendarDetailComponent,
+        },
+        {
+          path: '',
+          redirectTo: 'home',
+          pathMatch: 'full',
+        },
+      ],
+      {
+        useHash: true,
+      }
+    ),
+    CalendarModule.forRoot({
+      provide: DateAdapter,
+      useFactory: momentAdapterFactory,
+    }),
+  ],
+
   providers: [],
   bootstrap: [AppComponent],
 })
