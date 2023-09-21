@@ -34,11 +34,14 @@
           <div *ngFor="let movie of bookmarkedMovies">
             <ng-container
               *ngIf="
-                movie.release_date ===
-                formatDate(selectedYear, selectedMonth + 1, day)
+                movie.release_date.slice(5) ===
+                formatDate(selectedMonth + 1, day)
               "
             >
-              <strong>{{ movie.title }}</strong>
+              <div class="small-text">
+                <strong>{{ movie.title }}</strong>
+                {{ movie.release_date | date : "yyyy" }}
+              </div>
             </ng-container>
           </div>
         </div>

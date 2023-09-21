@@ -47,11 +47,12 @@ export class CalendarComponent implements OnInit {
 
   ngOnInit(): void {
     this.generateCalendar();
-    this.bookmarkedMovies = this.service.bookmarkedMovies;
-    console.log(this.service.bookmarkedMovies);
+    //console.log(this.service.bookmarkedMovies);
   }
 
   generateCalendar(): void {
+    this.bookmarkedMovies = this.service.bookmarkedMovies;
+    console.log(this.bookmarkedMovies);
     // Clear the weeks array
     this.weeks = [];
 
@@ -107,9 +108,9 @@ export class CalendarComponent implements OnInit {
     this.router.navigate(['/detail/', formattedDate]);
   }
 
-  formatDate(year: number, month: number, day: number): string {
+  formatDate(month: number, day: number): string {
     const formattedMonth = month < 10 ? `0${month}` : month.toString();
     const formattedDay = day < 10 ? `0${day}` : day.toString();
-    return `${year}-${formattedMonth}-${formattedDay}`;
+    return `${formattedMonth}-${formattedDay}`;
   }
 }

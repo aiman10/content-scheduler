@@ -52,3 +52,7 @@
   background-color: #3498db;
   color: #fff;
 }
+
+.small-text {
+  font-size: 12px; /* You can adjust the font size as needed */
+}
