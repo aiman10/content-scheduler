@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MoviedatabaseService } from '../service/moviedatabase.service';
 import { IFilm, Result } from '../filmresult';
+import { BookmarkService } from '../service/bookmarked.service';
 
 @Component({
   selector: 'app-calendar-detail',
@@ -10,7 +11,6 @@ import { IFilm, Result } from '../filmresult';
 })
 export class CalendarDetailComponent implements OnInit {
   selectedYear!: number;
-  isBookmarked = false;
 
   years: number[] = Array.from(
     { length: 61 }, // Change the length to cover a larger range of years
@@ -22,7 +22,8 @@ export class CalendarDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private movieService: MoviedatabaseService
+    private movieService: MoviedatabaseService,
+    private bookmarkService: BookmarkService
   ) {}
 
   ngOnInit(): void {
@@ -32,23 +33,40 @@ export class CalendarDetailComponent implements OnInit {
       this.getFilms(1);
     });
   }
+
   async getFilms(id: number) {
     this.result = await this.movieService.getFilms(this.date, id);
     this.films = this.result.results.sort((a, b) => {
       return b.popularity - a.popularity;
     });
 
-    //console.log(this.result);
+    // Retrieve bookmarked status from localStorage
+    this.films.forEach((movie) => {
+      const movieId = movie.id.toString(); // Convert the ID to a string if it's not
+      const isBookmarked = localStorage.getItem(`bookmark_${movieId}`);
+
+      // Update the movie's isBookmarked property based on the retrieved value
+      movie.isBookmarked = isBookmarked === 'true'; // Convert the string to a boolean
+    });
   }
 
-  toggleBookmark() {
-    this.isBookmarked = !this.isBookmarked;
-    if (this.isBookmarked) {
-      // Handle bookmarking action
-      // You can add your code to save the bookmarked status here
-    } else {
-      // Handle unbookmarking action
-      // You can add your code to remove the bookmarked status here
+  toggleBookmark(movie: IFilm) {
+    movie.isBookmarked = !movie.isBookmarked;
+
+    // Check if local storage is available in the browser
+    if (typeof localStorage !== 'undefined') {
+      const movieId = movie.id; // Replace with your unique identifier for the movie
+
+      if (movie.isBookmarked) {
+        // Handle bookmarking action
+        this.bookmarkService.addBookmark(movie);
+        localStorage.setItem(`bookmark_${movieId}`, 'true');
+      } else {
+        // Handle unbookmarking action
+        // Remove the bookmarked status from local storage
+        localStorage.removeItem(`bookmark_${movieId}`);
+        this.bookmarkService.removeBookmark(movie);
+      }
     }
   }
 

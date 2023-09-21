@@ -20,6 +20,8 @@
   margin-top: 5px; /* Adjust top margin for spacing */
 }
 
-.white-icon {
-  border-color: rgb(185, 183, 183);
+.transparent-button {
+  background-color: transparent;
+  border: none; /* Optionally, remove the button border */
+  padding: 0; /* Optionally, remove padding to make it as small as possible */
 }

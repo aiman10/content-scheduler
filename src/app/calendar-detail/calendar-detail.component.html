@@ -16,7 +16,7 @@
                   'https://image.tmdb.org/t/p/original' + movie.poster_path
                 "
                 alt="{{ movie.title }}"
-                style="max-width: 90%; max-height: 115%"
+                style="max-width: 90%; max-height: 125%"
               />
             </figure>
           </div>
@@ -38,14 +38,19 @@
                 </button>
               </p>
               <div class="bookmark-container">
-                <i
-                  class="fas fa-bookmark"
-                  (click)="toggleBookmark()"
-                  [ngClass]="{
-                    bookmarked: isBookmarked,
-                    'white-icon': !isBookmarked
-                  }"
-                ></i>
+                <button
+                  class="transparent-button"
+                  (click)="toggleBookmark(movie)"
+                >
+                  <i
+                    class="fa-solid fa-bookmark"
+                    *ngIf="movie.isBookmarked"
+                  ></i>
+                  <i
+                    class="fa-regular fa-bookmark"
+                    *ngIf="!movie.isBookmarked"
+                  ></i>
+                </button>
               </div>
             </div>
           </div>
