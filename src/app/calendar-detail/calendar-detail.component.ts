@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MoviedatabaseService } from '../service/moviedatabase.service';
 import { IFilm, Result } from '../filmresult';
 import { BookmarkService } from '../service/bookmarked.service';
+import { SelectdateService } from '../service/selectdate.service';
 
 @Component({
   selector: 'app-calendar-detail',
@@ -23,7 +24,8 @@ export class CalendarDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private movieService: MoviedatabaseService,
-    private bookmarkService: BookmarkService
+    private bookmarkService: BookmarkService,
+    private dateService: SelectdateService
   ) {}
 
   ngOnInit(): void {
@@ -72,6 +74,15 @@ export class CalendarDetailComponent implements OnInit {
 
   onDateChange() {
     this.date = this.selectedYear + this.date.substring(4); // Keep the rest of the date as it is
+    const dateString = `${this.selectedYear}${this.date.substring(4)}`;
+    const dateParts = dateString.split('-');
+    const year = parseInt(dateParts[0]);
+    const month = parseInt(dateParts[1]) - 1; // Month is zero-based (0-11)
+    const day = parseInt(dateParts[2]);
+    const newDate = new Date(year, month, day);
+    console.log(newDate);
+
+    this.dateService.selectedDate = newDate;
     this.getFilms(1);
   }
 

@@ -9,13 +9,14 @@ import { adapterFactory } from 'angular-calendar/date-adapters/moment';
 import * as moment from 'moment';
 import { CalendarDetailComponent } from './calendar-detail/calendar-detail.component';
 import { RouterModule } from '@angular/router';
+import { NavbarComponent } from './navbar/navbar.component';
 
 export function momentAdapterFactory() {
   return adapterFactory(moment);
 }
 
 @NgModule({
-  declarations: [AppComponent, CalendarComponent, CalendarDetailComponent],
+  declarations: [AppComponent, CalendarComponent, CalendarDetailComponent, NavbarComponent],
   imports: [
     BrowserModule,
     HttpClientModule,

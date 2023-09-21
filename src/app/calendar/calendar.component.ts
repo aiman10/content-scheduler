@@ -4,6 +4,7 @@ import { CalendarEvent, CalendarMonthViewDay } from 'angular-calendar';
 import * as moment from 'moment';
 import { BookmarkService } from '../service/bookmarked.service';
 import { IFilm } from '../filmresult';
+import { SelectdateService } from '../service/selectdate.service';
 
 @Component({
   selector: 'app-calendar',
@@ -13,6 +14,7 @@ import { IFilm } from '../filmresult';
 export class CalendarComponent implements OnInit {
   selectedMonth: number;
   selectedYear: number;
+  selectedDate = new Date();
   bookmarkedMovies: IFilm[] = [];
   weeks: number[][] = [];
   months: string[] = [
@@ -34,10 +36,13 @@ export class CalendarComponent implements OnInit {
     (_, i) => new Date().getFullYear() - 60 + i
   );
 
-  constructor(private router: Router, private service: BookmarkService) {
-    const currentDate = new Date();
-    this.selectedMonth = currentDate.getMonth();
-    this.selectedYear = currentDate.getFullYear();
+  constructor(
+    private router: Router,
+    private service: BookmarkService,
+    private dateService: SelectdateService
+  ) {
+    this.selectedMonth = this.dateService.selectedDate.getMonth();
+    this.selectedYear = this.dateService.selectedDate.getFullYear();
   }
 
   ngOnInit(): void {
@@ -96,25 +101,15 @@ export class CalendarComponent implements OnInit {
   }
 
   onDayClick(day: number): void {
-    const selectedDate = new Date(
-      this.selectedYear,
-      this.selectedMonth,
-      day + 1
-    );
-    const formattedDate = selectedDate.toISOString().slice(0, 10);
-
-    // Log the full date
-
+    this.selectedDate.setFullYear(this.selectedYear, this.selectedMonth, day);
+    this.dateService.selectedDate = this.selectedDate;
+    const formattedDate = this.selectedDate.toISOString().slice(0, 10);
     this.router.navigate(['/detail/', formattedDate]);
   }
 
-  // Inside your component class
   formatDate(year: number, month: number, day: number): string {
-    // Ensure month and day are zero-padded to have two digits
     const formattedMonth = month < 10 ? `0${month}` : month.toString();
     const formattedDay = day < 10 ? `0${day}` : day.toString();
-
-    // Combine the year, month, and day with hyphens
     return `${year}-${formattedMonth}-${formattedDay}`;
   }
 }

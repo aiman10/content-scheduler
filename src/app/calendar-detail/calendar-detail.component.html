@@ -1,5 +1,5 @@
 <div class="container">
-  <h1 class="title" [routerLink]="['/home']">{{ date }}</h1>
+  <h1 class="title">{{ date }}</h1>
   <div class="select is-inline">
     <select [(ngModel)]="selectedYear" (change)="onDateChange()">
       <option *ngFor="let year of years" [value]="year">{{ year }}</option>
