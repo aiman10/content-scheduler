@@ -1,39 +1,88 @@
 <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a class="navbar-item" href="#">
-      <!-- Your logo or brand name here -->
-      <img
-        src="../../assets/Transparant profile_Tekengebied 1 - Copy.png"
-        alt="Logo"
-      />
-    </a>
+  <!-- ... Navbar content ... -->
 
-    <!-- This button will appear on mobile devices -->
-    <a
-      role="button"
-      class="navbar-burger burger"
-      aria-label="menu"
-      aria-expanded="false"
-      data-target="navbarBasicExample"
-    >
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
+  <div class="container">
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="#">
+          <!-- Your logo or brand name here -->
+          <img
+            src="../../assets/Transparant profile_Tekengebied 1 - Copy.png"
+            alt="Logo"
+          />
+        </a>
+        <a class="navbar-item" [routerLink]="['home']"> Home </a>
+        <a class="navbar-item" [routerLink]="['bookmarked']"> Bookmark </a>
+      </div>
 
-  <div id="navbarBasicExample" class="navbar-menu">
-    <div class="navbar-start">
-      <!-- Navbar links -->
-      <a class="navbar-item" [routerLink]="['home']"> Home </a>
-      <a class="navbar-item" href="#"> About </a>
-    </div>
+      <!-- Add the search field here -->
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="field has-addons">
+            <p class="control is-wide">
+              <input
+                class="input"
+                type="text"
+                placeholder="Search"
+                (input)="onSearch($event)"
+                #searchInput
+              />
+            </p>
+            <p class="control">
+              <button class="button is-info">Search</button>
+            </p>
+          </div>
 
-    <div class="navbar-end">
-      <!-- Navbar items on the right -->
-      <div class="navbar-item">
-        <div class="buttons">
-          <a class="button is-light" href="#"> Log in </a>
+          <div class="dropdown is-active is-right" *ngIf="showDropdown">
+            <div class="dropdown-menu centered-dropdown" style="width: 580px">
+              <div class="dropdown-content results-list">
+                <!-- Display search results here as a list of cards -->
+                <div *ngFor="let movie of filmResult" class="result-card">
+                  <div class="card-content">
+                    <div class="media">
+                      <div class="media-left">
+                        <figure class="image is-64x64">
+                          <img
+                            [src]="[imageUrl + movie.poster_path]"
+                            alt="Movie Poster"
+                          />
+                        </figure>
+                      </div>
+                      <div class="media-content">
+                        <p class="title is-5">
+                          {{ movie.title }}
+                        </p>
+                        <p class="subtitle is-6 release-year">
+                          {{ movie.release_date }}
+                        </p>
+                      </div>
+                      <div class="media-right">
+                        <button
+                          class="transparent-button"
+                          (click)="toggleBookmark(movie)"
+                        >
+                          <i
+                            class="fa-solid fa-bookmark"
+                            *ngIf="movie.isBookmarked"
+                          ></i>
+                          <i
+                            class="fa-regular fa-bookmark"
+                            *ngIf="!movie.isBookmarked"
+                          ></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Navbar items on the right -->
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-dark" href="#"> Log in </a>
+          </div>
         </div>
       </div>
     </div>

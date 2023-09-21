@@ -1,28 +1,9 @@
 <div class="container">
-  <h1 class="title">{{ date }}</h1>
-  <div class="field is-grouped">
-    <div class="control custom">
-      <div class="select is-inline">
-        <select [(ngModel)]="selectedYear" (change)="onDateChange()">
-          <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-        </select>
-      </div>
-    </div>
-    <div class="control">
-      <button (click)="previousPage()" class="button">
-        <i class="fas fa-arrow-left"></i> Previous
-      </button>
-    </div>
-    <div class="control">{{ result.page }}/{{ result.total_pages }}</div>
-    <div class="control">
-      <button (click)="nextPage()" class="button">
-        Next <i class="fas fa-arrow-right"></i>
-      </button>
-    </div>
-  </div>
+  <h1 class="title">bookmarked Movies</h1>
+
   <div class="columns is-multiline">
-    <div class="column is-half" *ngFor="let movie of films">
-      <div class="box">
+    <div class="column is-half" *ngFor="let movie of bookmarkedMovies">
+      <div class="box" style="padding-bottom: 20px">
         <article class="media">
           <div class="media-left">
             <figure class="image is-96x96">
@@ -31,6 +12,7 @@
                   'https://image.tmdb.org/t/p/original' + movie.poster_path
                 "
                 alt="{{ movie.title }}"
+                style="max-width: 90%; max-height: 125%"
               />
             </figure>
           </div>
@@ -40,15 +22,14 @@
                 <a
                   href="https://www.themoviedb.org/movie/{{ movie.id }}"
                   target="_blank"
-                  >{{ movie.title }}</a
                 >
+                  {{ movie.title }}
+                </a>
                 <br />
                 {{ movie.release_date }}
                 <br />
                 <br />
-                <button (click)="downloadICSCalendar(movie)" class="button">
-                  Download Calendar
-                </button>
+                <button class="button">Download Calendar</button>
               </p>
               <div class="bookmark-container">
                 <button

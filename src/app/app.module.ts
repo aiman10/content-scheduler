@@ -10,13 +10,20 @@ import * as moment from 'moment';
 import { CalendarDetailComponent } from './calendar-detail/calendar-detail.component';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
+import { BookmarkedFilmsComponent } from './bookmarked-films/bookmarked-films.component';
 
 export function momentAdapterFactory() {
   return adapterFactory(moment);
 }
 
 @NgModule({
-  declarations: [AppComponent, CalendarComponent, CalendarDetailComponent, NavbarComponent],
+  declarations: [
+    AppComponent,
+    CalendarComponent,
+    CalendarDetailComponent,
+    NavbarComponent,
+    BookmarkedFilmsComponent,
+  ],
   imports: [
     BrowserModule,
     HttpClientModule,
@@ -32,6 +39,10 @@ export function momentAdapterFactory() {
         {
           path: 'detail/:date',
           component: CalendarDetailComponent,
+        },
+        {
+          path: 'bookmarked',
+          component: BookmarkedFilmsComponent,
         },
         {
           path: '',

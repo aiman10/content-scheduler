@@ -1,0 +1,50 @@
+.centered-dropdown {
+  flex-direction: column;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  padding-right: 80px;
+  padding-top: 25px;
+  height: 500px; /* Set a fixed height for the dropdown container */
+}
+
+.is-wide {
+  width: 500px; /* Adjust the width according to your preference */
+}
+
+/* Adjust styles for the results list and cards */
+.results-list {
+  max-height: 100%; /* Adjust the maximum height as needed, but it should not exceed the dropdown container's height */
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+}
+
+.result-card {
+  border: 1px solid #ddd;
+  margin-bottom: 10px; /* Adjust the margin between cards */
+  padding: 10px;
+  background-color: #f5f5f5; /* Background color for cards */
+}
+
+.result-card img {
+  max-width: 96px; /* Adjust the max width of the poster */
+  max-height: 144px; /* Adjust the max height of the poster */
+  margin-right: 10px; /* Adjust the space between poster and content */
+  margin-top: -25px;
+}
+
+.result-card .title {
+  font-weight: bold;
+}
+
+.result-card .release-year {
+  color: #777;
+}
+
+.card-content {
+  height: 90px;
+}
+
+.transparent-button {
+  background-color: transparent;
+  border: none; /* Optionally, remove the button border */
+  padding: 0; /* Optionally, remove padding to make it as small as possible */
+}

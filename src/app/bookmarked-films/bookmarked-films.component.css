@@ -1,5 +1,3 @@
-@import "~font-awesome/css/font-awesome.css";
-
 .custom-image {
   width: 80px; /* Adjust to your preferred width */
   height: 80px; /* Adjust to your preferred height */
@@ -24,8 +22,4 @@
   background-color: transparent;
   border: none; /* Optionally, remove the button border */
   padding: 0; /* Optionally, remove padding to make it as small as possible */
-}
-
-.custom {
-  padding-right: 33%;
 }

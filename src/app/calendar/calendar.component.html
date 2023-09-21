@@ -1,17 +1,25 @@
 <div class="container">
   <div class="calendar">
     <div class="date-selector">
-      <div class="select is-inline">
-        <select [(ngModel)]="selectedMonth" (change)="onDateChange()">
-          <option *ngFor="let month of months; let i = index" [value]="i">
-            {{ month }}
-          </option>
-        </select>
-      </div>
-      <div class="select is-inline">
-        <select [(ngModel)]="selectedYear" (change)="onDateChange()">
-          <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-        </select>
+      <div class="field is-grouped">
+        <div class="control">
+          <div class="select">
+            <select [(ngModel)]="selectedMonth" (change)="onDateChange()">
+              <option *ngFor="let month of months; let i = index" [value]="i">
+                {{ month }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="control">
+          <div class="select">
+            <select [(ngModel)]="selectedYear" (change)="onDateChange()">
+              <option *ngFor="let year of years" [value]="year">
+                {{ year }}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
       <div class="month-title">
         <h2>{{ months[selectedMonth] }} {{ selectedYear }}</h2>
