@@ -51,9 +51,8 @@ export class CalendarComponent implements OnInit {
   }
 
   generateCalendar(): void {
-    this.bookmarkedMovies = this.service.bookmarkedMovies;
-    console.log(this.bookmarkedMovies);
     // Clear the weeks array
+    this.bookmarkedMovies = this.service.bookmarkedMovies;
     this.weeks = [];
 
     // Create a new date for the selected month and year
@@ -69,12 +68,18 @@ export class CalendarComponent implements OnInit {
       0
     ).getDate();
 
+    // Calculate the number of days to add before the first day of the month
+    const daysBefore = firstDayOfWeek;
+
+    // Calculate the total number of days to display (5 weeks x 7 days)
+    const totalDays = 5 * 7;
+
     // Initialize variables for tracking the current day and week
     let currentDay = 1;
     let currentWeek: number[] = [];
 
-    // Fill in empty days at the beginning of the month
-    for (let i = 0; i < firstDayOfWeek; i++) {
+    // Fill in empty days before the first day of the month
+    for (let i = 0; i < daysBefore; i++) {
       currentWeek.push(0); // Use null to represent empty days
     }
 
@@ -91,9 +96,15 @@ export class CalendarComponent implements OnInit {
       currentDay++;
     }
 
-    // Add the last week if it's not a full week
-    if (currentWeek.length > 0) {
+    // Add the remaining empty days to complete 5 weeks
+    while (currentWeek.length < 7) {
+      currentWeek.push(0); // Use null to represent empty days
+    }
+
+    // Add the weeks to ensure you have a total of 5 weeks
+    while (this.weeks.length < 5) {
       this.weeks.push(currentWeek);
+      currentWeek = [];
     }
   }
 
@@ -108,9 +119,13 @@ export class CalendarComponent implements OnInit {
     this.router.navigate(['/detail/', formattedDate]);
   }
 
-  formatDate(month: number, day: number): string {
+  formatDate(day: number): string {
+    const month = Number(this.selectedMonth) + 1;
     const formattedMonth = month < 10 ? `0${month}` : month.toString();
     const formattedDay = day < 10 ? `0${day}` : day.toString();
     return `${formattedMonth}-${formattedDay}`;
+  }
+  getDayRange(day: number): number[] {
+    return Array.from({ length: day }, (_, i) => i + 1);
   }
 }

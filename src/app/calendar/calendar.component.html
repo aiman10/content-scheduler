@@ -28,28 +28,21 @@
     </div>
     <div class="week" *ngFor="let week of weeks">
       <ng-container *ngFor="let day of week">
-        <div *ngIf="day != 0" class="day square" (click)="onDayClick(day)">
-          {{ day }}
-          <br />
-          <div *ngFor="let movie of bookmarkedMovies">
-            <ng-container
-              *ngIf="
-                movie.release_date.slice(5) ===
-                formatDate(selectedMonth + 1, day)
-              "
-            >
-              <div class="small-text">
-                <strong>{{ movie.title }}</strong>
-                {{ movie.release_date | date : "yyyy" }}
-              </div>
-            </ng-container>
-          </div>
+        <div class="day square" (click)="onDayClick(day)">
+          <ng-container *ngIf="day !== 0">
+            {{ day }}
+            <div *ngFor="let movie of bookmarkedMovies">
+              <ng-container
+                *ngIf="movie.release_date.slice(5) === formatDate(day)"
+              >
+                <div class="small-text">
+                  <strong>{{ movie.title }}</strong>
+                  ({{ movie.release_date | date : "yyyy" }})
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
         </div>
-        <div
-          *ngIf="day == 0"
-          class="day square"
-          (click)="onDayClick(day)"
-        ></div>
       </ng-container>
     </div>
   </div>
