@@ -30,6 +30,19 @@
       <ng-container *ngFor="let day of week">
         <div *ngIf="day != 0" class="day square" (click)="onDayClick(day)">
           {{ day }}
+          <br />
+          <div *ngFor="let movie of bookmarkedMovies">
+            <div *ngFor="let movie of bookmarkedMovies">
+              <ng-container
+                *ngIf="
+                  movie.release_date ===
+                  formatDate(selectedYear, selectedMonth + 1, day)
+                "
+              >
+                <strong>{{ movie.title }}</strong>
+              </ng-container>
+            </div>
+          </div>
         </div>
         <div
           *ngIf="day == 0"

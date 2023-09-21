@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CalendarEvent, CalendarMonthViewDay } from 'angular-calendar';
 import * as moment from 'moment';
+import { BookmarkService } from '../service/bookmarked.service';
+import { IFilm } from '../filmresult';
 
 @Component({
   selector: 'app-calendar',
@@ -11,6 +13,7 @@ import * as moment from 'moment';
 export class CalendarComponent implements OnInit {
   selectedMonth: number;
   selectedYear: number;
+  bookmarkedMovies: IFilm[] = [];
   weeks: number[][] = [];
   months: string[] = [
     'January',
@@ -31,7 +34,7 @@ export class CalendarComponent implements OnInit {
     (_, i) => new Date().getFullYear() - 60 + i
   );
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private service: BookmarkService) {
     const currentDate = new Date();
     this.selectedMonth = currentDate.getMonth();
     this.selectedYear = currentDate.getFullYear();
@@ -39,6 +42,8 @@ export class CalendarComponent implements OnInit {
 
   ngOnInit(): void {
     this.generateCalendar();
+    this.bookmarkedMovies = this.service.bookmarkedMovies;
+    console.log(this.service.bookmarkedMovies);
   }
 
   generateCalendar(): void {
@@ -101,5 +106,15 @@ export class CalendarComponent implements OnInit {
     // Log the full date
 
     this.router.navigate(['/detail/', formattedDate]);
+  }
+
+  // Inside your component class
+  formatDate(year: number, month: number, day: number): string {
+    // Ensure month and day are zero-padded to have two digits
+    const formattedMonth = month < 10 ? `0${month}` : month.toString();
+    const formattedDay = day < 10 ? `0${day}` : day.toString();
+
+    // Combine the year, month, and day with hyphens
+    return `${year}-${formattedMonth}-${formattedDay}`;
   }
 }
