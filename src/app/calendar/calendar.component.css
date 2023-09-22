@@ -56,3 +56,13 @@
 .small-text {
   font-size: 12px; /* You can adjust the font size as needed */
 }
+
+.date-selector {
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.month-title {
+  margin-left: auto; /* Push the month title to the right */
+}
