@@ -32,7 +32,7 @@ export class CalendarComponent implements OnInit {
     'December',
   ];
   years: number[] = Array.from(
-    { length: 61 }, // Change the length to cover a larger range of years
+    { length: 62 }, // Change the length to cover a larger range of years
     (_, i) => new Date().getFullYear() - 60 + i
   );
 
@@ -112,10 +112,13 @@ export class CalendarComponent implements OnInit {
     this.generateCalendar();
   }
 
+  //TODO FIX THIS BUG
   onDayClick(day: number): void {
     this.selectedDate.setFullYear(this.selectedYear, this.selectedMonth, day);
     this.dateService.selectedDate = this.selectedDate;
-    const formattedDate = this.selectedDate.toISOString().slice(0, 10);
+    const formattedDate = this.selectedDate.toISOString().split('T')[0];
+    //console.log(formattedDate);
+    //console.log(this.selectedDate);
     this.router.navigate(['/detail/', formattedDate]);
   }
 
