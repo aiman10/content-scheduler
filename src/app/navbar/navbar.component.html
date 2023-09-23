@@ -81,7 +81,12 @@
         <!-- Navbar items on the right -->
         <div class="navbar-item">
           <div class="buttons">
-            <a class="button is-dark" href="#"> Log in </a>
+            <!-- Conditionally show the logout button if authenticated -->
+            <ng-container *ngIf="auth.isAuthenticated$">
+              <a class="button is-dark" href="#" (click)="auth.logout()">
+                Log out
+              </a>
+            </ng-container>
           </div>
         </div>
       </div>

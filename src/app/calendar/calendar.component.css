@@ -50,7 +50,6 @@
 
 .day:hover {
   background-color: #3498db;
-  color: #fff;
 }
 
 .small-text {
@@ -65,4 +64,22 @@
 
 .month-title {
   margin-left: auto; /* Push the month title to the right */
+}
+
+.film-background-0 {
+  background-color: #4ca2ff;
+  border: 2px solid #007bff;
+  color: #ffffff;
+}
+
+.film-background-1 {
+  background-color: #28a745;
+  border: 2px solid #68c17c;
+  color: #ffffff;
+}
+
+.film-background-2 {
+  background-color: #e6717c;
+  border: 2px solid #da3544;
+  color: #ffffff;
 }

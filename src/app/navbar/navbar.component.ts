@@ -4,10 +4,13 @@ import {
   ElementRef,
   HostListener,
   ViewChild,
+  Inject,
 } from '@angular/core';
 import { IFilm } from '../filmresult';
 import { MoviedatabaseService } from '../service/moviedatabase.service';
 import { BookmarkService } from '../service/bookmarked.service';
+import { DOCUMENT } from '@angular/common';
+import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
   selector: 'app-navbar',
@@ -23,7 +26,8 @@ export class NavbarComponent implements OnInit {
   constructor(
     private service: MoviedatabaseService,
     private bookmarkService: BookmarkService,
-    private elRef: ElementRef
+    @Inject(DOCUMENT) public document: Document,
+    public auth: AuthService
   ) {}
 
   ngOnInit(): void {}

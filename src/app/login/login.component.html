@@ -1,0 +1,13 @@
+<header class="hero is-primary is-bold">
+  <div class="hero-body has-text-centered">
+    <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
+      <button class="button is-warning" (click)="auth.logout()">Log out</button>
+    </ng-container>
+
+    <ng-template #loggedOut>
+      <button class="button is-primary" (click)="auth.loginWithRedirect()">
+        Log in
+      </button>
+    </ng-template>
+  </div>
+</header>

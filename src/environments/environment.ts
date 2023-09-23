@@ -3,7 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  auth: {
+    domain: 'dev-sipsml8vb00v5eww.us.auth0.com',
+    clientId: 'mkB7Huc7rbXX8QYZnT2iGTs3jI57gcOl',
+    redirectUri: window.location.origin,
+  },
 };
 
 /*

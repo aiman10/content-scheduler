@@ -12,6 +12,10 @@ import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { BookmarkedFilmsComponent } from './bookmarked-films/bookmarked-films.component';
 
+import { AuthModule } from '@auth0/auth0-angular';
+import { environment } from 'src/environments/environment';
+import { LoginComponent } from './login/login.component';
+
 export function momentAdapterFactory() {
   return adapterFactory(moment);
 }
@@ -23,13 +27,20 @@ export function momentAdapterFactory() {
     CalendarDetailComponent,
     NavbarComponent,
     BookmarkedFilmsComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
     BrowserModule,
-    //AngularIcalModule,
+    AuthModule.forRoot({
+      domain: 'dev-sipsml8vb00v5eww.us.auth0.com',
+      clientId: 'fV4butLWkV6RudKUFqBahesWfwjquf4r',
+      authorizationParams: {
+        redirect_uri: window.location.origin,
+      },
+    }),
     RouterModule.forRoot(
       [
         {
