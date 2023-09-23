@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { BookmarkService } from '../service/bookmarked.service';
 import { IFilm } from '../filmresult';
 import { SelectdateService } from '../service/selectdate.service';
+import { ImdbService } from '../service/imdb.service';
 
 @Component({
   selector: 'app-calendar',
@@ -17,6 +18,7 @@ export class CalendarComponent implements OnInit {
   selectedDate = new Date();
   bookmarkedMovies: IFilm[] = [];
   weeks: number[][] = [];
+  actorList: String[] = [];
   months: string[] = [
     'January',
     'February',
@@ -39,7 +41,8 @@ export class CalendarComponent implements OnInit {
   constructor(
     private router: Router,
     private service: BookmarkService,
-    private dateService: SelectdateService
+    private dateService: SelectdateService,
+    private imdb: ImdbService
   ) {
     this.selectedMonth = this.dateService.selectedDate.getMonth();
     this.selectedYear = this.dateService.selectedDate.getFullYear();
@@ -47,7 +50,13 @@ export class CalendarComponent implements OnInit {
 
   ngOnInit(): void {
     this.generateCalendar();
+    this.getActors();
     //console.log(this.service.bookmarkedMovies);
+  }
+
+  async getActors() {
+    this.actorList = await this.imdb.getActors(9, 2);
+    console.log(this.actorList);
   }
 
   generateCalendar(): void {
@@ -127,8 +136,5 @@ export class CalendarComponent implements OnInit {
     const formattedMonth = month < 10 ? `0${month}` : month.toString();
     const formattedDay = day < 10 ? `0${day}` : day.toString();
     return `${formattedMonth}-${formattedDay}`;
-  }
-  getDayRange(day: number): number[] {
-    return Array.from({ length: day }, (_, i) => i + 1);
   }
 }

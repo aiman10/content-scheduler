@@ -15,6 +15,7 @@ import { BookmarkedFilmsComponent } from './bookmarked-films/bookmarked-films.co
 import { AuthModule } from '@auth0/auth0-angular';
 import { environment } from 'src/environments/environment';
 import { LoginComponent } from './login/login.component';
+import { ActorCalendarComponent } from './actor-calendar/actor-calendar.component';
 
 export function momentAdapterFactory() {
   return adapterFactory(moment);
@@ -28,6 +29,7 @@ export function momentAdapterFactory() {
     NavbarComponent,
     BookmarkedFilmsComponent,
     LoginComponent,
+    ActorCalendarComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,6 +56,10 @@ export function momentAdapterFactory() {
         {
           path: 'bookmarked',
           component: BookmarkedFilmsComponent,
+        },
+        {
+          path: 'actors',
+          component: ActorCalendarComponent,
         },
         {
           path: '',
