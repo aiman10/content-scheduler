@@ -121,14 +121,20 @@ export class CalendarComponent implements OnInit {
     this.generateCalendar();
   }
 
-  //TODO FIX THIS BUG
   onDayClick(day: number): void {
     this.selectedDate.setFullYear(this.selectedYear, this.selectedMonth, day);
     this.dateService.selectedDate = this.selectedDate;
-    const formattedDate = this.selectedDate.toISOString().split('T')[0];
+    const formattedDate = this.formatDateToISO(this.selectedDate);
     //console.log(formattedDate);
     //console.log(this.selectedDate);
     this.router.navigate(['/detail/', formattedDate]);
+  }
+
+  formatDateToISO(inputDate: Date): string {
+    const year = inputDate.getFullYear();
+    const month = String(inputDate.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+    const day = String(inputDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   formatDate(day: number): string {

@@ -20,6 +20,7 @@ export class BookmarkedFilmsComponent implements OnInit {
     private dateService: SelectdateService
   ) {}
 
+  //TODO Add export/import localstorage/bookmarked movies to file
   ngOnInit(): void {
     this.bookmarkedMovies = this.bookmarkService.bookmarkedMovies;
   }
