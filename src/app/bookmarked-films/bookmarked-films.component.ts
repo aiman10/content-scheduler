@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BookmarkService } from '../service/bookmarked.service';
 import { MoviedatabaseService } from '../service/moviedatabase.service';
 import { SelectdateService } from '../service/selectdate.service';
+import { Papa } from 'ngx-papaparse';
 
 @Component({
   selector: 'app-bookmarked-films',
@@ -17,12 +18,23 @@ export class BookmarkedFilmsComponent implements OnInit {
     private route: ActivatedRoute,
     private movieService: MoviedatabaseService,
     private bookmarkService: BookmarkService,
-    private dateService: SelectdateService
+    private dateService: SelectdateService,
+    private papa: Papa
   ) {}
 
   //TODO Add export/import localstorage/bookmarked movies to file
   ngOnInit(): void {
     this.bookmarkedMovies = this.bookmarkService.bookmarkedMovies;
+    this.sortBookmarkedMoviesByMonth();
+  }
+
+  sortBookmarkedMoviesByMonth() {
+    this.bookmarkedMovies.sort((a, b) => {
+      const dateA = new Date(a.release_date);
+      const dateB = new Date(b.release_date);
+
+      return dateA.getMonth() - dateB.getMonth();
+    });
   }
 
   toggleBookmark(movie: IFilm) {
@@ -43,5 +55,32 @@ export class BookmarkedFilmsComponent implements OnInit {
         this.bookmarkService.removeBookmark(movie);
       }
     }
+  }
+
+  exportToCSV() {
+    const exportData = this.bookmarkedMovies.map((movie) => ({
+      Title: movie.title,
+      ReleaseYear: new Date(movie.release_date).getFullYear(),
+      PosterPath: movie.poster_path,
+      Id: movie.id,
+    }));
+
+    const csv = this.papa.unparse(exportData, {
+      header: true,
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+
+    // Create a temporary anchor element to trigger the download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bookmarked_movies.csv';
+
+    // Trigger a click event to start the download
+    a.click();
+
+    // Release the URL object
+    window.URL.revokeObjectURL(url);
   }
 }

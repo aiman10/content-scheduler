@@ -1,5 +1,8 @@
 <div class="container">
   <h1 class="title">bookmarked Movies</h1>
+  <button class="button export-button" (click)="exportToCSV()">
+    Export to CSV
+  </button>
 
   <div class="columns is-multiline">
     <div class="column is-half" *ngFor="let movie of bookmarkedMovies">
