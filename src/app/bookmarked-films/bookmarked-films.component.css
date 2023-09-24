@@ -27,5 +27,11 @@
 .export-button {
   position: absolute;
   top: -2px; /* Adjust the top distance as needed */
-  right: 10px; /* Adjust the right distance as needed */
+  right: 4px; /* Adjust the right distance as needed */
+}
+
+.import-button {
+  position: absolute;
+  top: -2px;
+  right: 150px;
 }
