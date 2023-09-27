@@ -26,6 +26,7 @@
     "bulma": "^0.9.4",
     "cheerio": "^1.0.0-rc.12",
     "font-awesome": "^4.7.0",
+    "ical": "^0.8.0",
     "ical.js": "^1.5.0",
     "moment": "^2.29.4",
     "ngx-papaparse": "^7.0.0",

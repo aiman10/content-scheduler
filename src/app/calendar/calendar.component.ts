@@ -44,8 +44,11 @@ export class CalendarComponent implements OnInit {
     private dateService: SelectdateService,
     private imdb: ImdbService
   ) {
-    this.selectedMonth = this.dateService.selectedDate.getMonth();
-    this.selectedYear = this.dateService.selectedDate.getFullYear();
+    const currentDate = new Date();
+    this.selectedMonth = currentDate.getMonth();
+    this.selectedYear = currentDate.getFullYear();
+    //this.selectedMonth = this.dateService.selectedDate.getMonth();
+    //this.selectedYear = this.dateService.selectedDate.getFullYear();
   }
 
   ngOnInit(): void {

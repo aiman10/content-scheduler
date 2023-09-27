@@ -102,7 +102,7 @@ export class BookmarkedFilmsComponent implements OnInit {
   exportToJSON() {
     const exportData = this.bookmarkedMovies.map((movie) => ({
       title: movie.title,
-      releaseYear: new Date(movie.release_date).getFullYear(),
+      releaseDate: movie.release_date,
       posterPath: movie.poster_path,
       id: movie.id,
       isBookmarked: true,
