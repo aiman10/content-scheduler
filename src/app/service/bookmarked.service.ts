@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { IFilm } from '../filmresult';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -7,9 +10,9 @@ import { IFilm } from '../filmresult';
 export class BookmarkService {
   bookmarkedMovies: IFilm[] = [];
 
-  constructor() {
-    // Retrieve the bookmarked movies from local storage during service initialization
-    this.loadBookmarkedMovies();
+  constructor(private http: HttpClient) {
+    // Retrieve the bookmarked movies from the JSON file during service initialization
+    this.loadBookmarkedMovies().subscribe();
   }
 
   addBookmark(movie: IFilm) {
@@ -35,11 +38,13 @@ export class BookmarkService {
     );
   }
 
-  // Load the bookmarked movies array from local storage
-  private loadBookmarkedMovies() {
-    const savedMovies = localStorage.getItem('bookmarkedMovies');
-    if (savedMovies) {
-      this.bookmarkedMovies = JSON.parse(savedMovies);
-    }
+  // Load the bookmarked movies array from the JSON file
+  private loadBookmarkedMovies(): Observable<IFilm[]> {
+    return this.http.get<IFilm[]>('assets/popular_movies.json').pipe(
+      tap((movies) => {
+        this.bookmarkedMovies = movies;
+        this.saveBookmarkedMovies();
+      })
+    );
   }
 }

@@ -53,13 +53,13 @@ export class CalendarComponent implements OnInit {
 
   ngOnInit(): void {
     this.generateCalendar();
-    this.getActors();
+    //this.getActors();
     //console.log(this.service.bookmarkedMovies);
   }
 
   async getActors() {
     this.actorList = await this.imdb.getActors(9, 2);
-    console.log(this.actorList);
+    //console.log(this.actorList);
   }
 
   generateCalendar(): void {
@@ -145,5 +145,21 @@ export class CalendarComponent implements OnInit {
     const formattedMonth = month < 10 ? `0${month}` : month.toString();
     const formattedDay = day < 10 ? `0${day}` : day.toString();
     return `${formattedMonth}-${formattedDay}`;
+  }
+
+  getMoviesForDay(day: number): any[] {
+    const dayStr = this.formatDate(day);
+    const moviesForDay = this.bookmarkedMovies.filter(
+      (movie) => movie.release_date.slice(5) === dayStr
+    );
+    return moviesForDay.slice(0, 3);
+  }
+
+  getMovieCountForDay(day: number): number {
+    const dayStr = this.formatDate(day);
+    const moviesForDay = this.bookmarkedMovies.filter(
+      (movie) => movie.release_date.slice(5) === dayStr
+    );
+    return moviesForDay.length - this.getMoviesForDay(day).length;
   }
 }

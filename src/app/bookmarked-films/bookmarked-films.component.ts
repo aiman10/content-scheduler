@@ -28,15 +28,28 @@ export class BookmarkedFilmsComponent implements OnInit {
   //TODO Add export/import localstorage/bookmarked movies to file
   ngOnInit(): void {
     this.bookmarkedMovies = this.bookmarkService.bookmarkedMovies;
-    this.sortBookmarkedMoviesByMonth();
+    this.sortBookmarkedMoviesByDate();
   }
 
-  sortBookmarkedMoviesByMonth() {
+  sortBookmarkedMoviesByDate() {
     this.bookmarkedMovies.sort((a, b) => {
       const dateA = new Date(a.release_date);
       const dateB = new Date(b.release_date);
 
-      return dateA.getMonth() - dateB.getMonth();
+      // Compare years
+      const yearDifference = dateA.getFullYear() - dateB.getFullYear();
+      if (yearDifference !== 0) {
+        return yearDifference;
+      }
+
+      // Compare months if years are equal
+      const monthDifference = dateA.getMonth() - dateB.getMonth();
+      if (monthDifference !== 0) {
+        return monthDifference;
+      }
+
+      // Compare days if years and months are equal
+      return dateA.getDate() - dateB.getDate();
     });
   }
 

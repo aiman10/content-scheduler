@@ -40,18 +40,16 @@
         <div class="day square" (click)="onDayClick(day)">
           <ng-container *ngIf="day !== 0">
             {{ day }}
-            <div *ngFor="let movie of bookmarkedMovies; let i = index">
-              <ng-container
-                *ngIf="movie.release_date.slice(5) === formatDate(day)"
-              >
-                <div
-                  class="small-text"
-                  [ngClass]="'film-background-' + (i % 3)"
-                >
-                  <strong style="color: white">{{ movie.title }}</strong>
-                  ({{ movie.release_date | date : "yyyy" }})
-                </div>
-              </ng-container>
+            <div *ngFor="let movie of getMoviesForDay(day); let i = index">
+              <div class="small-text film-background">
+                <strong style="color: white">{{
+                  movie.title | slice : 0 : 25
+                }}</strong>
+                <!-- ({{ movie.release_date | date : "yyyy" }}) -->
+              </div>
+            </div>
+            <div *ngIf="getMovieCountForDay(day) >= 1" class="movie-count">
+              {{ getMovieCountForDay(day) }} more
             </div>
           </ng-container>
         </div>

@@ -35,7 +35,7 @@
   cursor: pointer;
   /* Add the following lines to make each square the same width and height */
   width: calc(100% / 7); /* Adjust as needed */
-  height: 100px; /* Adjust as needed */
+  height: 180px; /* Adjust as needed */
 }
 
 .day2 {
@@ -66,20 +66,10 @@
   margin-left: auto; /* Push the month title to the right */
 }
 
-.film-background-0 {
-  background-color: #4ca2ff;
+.film-background {
+  background-color: #049be5;
   border: 2px solid #007bff;
   color: #ffffff;
-}
-
-.film-background-1 {
-  background-color: #28a745;
-  border: 2px solid #68c17c;
-  color: #ffffff;
-}
-
-.film-background-2 {
-  background-color: #e6717c;
-  border: 2px solid #da3544;
-  color: #ffffff;
+  margin-bottom: 5px;
+  /*border-radius: 5px;*/
 }
