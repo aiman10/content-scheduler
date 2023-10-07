@@ -11,6 +11,7 @@ import { CalendarDetailComponent } from './calendar-detail/calendar-detail.compo
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { BookmarkedFilmsComponent } from './bookmarked-films/bookmarked-films.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AuthModule } from '@auth0/auth0-angular';
 import { environment } from 'src/environments/environment';
@@ -35,6 +36,7 @@ export function momentAdapterFactory() {
     BrowserModule,
     HttpClientModule,
     FormsModule,
+    BrowserAnimationsModule,
     BrowserModule,
     AuthModule.forRoot({
       domain: 'dev-sipsml8vb00v5eww.us.auth0.com',

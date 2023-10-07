@@ -6,11 +6,29 @@ import { BookmarkService } from '../service/bookmarked.service';
 import { IFilm } from '../filmresult';
 import { SelectdateService } from '../service/selectdate.service';
 import { ImdbService } from '../service/imdb.service';
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate,
+} from '@angular/animations';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css'],
+  animations: [
+    trigger('fadeInOut', [
+      state(
+        'void',
+        style({
+          opacity: 0,
+        })
+      ),
+      transition('void <=> *', animate(400)),
+    ]),
+  ],
 })
 export class CalendarComponent implements OnInit {
   selectedMonth: number;
@@ -37,7 +55,8 @@ export class CalendarComponent implements OnInit {
     { length: 62 }, // Change the length to cover a larger range of years
     (_, i) => new Date().getFullYear() - 60 + i
   );
-
+  hoveredDay: number | null = null;
+  hoverTimeout: any = null;
   constructor(
     private router: Router,
     private service: BookmarkService,
@@ -161,5 +180,27 @@ export class CalendarComponent implements OnInit {
       (movie) => movie.release_date.slice(5) === dayStr
     );
     return moviesForDay.length - this.getMoviesForDay(day).length;
+  }
+
+  isHovered(day: number): boolean {
+    return this.hoveredDay === day;
+  }
+
+  onDayMouseEnter(day: number): void {
+    this.hoverTimeout = setTimeout(() => {
+      this.hoveredDay = day;
+    }, 400); // 2000 milliseconds (2 seconds) delay
+  }
+
+  onDayMouseLeave(): void {
+    clearTimeout(this.hoverTimeout); // clear the timeout
+    this.hoveredDay = null;
+  }
+
+  getFullMoviesForDay(day: number): any[] {
+    const dayStr = this.formatDate(day);
+    return this.bookmarkedMovies.filter(
+      (movie) => movie.release_date.slice(5) === dayStr
+    );
   }
 }

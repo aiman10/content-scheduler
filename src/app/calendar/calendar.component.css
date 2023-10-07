@@ -36,6 +36,7 @@
   /* Add the following lines to make each square the same width and height */
   width: calc(100% / 7); /* Adjust as needed */
   height: 180px; /* Adjust as needed */
+  position: relative;
 }
 
 .day2 {
@@ -72,4 +73,34 @@
   color: #ffffff;
   margin-bottom: 5px;
   /*border-radius: 5px;*/
+}
+
+.day:hover {
+  background-color: #3498db;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 40px;
+  left: -20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 10px;
+
+  z-index: 1;
+  width: 120%; /* to ensure the tooltip covers the full width of the day square */
+  display: none;
+  box-sizing: border-box;
+}
+
+.day.hovered .tooltip {
+  display: block;
+}
+
+.day.square {
+  position: relative;
+}
+
+.day-title {
+  margin-bottom: 10px;
 }
