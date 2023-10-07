@@ -62,7 +62,7 @@ export class NavbarComponent implements OnInit {
     } else {
       // Click occurred outside, hide the search results
       this.showDropdown = false;
-      console.log('Hiding dropdown');
+      //console.log('Hiding dropdown');
     }
   }
 

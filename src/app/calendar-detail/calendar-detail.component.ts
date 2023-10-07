@@ -12,6 +12,7 @@ import { SelectdateService } from '../service/selectdate.service';
 })
 export class CalendarDetailComponent implements OnInit {
   selectedYear!: number;
+  bookmarkedMovies: IFilm[] = [];
 
   years: number[] = Array.from(
     { length: 61 }, // Change the length to cover a larger range of years
@@ -19,7 +20,7 @@ export class CalendarDetailComponent implements OnInit {
   );
   date = '';
   films: IFilm[] = [];
-  result!: Result;
+  result: Result = { page: 1, total_pages: 1, results: [], total_results: 0 }; // Added total_results property
 
   constructor(
     private route: ActivatedRoute,
@@ -32,12 +33,30 @@ export class CalendarDetailComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.date = params['date']; // Access the 'date' parameter
       this.selectedYear = Number(this.date.substring(0, 4));
+
+      // Extract the month and day from the date parameter
+      const selectedMonthDay = this.date.substring(5); // Assuming 'date' is in 'YYYY-MM-DD' format
+
+      // Get all bookmarked movies from the service
+      this.bookmarkedMovies = this.bookmarkService.bookmarkedMovies;
+
+      // Filter the bookmarkedMovies array to only include movies released on the selected day and month
+      this.bookmarkedMovies = this.bookmarkedMovies.filter((movie) => {
+        const movieMonthDay = movie.release_date.substring(5);
+        return movieMonthDay === selectedMonthDay;
+      });
+
       this.getFilms(1);
     });
   }
 
   async getFilms(id: number) {
-    this.result = await this.movieService.getFilms(this.date, id);
+    try {
+      this.result = await this.movieService.getFilms(this.date, id);
+      // ...
+    } catch (error) {
+      console.error('Error fetching films:', error);
+    }
     this.films = this.result.results.sort((a, b) => {
       return b.popularity - a.popularity;
     });
@@ -80,7 +99,7 @@ export class CalendarDetailComponent implements OnInit {
     const month = parseInt(dateParts[1]) - 1; // Month is zero-based (0-11)
     const day = parseInt(dateParts[2]);
     const newDate = new Date(year, month, day);
-    console.log(newDate);
+    //console.log(newDate);
 
     this.dateService.selectedDate = newDate;
     this.getFilms(1);
