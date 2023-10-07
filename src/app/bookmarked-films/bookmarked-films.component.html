@@ -1,56 +1,5 @@
 <div class="container">
-  <h1 class="title">bookmarked Movies</h1>
-  <button class="button export-button" (click)="exportToJSON()">
-    Export Movies
-  </button>
-  <button class="button import-button" (click)="toggleImportSection()">
-    Import Movies
-  </button>
-  <input
-    type="file"
-    *ngIf="showImportSection"
-    (change)="onFileSelected($event)"
-    accept=".json"
-  />
-  <div *ngIf="showSelect">
-    <h2 class="subtitle">Select Movies to Add:</h2>
-    <!-- "Select All" checkbox -->
-    <label>
-      <input
-        type="checkbox"
-        [(ngModel)]="selectAll"
-        (change)="toggleSelectAll()"
-      />
-      Select All
-    </label>
-    <table class="table is-bordered">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Movie Title</th>
-          <th>Release Year</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let movie of importedMovies">
-          <td>
-            <input type="checkbox" [(ngModel)]="movie.selected" />
-          </td>
-          <td>
-            <label>
-              {{ movie.title }}
-            </label>
-          </td>
-          <td>{{ movie.releaseDate }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <button class="button" (click)="addSelectedMovies()">
-      Add Selected Movies
-    </button>
-    <br />
-    <br />
-  </div>
+  <h1 class="title">All bookmarked Movies</h1>
 
   <div class="columns is-multiline">
     <div class="column is-half" *ngFor="let movie of bookmarkedMovies">

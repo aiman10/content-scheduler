@@ -13,10 +13,6 @@ import { HttpClient } from '@angular/common/http';
 })
 export class BookmarkedFilmsComponent implements OnInit {
   bookmarkedMovies: IFilm[] = [];
-  importedMovies: any[] = [];
-  showSelect = false;
-  showImportSection = false;
-  selectAll: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -53,20 +49,6 @@ export class BookmarkedFilmsComponent implements OnInit {
     });
   }
 
-  toggleExportSection() {
-    // Hide import section when export section is toggled
-    this.showImportSection = false;
-  }
-  toggleImportSection() {
-    this.showImportSection = !this.showImportSection;
-  }
-
-  toggleSelectAll() {
-    for (const movie of this.importedMovies) {
-      movie.selected = this.selectAll;
-    }
-  }
-
   toggleBookmark(movie: IFilm) {
     movie.isBookmarked = !movie.isBookmarked;
 
@@ -85,56 +67,5 @@ export class BookmarkedFilmsComponent implements OnInit {
         this.bookmarkService.removeBookmark(movie);
       }
     }
-  }
-
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.showSelect = !this.showSelect;
-      // Read the JSON file and populate the importedMovies array
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        this.importedMovies = JSON.parse(content);
-      };
-      reader.readAsText(file);
-    }
-  }
-
-  addSelectedMovies() {
-    // Add selected movies from importedMovies to bookmarkedMovies
-    const selectedMovies = this.importedMovies.filter(
-      (movie) => movie.selected
-    );
-    this.bookmarkedMovies.push(...selectedMovies);
-
-    // Clear the importedMovies array
-    this.importedMovies = [];
-  }
-
-  exportToJSON() {
-    const exportData = this.bookmarkedMovies.map((movie) => ({
-      title: movie.title,
-      releaseDate: movie.release_date,
-      posterPath: movie.poster_path,
-      id: movie.id,
-      isBookmarked: true,
-    }));
-
-    const jsonContent = JSON.stringify(exportData, null, 2);
-
-    const blob = new Blob([jsonContent], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-
-    // Create a temporary anchor element to trigger the download
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'bookmarked_movies.json';
-
-    // Trigger a click event to start the download
-    a.click();
-
-    // Release the URL object
-    window.URL.revokeObjectURL(url);
   }
 }
