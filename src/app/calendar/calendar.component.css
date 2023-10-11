@@ -57,10 +57,18 @@
   font-size: 12px; /* You can adjust the font size as needed */
 }
 
+.small-week-text {
+  font-size: 13px; /* You can adjust the font size as needed */
+}
+
 .date-selector {
   justify-content: space-between;
   align-items: center;
   padding-bottom: 20px;
+}
+.select {
+  z-index: 1;
+  position: relative;
 }
 
 .month-title {
@@ -81,7 +89,7 @@
 
 .tooltip {
   position: absolute;
-  bottom: 40px;
+  bottom: 30px;
   left: -20px;
   background-color: #f9f9f9;
   border: 1px solid #ccc;
@@ -110,4 +118,59 @@
   border: 2px solid #66b3ff;
   color: #ffffff;
   font-size: 12px;
+}
+
+/* Additional or modified styles for horizontal week view */
+
+.week {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch; /* Ensures all day squares are of equal height */
+}
+
+.week-square {
+  height: 500px;
+}
+
+.week-day:hover {
+  background-color: #3498db;
+}
+
+.week-view {
+  position: relative; /* Set the position context for absolute positioning */
+}
+
+.week-navigation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%; /* Stretch the navigation to cover the entire height of the week view */
+}
+
+.nav-button {
+  position: absolute;
+  top: 50%; /* Center the buttons vertically */
+  transform: translateY(
+    -50%
+  ); /* Adjust the position to truly center the buttons */
+  border: none;
+  background-color: transparent;
+  font-size: 2em; /* Adjust the size of the arrows */
+  cursor: pointer;
+}
+
+.prev-button {
+  left: 0; /* Position the Previous button on the left */
+  margin-left: -50px;
+}
+
+.next-button {
+  right: 0; /* Position the Next button on the right */
+  margin-right: -50px;
+}
+
+/* Optional: Add some padding and hover effect */
+.nav-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }

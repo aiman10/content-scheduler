@@ -13,11 +13,17 @@
         </div>
         <div class="control">
           <div class="select">
+            <select [(ngModel)]="selectedView">
+              <option>Month</option>
+              <option>Week</option>
+            </select>
+            <!--
             <select [(ngModel)]="selectedYear" (change)="onDateChange()">
               <option *ngFor="let year of years" [value]="year">
                 {{ year }}
               </option>
             </select>
+            -->
           </div>
         </div>
         <div class="month-title title">
@@ -35,41 +41,74 @@
       <div class="day2 header">Fri</div>
       <div class="day2 header">Sat</div>
     </div>
-    <div class="week" *ngFor="let week of weeks">
-      <ng-container *ngFor="let day of week">
-        <div
-          class="day square"
-          (click)="onDayClick(day)"
-          (mouseenter)="onDayMouseEnter(day)"
-          (mouseleave)="onDayMouseLeave()"
-          [class.hovered]="isHovered(day)"
-        >
-          <ng-container *ngIf="day !== 0">
-            <div class="day-title">{{ day }}</div>
+    <div *ngIf="selectedView === 'Month'" class="month-view">
+      <div class="week" *ngFor="let week of weeks">
+        <ng-container *ngFor="let day of week">
+          <div
+            class="day square"
+            (click)="onDayClick(day)"
+            (mouseenter)="onDayMouseEnter(day)"
+            (mouseleave)="onDayMouseLeave()"
+            [class.hovered]="isHovered(day)"
+          >
+            <ng-container *ngIf="day !== 0">
+              <div class="day-title">{{ day }}</div>
 
-            <div *ngFor="let movie of getMoviesForDay(day); let i = index">
-              <div class="small-text film-background">
-                <strong style="color: white">{{
-                  movie.title | slice : 0 : 25
-                }}</strong>
-                <!-- ({{ movie.release_date | date : "yyyy" }}) -->
-              </div>
-            </div>
-            <div *ngIf="getMovieCountForDay(day) >= 1" class="movie-count">
-              <div class="more-movies">{{ getMovieCountForDay(day) }} more</div>
-              <!-- Tooltip div -->
-              <div class="tooltip" *ngIf="isHovered(day)" [@fadeInOut]>
-                <div
-                  *ngFor="let movie of getFullMoviesForDay(day)"
-                  class="small-text film-background"
-                >
-                  {{ movie.title }}
+              <div *ngFor="let movie of getMoviesForDay(day); let i = index">
+                <div class="small-text film-background">
+                  <strong style="color: white">{{
+                    movie.title | slice : 0 : 25
+                  }}</strong>
+                  <!-- ({{ movie.release_date | date : "yyyy" }}) -->
                 </div>
               </div>
+              <div *ngIf="getMovieCountForDay(day) >= 1" class="movie-count">
+                <div class="more-movies">
+                  {{ getMovieCountForDay(day) }} more
+                </div>
+                <!-- Tooltip div -->
+                <div class="tooltip" *ngIf="isHovered(day)" [@fadeInOut]>
+                  <div
+                    *ngFor="let movie of getFullMoviesForDay(day)"
+                    class="small-text film-background"
+                  >
+                    {{ movie.title }}
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div *ngIf="selectedView === 'Week'" class="week">
+      <div class="week-navigation">
+        <button class="nav-button prev-button" (click)="previousWeek()">
+          <i class="fas fa-arrow-left"></i>
+          <!-- Left arrow icon (using FontAwesome) -->
+        </button>
+        <button class="nav-button next-button" (click)="nextWeek()">
+          <i class="fas fa-arrow-right"></i>
+          <!-- Right arrow icon (using FontAwesome) -->
+        </button>
+      </div>
+      <div
+        *ngFor="let day of weeks[0]"
+        class="day square week-square"
+        (click)="onDayClick(day)"
+      >
+        <ng-container *ngIf="day !== 0">
+          <div class="day-title">{{ day }}</div>
+
+          <div *ngFor="let movie of getMoviesForWeek(day); let i = index">
+            <div class="small-week-text film-background">
+              <strong style="color: white">
+                {{ movie.title | slice : 0 : 25 }}
+              </strong>
             </div>
-          </ng-container>
-        </div>
-      </ng-container>
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>

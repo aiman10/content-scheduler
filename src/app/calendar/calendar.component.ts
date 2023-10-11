@@ -31,6 +31,8 @@ import {
   ],
 })
 export class CalendarComponent implements OnInit {
+  private _selectedView = 'Month';
+
   selectedMonth: number;
   selectedYear: number;
   selectedDate = new Date();
@@ -71,7 +73,7 @@ export class CalendarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.generateCalendar();
+    this.generateMonthCalendar();
     //this.getActors();
     //console.log(this.service.bookmarkedMovies);
   }
@@ -81,7 +83,7 @@ export class CalendarComponent implements OnInit {
     //console.log(this.actorList);
   }
 
-  generateCalendar(): void {
+  generateMonthCalendar(): void {
     // Clear the weeks array
     this.bookmarkedMovies = this.service.bookmarkedMovies;
     this.weeks = [];
@@ -139,8 +141,28 @@ export class CalendarComponent implements OnInit {
     }
   }
 
+  generateWeekCalendar(): void {
+    // Clear the weeks array
+    this.weeks = [];
+
+    // Assume that selectedDate is the date around which you want to build your week view.
+    const startDate = new Date(this.selectedDate);
+    startDate.setDate(this.selectedDate.getDate() - this.selectedDate.getDay());
+
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+
+    const currentWeek: number[] = [];
+
+    for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+      currentWeek.push(d.getDate());
+    }
+
+    this.weeks.push(currentWeek);
+  }
+
   onDateChange(): void {
-    this.generateCalendar();
+    this.generateMonthCalendar();
   }
 
   onDayClick(day: number): void {
@@ -174,6 +196,14 @@ export class CalendarComponent implements OnInit {
     return moviesForDay.slice(0, 3);
   }
 
+  getMoviesForWeek(day: number): any[] {
+    const dayStr = this.formatDate(day);
+    const moviesForDay = this.bookmarkedMovies.filter(
+      (movie) => movie.release_date.slice(5) === dayStr
+    );
+    return moviesForDay;
+  }
+
   getMovieCountForDay(day: number): number {
     const dayStr = this.formatDate(day);
     const moviesForDay = this.bookmarkedMovies.filter(
@@ -202,5 +232,32 @@ export class CalendarComponent implements OnInit {
     return this.bookmarkedMovies.filter(
       (movie) => movie.release_date.slice(5) === dayStr
     );
+  }
+  public get selectedView() {
+    return this._selectedView;
+  }
+  public set selectedView(value) {
+    this._selectedView = value;
+    if (this.selectedView === 'Month') {
+      console.log('Month');
+      this.generateMonthCalendar;
+    } else {
+      console.log('Week');
+      this.generateWeekCalendar;
+    }
+  }
+
+  previousWeek(): void {
+    this.selectedDate.setDate(this.selectedDate.getDate() - 7);
+    this.selectedMonth = this.selectedDate.getMonth();
+
+    this.generateWeekCalendar();
+  }
+
+  nextWeek(): void {
+    this.selectedDate.setDate(this.selectedDate.getDate() + 7);
+    this.selectedMonth = this.selectedDate.getMonth();
+
+    this.generateWeekCalendar();
   }
 }
