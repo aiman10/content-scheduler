@@ -1,0 +1,9 @@
+{
+  "hosting": [
+    {
+      "target": "content-cal",
+      "source": ".",
+      "frameworksBackend": {}
+    }
+  ]
+}

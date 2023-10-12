@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "content-calender-ce797": {
+      "hosting": {
+        "content-cal": [
+          "content-calender-ce797"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "content-calender-ce797"
+  }
+}
