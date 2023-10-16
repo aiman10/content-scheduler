@@ -12,13 +12,13 @@ export class BookmarkService {
 
   constructor(private http: HttpClient) {
     // Retrieve the bookmarked movies from the JSON file during service initialization
-    this.loadBookmarkedMovies().subscribe();
+    //this.loadBookmarkedMovies().subscribe();
   }
 
   addBookmark(movie: IFilm) {
-    this.bookmarkedMovies.push(movie);
+    //this.bookmarkedMovies.push(movie);
     // Save the updated array to local storage
-    this.saveBookmarkedMovies();
+    //this.saveBookmarkedMovies();
   }
 
   removeBookmark(movie: IFilm) {

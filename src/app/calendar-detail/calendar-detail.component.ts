@@ -4,6 +4,7 @@ import { MoviedatabaseService } from '../service/moviedatabase.service';
 import { IFilm, Result } from '../filmresult';
 import { BookmarkService } from '../service/bookmarked.service';
 import { SelectdateService } from '../service/selectdate.service';
+import { DatabaseService } from '../service/database.service';
 
 @Component({
   selector: 'app-calendar-detail',
@@ -25,8 +26,9 @@ export class CalendarDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private movieService: MoviedatabaseService,
-    private bookmarkService: BookmarkService,
-    private dateService: SelectdateService
+    //private bookmarkService: BookmarkService,
+    private dateService: SelectdateService,
+    private databaseService: DatabaseService
   ) {}
 
   ngOnInit(): void {
@@ -37,8 +39,8 @@ export class CalendarDetailComponent implements OnInit {
       // Extract the month and day from the date parameter
       const selectedMonthDay = this.date.substring(5); // Assuming 'date' is in 'YYYY-MM-DD' format
 
-      // Get all bookmarked movies from the service
-      this.bookmarkedMovies = this.bookmarkService.bookmarkedMovies;
+      // Get all bookmarked movies from the database
+      this.getDatabaseFilms();
 
       // Filter the bookmarkedMovies array to only include movies released on the selected day and month
       this.bookmarkedMovies = this.bookmarkedMovies.filter((movie) => {
@@ -50,44 +52,30 @@ export class CalendarDetailComponent implements OnInit {
     });
   }
 
+  async getDatabaseFilms() {
+    this.bookmarkedMovies = (await this.databaseService.getAllFilms()).filter(
+      (movie) => {
+        const [movieYear, movieMonth, movieDay] = movie.release_date.split('-');
+        const [filterYear, filterMonth, filterDay] = this.date.split('-');
+        return movieMonth === filterMonth && movieDay === filterDay;
+      }
+    );
+    //console.log(this.bookmarkedMovies);
+  }
+
   async getFilms(id: number) {
-    try {
-      this.result = await this.movieService.getFilms(this.date, id);
-      // ...
-    } catch (error) {
-      console.error('Error fetching films:', error);
-    }
+    this.result = await this.movieService.getFilms(this.date, id);
+
     this.films = this.result.results.sort((a, b) => {
       return b.popularity - a.popularity;
-    });
-
-    // Retrieve bookmarked status from localStorage
-    this.films.forEach((movie) => {
-      const movieId = movie.id.toString(); // Convert the ID to a string if it's not
-      const isBookmarked = localStorage.getItem(`bookmark_${movieId}`);
-
-      // Update the movie's isBookmarked property based on the retrieved value
-      movie.isBookmarked = isBookmarked === 'true'; // Convert the string to a boolean
     });
   }
 
   toggleBookmark(movie: IFilm) {
     movie.isBookmarked = !movie.isBookmarked;
-
-    // Check if local storage is available in the browser
-    if (typeof localStorage !== 'undefined') {
-      const movieId = movie.id; // Replace with your unique identifier for the movie
-
-      if (movie.isBookmarked) {
-        // Handle bookmarking action
-        this.bookmarkService.addBookmark(movie);
-        localStorage.setItem(`bookmark_${movieId}`, 'true');
-      } else {
-        // Handle unbookmarking action
-        // Remove the bookmarked status from local storage
-        localStorage.removeItem(`bookmark_${movieId}`);
-        this.bookmarkService.removeBookmark(movie);
-      }
+    console.log(movie);
+    if (movie._id) {
+      this.databaseService.updateFilm(movie._id.toString(), movie);
     }
   }
 

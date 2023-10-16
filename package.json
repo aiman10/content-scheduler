@@ -31,6 +31,7 @@
     "ical": "^0.8.0",
     "ical.js": "^1.5.0",
     "moment": "^2.29.4",
+    "mongodb": "^6.1.0",
     "ngx-papaparse": "^7.0.0",
     "papaparse": "^5.4.1",
     "rxjs": "~7.5.0",

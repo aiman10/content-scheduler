@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 export interface Result {
   page: number;
   results: IFilm[];
@@ -6,6 +8,7 @@ export interface Result {
 }
 
 export interface IFilm {
+  _id?: ObjectId;
   adult: boolean;
   backdrop_path?: string;
   genre_ids: number[];

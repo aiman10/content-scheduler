@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Result } from '../filmresult';
+import { IFilm, Result } from '../filmresult';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable({

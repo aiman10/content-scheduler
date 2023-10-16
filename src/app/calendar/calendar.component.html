@@ -50,12 +50,19 @@
             (mouseenter)="onDayMouseEnter(day)"
             (mouseleave)="onDayMouseLeave()"
             [class.hovered]="isHovered(day)"
+            [class.today]="isToday(day)"
           >
             <ng-container *ngIf="day !== 0">
               <div class="day-title">{{ day }}</div>
 
               <div *ngFor="let movie of getMoviesForDay(day); let i = index">
-                <div class="small-text film-background">
+                <div
+                  class="small-text"
+                  [ngClass]="{
+                    'bookmarked-movie': movie.isBookmarked,
+                    'film-background': !movie.isBookmarked
+                  }"
+                >
                   <strong style="color: white">{{
                     movie.title | slice : 0 : 25
                   }}</strong>
@@ -101,7 +108,13 @@
           <div class="day-title">{{ day }}</div>
 
           <div *ngFor="let movie of getMoviesForWeek(day); let i = index">
-            <div class="small-week-text film-background">
+            <div
+              class="small-text"
+              [ngClass]="{
+                'bookmarked-movie': movie.isBookmarked,
+                'film-background': !movie.isBookmarked
+              }"
+            >
               <strong style="color: white">
                 {{ movie.title | slice : 0 : 25 }}
               </strong>

@@ -174,3 +174,15 @@
 .nav-button:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
+
+.today {
+  background-color: rgb(226, 226, 226); /* Or whatever color you prefer */
+}
+
+.bookmarked-movie {
+  background-color: #ffa500; /* Standard orange */
+  border: 2px solid #ff4500; /* Darker orange */
+  color: #ffffff;
+  font-size: 12px;
+  margin-bottom: 5px;
+}

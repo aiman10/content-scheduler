@@ -13,6 +13,7 @@ import {
   transition,
   animate,
 } from '@angular/animations';
+import { DatabaseService } from '../service/database.service';
 
 @Component({
   selector: 'app-calendar',
@@ -63,7 +64,8 @@ export class CalendarComponent implements OnInit {
     private router: Router,
     private service: BookmarkService,
     private dateService: SelectdateService,
-    private imdb: ImdbService
+    private imdb: ImdbService,
+    private databaseService: DatabaseService
   ) {
     const currentDate = new Date();
     this.selectedMonth = currentDate.getMonth();
@@ -78,6 +80,10 @@ export class CalendarComponent implements OnInit {
     //console.log(this.service.bookmarkedMovies);
   }
 
+  async getFilms() {
+    this.bookmarkedMovies = await this.databaseService.getAllFilms();
+  }
+
   async getActors() {
     this.actorList = await this.imdb.getActors(9, 2);
     //console.log(this.actorList);
@@ -85,7 +91,8 @@ export class CalendarComponent implements OnInit {
 
   generateMonthCalendar(): void {
     // Clear the weeks array
-    this.bookmarkedMovies = this.service.bookmarkedMovies;
+    //this.bookmarkedMovies = this.service.bookmarkedMovies;
+    this.getFilms();
     this.weeks = [];
 
     // Create a new date for the selected month and year
@@ -190,9 +197,9 @@ export class CalendarComponent implements OnInit {
 
   getMoviesForDay(day: number): any[] {
     const dayStr = this.formatDate(day);
-    const moviesForDay = this.bookmarkedMovies.filter(
-      (movie) => movie.release_date.slice(5) === dayStr
-    );
+    const moviesForDay = this.bookmarkedMovies
+      .filter((movie) => movie.release_date.slice(5) === dayStr)
+      .sort((a, b) => (b.isBookmarked ? 1 : -1) - (a.isBookmarked ? 1 : -1)); // This line sorts the movies
     return moviesForDay.slice(0, 3);
   }
 
@@ -259,5 +266,14 @@ export class CalendarComponent implements OnInit {
     this.selectedMonth = this.selectedDate.getMonth();
 
     this.generateWeekCalendar();
+  }
+
+  isToday(day: number): boolean {
+    const currentDate = new Date();
+    return (
+      day === currentDate.getDate() &&
+      this.selectedMonth === currentDate.getMonth() &&
+      this.selectedYear === currentDate.getFullYear()
+    );
   }
 }
