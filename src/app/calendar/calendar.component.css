@@ -40,11 +40,12 @@
 }
 
 .day2 {
-  flex: 1;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 10px;
   border: 1px solid #ccc;
-  /* Add the following lines to make each square the same width and height */
+  text-align: center;
   width: calc(100% / 7); /* Adjust as needed */
   height: 100px; /* Adjust as needed */
 }
@@ -176,12 +177,12 @@
 }
 
 .today {
-  background-color: rgb(226, 226, 226); /* Or whatever color you prefer */
+  background-color: rgb(207, 206, 206); /* Or whatever color you prefer */
 }
 
 .bookmarked-movie {
-  background-color: #ffa500; /* Standard orange */
-  border: 2px solid #ff4500; /* Darker orange */
+  background-color: #4cb965;
+  border: 2px solid #3f9b53;
   color: #ffffff;
   font-size: 12px;
   margin-bottom: 5px;

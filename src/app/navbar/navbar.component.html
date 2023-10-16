@@ -34,7 +34,11 @@
             </p>
           </div>
 
-          <div class="dropdown is-active is-right" *ngIf="showDropdown">
+          <div
+            class="dropdown is-active is-right"
+            *ngIf="showDropdown"
+            #dropdownMenu
+          >
             <div class="dropdown-menu centered-dropdown" style="width: 580px">
               <div class="dropdown-content results-list">
                 <!-- Display search results here as a list of cards -->

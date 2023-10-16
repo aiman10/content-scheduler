@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IFilm, Result } from '../filmresult';
 import { lastValueFrom } from 'rxjs';
+import { Root } from '../releaseyear';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,14 @@ export class MoviedatabaseService {
     return lastValueFrom(
       this.http.get<Result>(
         `https://api.themoviedb.org/3/search/movie?api_key=${this.apiKey}&query=${title}&year&=${releaseYear}`
+      )
+    );
+  }
+
+  getReleaseDates(id: number): Promise<Root> {
+    return lastValueFrom(
+      this.http.get<Root>(
+        `https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${this.apiKey}`
       )
     );
   }
