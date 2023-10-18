@@ -1,0 +1,128 @@
+<div class="container">
+  <div class="calendar">
+    <div class="date-selector">
+      <div class="field is-grouped">
+        <div class="control">
+          <div class="select">
+            <select [(ngModel)]="selectedMonth" (change)="onDateChange()">
+              <option *ngFor="let month of months; let i = index" [value]="i">
+                {{ month }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="control">
+          <div class="select">
+            <select [(ngModel)]="selectedView">
+              <option>Month</option>
+              <option>Week</option>
+            </select>
+            <!--
+              <select [(ngModel)]="selectedYear" (change)="onDateChange()">
+                <option *ngFor="let year of years" [value]="year">
+                  {{ year }}
+                </option>
+              </select>
+              -->
+          </div>
+        </div>
+        <div class="month-title title">
+          <h1>Birthdays for {{ months[selectedMonth] }} {{ selectedYear }}</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="week">
+      <div class="day2 header">Sun</div>
+      <div class="day2 header">Mon</div>
+      <div class="day2 header">Tue</div>
+      <div class="day2 header">Wed</div>
+      <div class="day2 header">Thu</div>
+      <div class="day2 header">Fri</div>
+      <div class="day2 header">Sat</div>
+    </div>
+    <div *ngIf="selectedView === 'Month'" class="month-view">
+      <div class="week" *ngFor="let week of weeks">
+        <ng-container *ngFor="let day of week">
+          <div
+            class="day square"
+            (click)="onDayClick(day)"
+            (mouseenter)="onDayMouseEnter(day)"
+            (mouseleave)="onDayMouseLeave()"
+            [class.hovered]="isHovered(day)"
+            [class.today]="isToday(day)"
+          >
+            <ng-container *ngIf="day !== 0">
+              <div class="day-title">{{ day }}</div>
+
+              <div *ngFor="let person of getMoviesForDay(day); let i = index">
+                <div
+                  class="small-text"
+                  [ngClass]="{
+                    'bookmarked-movie': person.isBookmarked,
+                    'film-background': !person.isBookmarked
+                  }"
+                >
+                  <strong style="color: white">{{
+                    person.Title | slice : 0 : 25
+                  }}</strong>
+                  <!-- ({{ movie.release_date | date : "yyyy" }}) -->
+                </div>
+              </div>
+              <div *ngIf="getMovieCountForDay(day) >= 1" class="movie-count">
+                <div class="more-movies">
+                  {{ getMovieCountForDay(day) }} more
+                </div>
+                <!-- Tooltip div -->
+                <div class="tooltip" *ngIf="isHovered(day)" [@fadeInOut]>
+                  <div
+                    *ngFor="let person of getFullMoviesForDay(day)"
+                    class="small-text film-background"
+                  >
+                    {{ person.Title }}
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div *ngIf="selectedView === 'Week'" class="week">
+      <div class="week-navigation">
+        <button class="nav-button prev-button" (click)="previousWeek()">
+          <i class="fas fa-arrow-left"></i>
+          <!-- Left arrow icon (using FontAwesome) -->
+        </button>
+        <button class="nav-button next-button" (click)="nextWeek()">
+          <i class="fas fa-arrow-right"></i>
+          <!-- Right arrow icon (using FontAwesome) -->
+        </button>
+      </div>
+      <div
+        *ngFor="let day of weeks[0]"
+        class="day square week-square"
+        (click)="onDayClick(day)"
+      >
+        <ng-container *ngIf="day !== 0">
+          <div class="day-title">{{ day }}</div>
+
+          <div *ngFor="let person of getMoviesForWeek(day); let i = index">
+            <div
+              class="small-text"
+              [ngClass]="{
+                'bookmarked-movie': person.isBookmarked,
+                'film-background': !person.isBookmarked
+              }"
+            >
+              <strong style="color: white">
+                {{ person.Title | slice : 0 : 25 }}
+              </strong>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<br />

@@ -79,6 +79,9 @@ export class CalendarDetailComponent implements OnInit {
     }
   }
 
+  //TODO: add toggleBookmark for new movies
+  addToggleBookmark(movie: IFilm) {}
+
   onDateChange() {
     this.date = this.selectedYear + this.date.substring(4); // Keep the rest of the date as it is
     const dateString = `${this.selectedYear}${this.date.substring(4)}`;

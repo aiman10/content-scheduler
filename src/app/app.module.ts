@@ -29,6 +29,7 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideDatabase, getDatabase } from '@angular/fire/database';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
+import { CastCrewComponent } from './cast-crew/cast-crew.component';
 
 export function momentAdapterFactory() {
   return adapterFactory(moment);
@@ -43,6 +44,7 @@ export function momentAdapterFactory() {
     BookmarkedFilmsComponent,
     LoginComponent,
     ActorCalendarComponent,
+    CastCrewComponent,
   ],
   imports: [
     BrowserModule,
@@ -76,6 +78,10 @@ export function momentAdapterFactory() {
         {
           path: 'actors',
           component: ActorCalendarComponent,
+        },
+        {
+          path: 'castcrew',
+          component: CastCrewComponent,
         },
         {
           path: '',

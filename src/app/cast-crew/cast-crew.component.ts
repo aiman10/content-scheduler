@@ -14,11 +14,12 @@ import {
   animate,
 } from '@angular/animations';
 import { DatabaseService } from '../service/database.service';
+import { CastCrew } from '../cast-crew';
 
 @Component({
-  selector: 'app-calendar',
-  templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css'],
+  selector: 'app-cast-crew',
+  templateUrl: './cast-crew.component.html',
+  styleUrls: ['./cast-crew.component.css'],
   animations: [
     trigger('fadeInOut', [
       state(
@@ -31,13 +32,18 @@ import { DatabaseService } from '../service/database.service';
     ]),
   ],
 })
-export class CalendarComponent implements OnInit {
+export class CastCrewComponent implements OnInit {
   private _selectedView = 'Month';
-  loading = false;
+
   selectedMonth: number;
   selectedYear: number;
   selectedDate = new Date();
-  bookmarkedMovies: IFilm[] = [];
+  //bookmarkedMovies: IFilm[] = [];
+  actors: CastCrew[] = [];
+  actresses: CastCrew[] = [];
+  directors: CastCrew[] = [];
+  composers: CastCrew[] = [];
+  allcastCrew: CastCrew[] = [];
   weeks: number[][] = [];
   actorList: String[] = [];
   months: string[] = [
@@ -64,38 +70,45 @@ export class CalendarComponent implements OnInit {
     private router: Router,
     private service: BookmarkService,
     private dateService: SelectdateService,
-    private imdb: ImdbService,
     private databaseService: DatabaseService
   ) {
     const currentDate = new Date();
     this.selectedMonth = currentDate.getMonth();
     this.selectedYear = currentDate.getFullYear();
-    //this.selectedMonth = this.dateService.selectedDate.getMonth();
-    //this.selectedYear = this.dateService.selectedDate.getFullYear();
   }
 
   ngOnInit(): void {
     this.generateMonthCalendar();
-    //this.getActors();
-    //console.log(this.service.bookmarkedMovies);
   }
 
-  async getFilms() {
-    // this.loading = true; // Set loading to true at the start of the function
-    this.bookmarkedMovies = await this.databaseService.getAllFilms();
-    this.loading = false; // Set loading to false after the data has loaded
+  onDateChange(): void {
+    this.generateMonthCalendar();
   }
 
-  async getActors() {
-    this.actorList = await this.imdb.getActors(9, 2);
-    //console.log(this.actorList);
+  async getCastCrew() {
+    this.actors = await this.databaseService.getActors();
+    this.actresses = await this.databaseService.getAcresses();
+    this.directors = await this.databaseService.getDirectors();
+    this.composers = await this.databaseService.getComposer();
+    //add to all to allcastCrew
+    this.allcastCrew = this.allcastCrew.concat(this.actors);
+    this.allcastCrew = this.allcastCrew.concat(this.actresses);
+    this.allcastCrew = this.allcastCrew.concat(this.directors);
+    this.allcastCrew = this.allcastCrew.concat(this.composers);
+    //remove duplicates from allcastCrew
+    this.allcastCrew = this.allcastCrew.filter(
+      (thing, index, self) =>
+        index === self.findIndex((t) => t.Title === thing.Title)
+    );
+
+    console.log(this.allcastCrew);
   }
 
   generateMonthCalendar(): void {
     // Clear the weeks array
-    //this.bookmarkedMovies = this.service.bookmarkedMovies;
-    this.getFilms();
     this.weeks = [];
+    //this.getFilms();
+    this.getCastCrew();
 
     // Create a new date for the selected month and year
     const currentDate = new Date(this.selectedYear, this.selectedMonth, 1);
@@ -173,17 +186,28 @@ export class CalendarComponent implements OnInit {
     this.weeks.push(currentWeek);
   }
 
-  onDateChange(): void {
-    this.generateMonthCalendar();
-  }
-
   onDayClick(day: number): void {
     this.selectedDate.setFullYear(this.selectedYear, this.selectedMonth, day);
     this.dateService.selectedDate = this.selectedDate;
     const formattedDate = this.formatDateToISO(this.selectedDate);
     //console.log(formattedDate);
     //console.log(this.selectedDate);
-    this.router.navigate(['/detail/', formattedDate]);
+    //this.router.navigate(['/detail/', formattedDate]);
+  }
+
+  isHovered(day: number): boolean {
+    return this.hoveredDay === day;
+  }
+
+  onDayMouseEnter(day: number): void {
+    this.hoverTimeout = setTimeout(() => {
+      this.hoveredDay = day;
+    }, 400); // 2000 milliseconds (2 seconds) delay
+  }
+
+  onDayMouseLeave(): void {
+    clearTimeout(this.hoverTimeout); // clear the timeout
+    this.hoveredDay = null;
   }
 
   formatDateToISO(inputDate: Date): string {
@@ -202,49 +226,36 @@ export class CalendarComponent implements OnInit {
 
   getMoviesForDay(day: number): any[] {
     const dayStr = this.formatDate(day);
-    const moviesForDay = this.bookmarkedMovies
-      .filter((movie) => movie.release_date.slice(5) === dayStr)
-      .sort((a, b) => (b.isBookmarked ? 1 : -1) - (a.isBookmarked ? 1 : -1)); // This line sorts the movies
+    const moviesForDay = this.allcastCrew.filter(
+      (person) => person.Birthday.slice(5) === dayStr
+    );
+    //.sort((a, b) => (b.isBookmarked ? 1 : -1) - (a.isBookmarked ? 1 : -1)); // This line sorts the movies
     return moviesForDay.slice(0, 3);
   }
 
   getMoviesForWeek(day: number): any[] {
     const dayStr = this.formatDate(day);
-    const moviesForDay = this.bookmarkedMovies.filter(
-      (movie) => movie.release_date.slice(5) === dayStr
+    const moviesForDay = this.allcastCrew.filter(
+      (person) => person.Birthday.slice(5) === dayStr
     );
     return moviesForDay;
   }
 
   getMovieCountForDay(day: number): number {
     const dayStr = this.formatDate(day);
-    const moviesForDay = this.bookmarkedMovies.filter(
-      (movie) => movie.release_date.slice(5) === dayStr
+    const moviesForDay = this.allcastCrew.filter(
+      (person) => person.Birthday.slice(5) === dayStr
     );
     return moviesForDay.length - this.getMoviesForDay(day).length;
   }
 
-  isHovered(day: number): boolean {
-    return this.hoveredDay === day;
-  }
-
-  onDayMouseEnter(day: number): void {
-    this.hoverTimeout = setTimeout(() => {
-      this.hoveredDay = day;
-    }, 400); // 2000 milliseconds (2 seconds) delay
-  }
-
-  onDayMouseLeave(): void {
-    clearTimeout(this.hoverTimeout); // clear the timeout
-    this.hoveredDay = null;
-  }
-
   getFullMoviesForDay(day: number): any[] {
     const dayStr = this.formatDate(day);
-    return this.bookmarkedMovies.filter(
-      (movie) => movie.release_date.slice(5) === dayStr
+    return this.allcastCrew.filter(
+      (person) => person.Birthday.slice(5) === dayStr
     );
   }
+
   public get selectedView() {
     return this._selectedView;
   }
@@ -262,7 +273,6 @@ export class CalendarComponent implements OnInit {
   previousWeek(): void {
     this.selectedDate.setDate(this.selectedDate.getDate() - 7);
     this.selectedMonth = this.selectedDate.getMonth();
-
     this.generateWeekCalendar();
   }
 

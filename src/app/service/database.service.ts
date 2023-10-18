@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { IFilm } from '../filmresult';
+import { CastCrew } from '../cast-crew';
 
 @Injectable({
   providedIn: 'root',
@@ -37,5 +38,29 @@ export class DatabaseService {
   async createFilm(film: IFilm) {
     await lastValueFrom(this.http.post('http://localhost:3000/movies', film));
     await this.getAllFilms();
+  }
+
+  async getActors() {
+    return lastValueFrom(
+      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/actors')
+    );
+  }
+
+  async getAcresses() {
+    return lastValueFrom(
+      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/actresses')
+    );
+  }
+
+  async getDirectors() {
+    return lastValueFrom(
+      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/directors')
+    );
+  }
+
+  async getComposer() {
+    return lastValueFrom(
+      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/composers')
+    );
   }
 }

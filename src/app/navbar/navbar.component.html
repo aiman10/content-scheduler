@@ -11,7 +11,9 @@
             alt="Logo"
           />
         </a>
-        <a class="navbar-item" [routerLink]="['home']"> Home </a>
+        <a class="navbar-item" [routerLink]="['home']"> Movies </a>
+
+        <a class="navbar-item" [routerLink]="['castcrew']"> Cast & Crew </a>
         <a class="navbar-item" [routerLink]="['bookmarked']"> Bookmark </a>
         <!-- <a class="navbar-item" [routerLink]="['actors']"> Actors </a> -->
       </div>
@@ -24,7 +26,7 @@
               <input
                 class="input"
                 type="text"
-                placeholder="Search"
+                placeholder="Search movies..."
                 (input)="onSearch($event)"
                 #searchInput
               />
