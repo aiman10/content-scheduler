@@ -28,4 +28,5 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 Usefull links
 https://chat.openai.com/share/82239d13-b9dd-48c7-8400-763aeed7d192
+
 https://developer.themoviedb.org/reference/movie-upcoming-list
