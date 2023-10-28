@@ -101,7 +101,7 @@ export class CastCrewComponent implements OnInit {
         index === self.findIndex((t) => t.Title === thing.Title)
     );
 
-    console.log(this.allcastCrew);
+    //console.log(this.allcastCrew);
   }
 
   generateMonthCalendar(): void {
@@ -190,9 +190,9 @@ export class CastCrewComponent implements OnInit {
     this.selectedDate.setFullYear(this.selectedYear, this.selectedMonth, day);
     this.dateService.selectedDate = this.selectedDate;
     const formattedDate = this.formatDateToISO(this.selectedDate);
-    //console.log(formattedDate);
+    console.log(formattedDate);
     //console.log(this.selectedDate);
-    //this.router.navigate(['/detail/', formattedDate]);
+    this.router.navigate(['/castcrew/', formattedDate]);
   }
 
   isHovered(day: number): boolean {

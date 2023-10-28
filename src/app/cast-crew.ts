@@ -6,4 +6,5 @@ export interface CastCrew {
   Title_URL: string;
   Image: string;
   Birthday: string;
+  Type?: string;
 }

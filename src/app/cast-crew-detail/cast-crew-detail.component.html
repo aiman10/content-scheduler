@@ -1,0 +1,52 @@
+<div class="container">
+  <h1 class="title is-size-3">{{ date }}</h1>
+  <h1 class="title is-size-4">Cast and Crew</h1>
+  <div class="columns is-multiline">
+    <div class="column is-half" *ngFor="let person of allcastCrew">
+      <div class="box">
+        <article class="media">
+          <div class="media-left">
+            <figure class="image is-96x96">
+              <img [src]="person.Image" alt="{{ person.Title }}" />
+            </figure>
+          </div>
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <a href="{{ person.Title_URL }}" target="_blank">{{
+                  person.Title
+                }}</a>
+                <br />
+                {{ person.Birthday }}
+                <br />
+                {{ findType(person) }}
+                <br />
+                <br />
+                <button (click)="downloadICSCalendar(person)" class="button">
+                  Download Calendar
+                </button>
+              </p>
+              <div class="bookmark-container">
+                <!--
+                <button
+                  class="transparent-button"
+                  (click)="toggleBookmark(movie)"
+                >
+                  <i
+                    class="fa-solid fa-bookmark"
+                    *ngIf="movie.isBookmarked"
+                  ></i>
+                  <i
+                    class="fa-regular fa-bookmark"
+                    *ngIf="!movie.isBookmarked"
+                  ></i>
+                </button>
+                  -->
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
