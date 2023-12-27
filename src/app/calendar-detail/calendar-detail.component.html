@@ -24,7 +24,17 @@
                   >{{ movie.title }}</a
                 >
                 <br />
-                {{ movie.release_date }}
+                <span *ngIf="!editing[movie.id]" (click)="enableEditing(movie)">
+                  {{ movie.release_date }}
+                </span>
+                <input
+                  *ngIf="editing[movie.id]"
+                  type="text"
+                  [value]="movie.release_date"
+                  (keyup.enter)="updateReleaseDate($event, movie)"
+                  (blur)="disableEditing(movie)"
+                />
+
                 <br />
                 <br />
                 <button (click)="downloadICSCalendar(movie)" class="button">

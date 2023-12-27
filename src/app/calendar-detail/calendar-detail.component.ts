@@ -22,6 +22,7 @@ export class CalendarDetailComponent implements OnInit {
   date = '';
   films: IFilm[] = [];
   result: Result = { page: 1, total_pages: 1, results: [], total_results: 0 }; // Added total_results property
+  editing: { [key: string]: boolean } = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -50,6 +51,23 @@ export class CalendarDetailComponent implements OnInit {
 
       this.getFilms(1);
     });
+  }
+
+  enableEditing(movie: IFilm) {
+    this.editing[movie.id] = true;
+  }
+
+  disableEditing(movie: IFilm) {
+    this.editing[movie.id] = false;
+  }
+
+  updateReleaseDate(event: any, movie: IFilm) {
+    const newDate = event.target.value;
+    movie.release_date = newDate;
+    this.disableEditing(movie);
+    if (movie._id) {
+      this.databaseService.updateFilm(movie._id.toString(), movie);
+    }
   }
 
   async getDatabaseFilms() {
