@@ -17,6 +17,7 @@ export class CastCrewDetailComponent implements OnInit {
   composers: CastCrew[] = [];
   allcastCrew: CastCrew[] = [];
   date = '';
+  age = 0;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -27,6 +28,20 @@ export class CastCrewDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCastCrew();
+  }
+
+  calculateAge(birthday: string) {
+    const birthDate = new Date(birthday);
+    const currentDate = new Date();
+    let age = currentDate.getFullYear() - birthDate.getFullYear();
+    const monthDifference = currentDate.getMonth() - birthDate.getMonth();
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    return age;
   }
 
   async getCastCrew() {

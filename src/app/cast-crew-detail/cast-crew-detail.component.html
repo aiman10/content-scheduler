@@ -17,7 +17,8 @@
                   person.Title
                 }}</a>
                 <br />
-                {{ person.Birthday }}
+                {{ person.Birthday }} |
+                <strong>{{ calculateAge(person.Birthday) }}</strong>
                 <br />
                 {{ findType(person) }}
                 <br />
