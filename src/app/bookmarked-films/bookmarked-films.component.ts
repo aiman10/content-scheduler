@@ -14,6 +14,8 @@ import { DatabaseService } from '../service/database.service';
 })
 export class BookmarkedFilmsComponent implements OnInit {
   bookmarkedMovies: IFilm[] = [];
+  filterValues: string[] = ['All', 'Bookmarked'];
+  selectedValue = 'All';
   isLoading = true;
   constructor(
     private route: ActivatedRoute,
@@ -24,12 +26,22 @@ export class BookmarkedFilmsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.selectedValue);
     this.getFilms();
     this.sortBookmarkedMoviesByDate();
   }
 
   async getFilms() {
-    this.bookmarkedMovies = await this.databaseService.getAllFilms();
+    this.isLoading = true;
+    const allMovies = await this.databaseService.getAllFilms();
+
+    if (this.selectedValue === 'All') {
+      this.bookmarkedMovies = allMovies;
+    } else if (this.selectedValue === 'Bookmarked') {
+      this.bookmarkedMovies = allMovies.filter((movie) => movie.isBookmarked);
+    }
+
+    this.sortBookmarkedMoviesByDate();
     this.isLoading = false;
   }
 
@@ -62,4 +74,9 @@ export class BookmarkedFilmsComponent implements OnInit {
       this.databaseService.updateFilm(movie._id.toString(), movie);
     }
   }
+
+  onFilterChange(): void {
+    this.getFilms();
+  }
+  //add a dropdown list to filter movies on favorites, release year
 }

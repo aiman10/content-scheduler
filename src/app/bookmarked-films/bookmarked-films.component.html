@@ -1,6 +1,25 @@
 <div class="container">
-  <h1 class="title">All Movies</h1>
-
+  <div
+    class="header-container"
+    style="display: flex; align-items: center; justify-content: space-between"
+  >
+    <h1 class="title">All Movies</h1>
+    <div class="select-wrapper" style="position: relative">
+      <select
+        [(ngModel)]="selectedValue"
+        (change)="onFilterChange()"
+        class="custom-select"
+      >
+        <option
+          *ngFor="let value of filterValues"
+          [ngClass]="{ 'is-selected': value === selectedValue }"
+          [value]="value"
+        >
+          {{ value }}
+        </option>
+      </select>
+    </div>
+  </div>
   <div class="columns is-multiline">
     <div class="column is-half" *ngFor="let movie of bookmarkedMovies">
       <div class="box" style="padding-bottom: 20px">
@@ -52,6 +71,7 @@
       </div>
     </div>
   </div>
+
   <div *ngIf="!isLoading">
     <!-- Only show the following content if not loading -->
     <div *ngIf="bookmarkedMovies.length == 0" class="column is-full">

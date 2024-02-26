@@ -54,6 +54,7 @@ export class CalendarComponent implements OnInit {
     'November',
     'December',
   ];
+
   years: number[] = Array.from(
     { length: 62 }, // Change the length to cover a larger range of years
     (_, i) => new Date().getFullYear() - 60 + i

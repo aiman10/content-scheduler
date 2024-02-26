@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,8 @@ export class ImdbService {
 
   getActors(month: number, day: number): Promise<Root> {
     const headers = new HttpHeaders({
-      'X-RapidAPI-Key': '4789f3c0femshf2725f6d52bbd83p1ee145jsnafd5a39b1aa8',
+      //encrypt api key using environment variable
+      'X-RapidAPI-Key': environment.apiKey,
       'X-RapidAPI-Host': 'imdb8.p.rapidapi.com',
     });
     return lastValueFrom(
