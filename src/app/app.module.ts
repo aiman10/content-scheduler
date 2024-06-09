@@ -31,6 +31,7 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { CastCrewComponent } from './cast-crew/cast-crew.component';
 import { CastCrewDetailComponent } from './cast-crew-detail/cast-crew-detail.component';
+import { AwardsComponent } from './awards/awards.component';
 
 export function momentAdapterFactory() {
   return adapterFactory(moment);
@@ -47,6 +48,7 @@ export function momentAdapterFactory() {
     ActorCalendarComponent,
     CastCrewComponent,
     CastCrewDetailComponent,
+    AwardsComponent,
   ],
   imports: [
     BrowserModule,
@@ -88,6 +90,10 @@ export function momentAdapterFactory() {
         {
           path: 'castcrew/:date',
           component: CastCrewDetailComponent,
+        },
+        {
+          path: 'awards',
+          component: AwardsComponent,
         },
         {
           path: '',

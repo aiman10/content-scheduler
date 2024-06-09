@@ -1,0 +1,37 @@
+<div class="container">
+  <div
+    class="header-container"
+    style="display: flex; align-items: center; justify-content: space-between"
+  >
+    <h1 class="title">Awards</h1>
+  </div>
+  <div class="columns is-multiline">
+    <div class="column is-half" *ngFor="let award of awards">
+      <div class="box" style="padding-bottom: 20px">
+        <article class="media">
+          <div class="media-left">
+            <figure class="image is-96x96">
+              <img
+                [src]="award.url || 'path/to/default/image.png'"
+                alt="logo"
+              />
+            </figure>
+          </div>
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <strong>
+                  <a href="{{ award.imdb }}" target="_blank">{{
+                    award.name
+                  }}</a>
+                </strong>
+                <br />
+                Date: {{ award.date }}
+              </p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>

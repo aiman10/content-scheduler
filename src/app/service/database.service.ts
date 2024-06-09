@@ -3,6 +3,7 @@ import { lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { IFilm } from '../filmresult';
 import { CastCrew } from '../cast-crew';
+import { Award } from '../awards';
 
 @Injectable({
   providedIn: 'root',
@@ -61,6 +62,12 @@ export class DatabaseService {
   async getComposer() {
     return lastValueFrom(
       this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/composers')
+    );
+  }
+
+  async getAwards() {
+    return lastValueFrom(
+      this.http.get<Award[]>('http://localhost:3000/awards')
     );
   }
 }
