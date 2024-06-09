@@ -70,6 +70,12 @@ export class CalendarDetailComponent implements OnInit {
     }
   }
 
+  calculateReleasedYearsAgo(movie: IFilm): number {
+    const releaseYear = new Date(movie.release_date).getFullYear();
+    const currentYear = new Date().getFullYear();
+    return currentYear - releaseYear;
+  }
+
   async getDatabaseFilms() {
     this.bookmarkedMovies = (await this.databaseService.getAllFilms()).filter(
       (movie) => {

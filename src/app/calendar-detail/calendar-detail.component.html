@@ -25,7 +25,10 @@
                 >
                 <br />
                 <span *ngIf="!editing[movie.id]" (click)="enableEditing(movie)">
-                  {{ movie.release_date }}
+                  {{ movie.release_date }} |
+                  <strong>
+                    {{ calculateReleasedYearsAgo(movie) }} year(s) ago
+                  </strong>
                 </span>
                 <input
                   *ngIf="editing[movie.id]"
