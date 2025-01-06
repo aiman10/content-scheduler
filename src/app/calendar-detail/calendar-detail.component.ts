@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MoviedatabaseService } from '../service/moviedatabase.service';
 import { IFilm, Result } from '../filmresult';
 import { BookmarkService } from '../service/bookmarked.service';
+import { ICalendar } from 'datebook';
 import { SelectdateService } from '../service/selectdate.service';
 import { DatabaseService } from '../service/database.service';
 
@@ -131,19 +132,35 @@ export class CalendarDetailComponent implements OnInit {
     }
   }
   downloadICSCalendar(film: IFilm) {
-    // Generate the ICS content
-    const icsContent = this.generateICSCalendar(film);
+    const eventDate = new Date(film.release_date);
+    const eventEnd = new Date(film.release_date);
+    eventEnd.setDate(eventDate.getDate() + 1); // assuming event lasts 1 day
 
-    // Create a Blob with the ICS content
-    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const config = {
+      title: film.title,
+      description: 'Movie release date',
+      start: eventDate,
+      end: eventEnd,
+      allDay: true,
+    };
+
+    const icsCalendar = new ICalendar(config);
+
+    // Generate the calendar data
+    const icsData = icsCalendar.render();
+
+    // Create a Blob from the ICS data
+    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
 
     // Create a download link
     const downloadLink = document.createElement('a');
     downloadLink.href = window.URL.createObjectURL(blob);
     downloadLink.setAttribute('download', `${film.title}.ics`);
 
-    // Trigger the download
+    // Append link to the body, trigger click, and remove it after
+    document.body.appendChild(downloadLink);
     downloadLink.click();
+    document.body.removeChild(downloadLink);
   }
 
   generateICSCalendar(film: IFilm): string {

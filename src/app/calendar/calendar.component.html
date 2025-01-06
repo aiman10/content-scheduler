@@ -83,7 +83,10 @@
                   <div class="tooltip" *ngIf="isHovered(day)" [@fadeInOut]>
                     <div
                       *ngFor="let movie of getFullMoviesForDay(day)"
-                      class="small-text film-background"
+                      [ngClass]="{
+                        'small-text bookmarked-movie': movie.isBookmarked,
+                        'small-text film-background': !movie.isBookmarked
+                      }"
                     >
                       {{ movie.title }}
                     </div>

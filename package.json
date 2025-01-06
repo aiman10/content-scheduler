@@ -26,6 +26,7 @@
     "axios": "^1.5.0",
     "bulma": "^0.9.4",
     "cheerio": "^1.0.0-rc.12",
+    "datebook": "^8.0.1",
     "firebase": "^10.4.0",
     "font-awesome": "^4.7.0",
     "ical": "^0.8.0",
