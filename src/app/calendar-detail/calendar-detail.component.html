@@ -1,6 +1,21 @@
 <div class="container">
   <h1 class="title is-size-3">{{ date }}</h1>
   <h1 class="title is-size-4">Bookmarked Movies</h1>
+  <div class="control">
+    <button (click)="onDateChangePrevious()" class="button left">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <button (click)="onDateChangeNext()" class="button right">
+      <i class="fas fa-arrow-right"></i>
+    </button>
+  </div>
+
+  <div *ngIf="isLoadingBookmarked" class="has-text-centered">
+    <button class="button is-large is-loading is-white">
+      Loading Bookmarked Movies...
+    </button>
+  </div>
+
   <div class="columns is-multiline">
     <div class="column is-half" *ngFor="let movie of bookmarkedMovies">
       <div class="box">
@@ -75,15 +90,15 @@
       </div>
     </div>
 
-    <div class="control">
+    <div class="control" style="margin-left: 55px">
       <button (click)="previousPage()" class="button">
-        <i class="fas fa-arrow-left"></i> Previous
+        <i class="fas fa-arrow-left"></i>
       </button>
     </div>
     <div class="control">{{ result.page }}/{{ result.total_pages }}</div>
     <div class="control">
       <button (click)="nextPage()" class="button">
-        Next <i class="fas fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </div>
   </div>

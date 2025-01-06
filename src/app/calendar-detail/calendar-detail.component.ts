@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MoviedatabaseService } from '../service/moviedatabase.service';
 import { IFilm, Result } from '../filmresult';
 import { BookmarkService } from '../service/bookmarked.service';
@@ -15,14 +15,15 @@ import { DatabaseService } from '../service/database.service';
 export class CalendarDetailComponent implements OnInit {
   selectedYear!: number;
   bookmarkedMovies: IFilm[] = [];
+  isLoadingBookmarked = false; // <-- NEW FLAG
 
   years: number[] = Array.from(
-    { length: 61 }, // Change the length to cover a larger range of years
+    { length: 61 },
     (_, i) => new Date().getFullYear() - 60 + i
   );
   date = '';
   films: IFilm[] = [];
-  result: Result = { page: 1, total_pages: 1, results: [], total_results: 0 }; // Added total_results property
+  result: Result = { page: 1, total_pages: 1, results: [], total_results: 0 };
   editing: { [key: string]: boolean } = {};
 
   constructor(
@@ -30,7 +31,8 @@ export class CalendarDetailComponent implements OnInit {
     private movieService: MoviedatabaseService,
     //private bookmarkService: BookmarkService,
     private dateService: SelectdateService,
-    private databaseService: DatabaseService
+    private databaseService: DatabaseService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -39,15 +41,15 @@ export class CalendarDetailComponent implements OnInit {
       this.selectedYear = Number(this.date.substring(0, 4));
 
       // Extract the month and day from the date parameter
-      const selectedMonthDay = this.date.substring(5); // Assuming 'date' is in 'YYYY-MM-DD' format
+      const selectedMonthDay = this.date.substring(5);
 
       // Get all bookmarked movies from the database
-      this.getDatabaseFilms();
-
-      // Filter the bookmarkedMovies array to only include movies released on the selected day and month
-      this.bookmarkedMovies = this.bookmarkedMovies.filter((movie) => {
-        const movieMonthDay = movie.release_date.substring(5);
-        return movieMonthDay === selectedMonthDay;
+      this.getDatabaseFilms().then(() => {
+        // Filter the bookmarkedMovies array to only include movies released on the selected day and month
+        this.bookmarkedMovies = this.bookmarkedMovies.filter((movie) => {
+          const movieMonthDay = movie.release_date.substring(5);
+          return movieMonthDay === selectedMonthDay;
+        });
       });
 
       this.getFilms(1);
@@ -78,27 +80,20 @@ export class CalendarDetailComponent implements OnInit {
   }
 
   async getDatabaseFilms() {
-    this.bookmarkedMovies = (await this.databaseService.getAllFilms()).filter(
-      (movie) => {
-        const [movieYear, movieMonth, movieDay] = movie.release_date.split('-');
-        const [filterYear, filterMonth, filterDay] = this.date.split('-');
-        return movieMonth === filterMonth && movieDay === filterDay;
-      }
-    );
-    //console.log(this.bookmarkedMovies);
+    this.isLoadingBookmarked = true; // <-- TURN ON LOADING
+    this.bookmarkedMovies = (await this.databaseService.getAllFilms()) || [];
+    this.isLoadingBookmarked = false; // <-- TURN OFF LOADING
   }
 
   async getFilms(id: number) {
     this.result = await this.movieService.getFilms(this.date, id);
-
-    this.films = this.result.results.sort((a, b) => {
-      return b.popularity - a.popularity;
-    });
+    this.films = this.result.results.sort(
+      (a, b) => b.popularity - a.popularity
+    );
   }
 
   toggleBookmark(movie: IFilm) {
     movie.isBookmarked = !movie.isBookmarked;
-    console.log(movie);
     if (movie._id) {
       this.databaseService.updateFilm(movie._id.toString(), movie);
     }
@@ -108,17 +103,67 @@ export class CalendarDetailComponent implements OnInit {
   addToggleBookmark(movie: IFilm) {}
 
   onDateChange() {
-    this.date = this.selectedYear + this.date.substring(4); // Keep the rest of the date as it is
+    this.date = this.selectedYear + this.date.substring(4);
     const dateString = `${this.selectedYear}${this.date.substring(4)}`;
     const dateParts = dateString.split('-');
     const year = parseInt(dateParts[0]);
-    const month = parseInt(dateParts[1]) - 1; // Month is zero-based (0-11)
+    const month = parseInt(dateParts[1]) - 1;
     const day = parseInt(dateParts[2]);
     const newDate = new Date(year, month, day);
-    //console.log(newDate);
 
     this.dateService.selectedDate = newDate;
     this.getFilms(1);
+  }
+
+  //change date for page to next day
+  onDateChangeNext() {
+    const dateParts = this.date.split('-');
+    const year = parseInt(dateParts[0], 10);
+    const month = parseInt(dateParts[1], 10) - 1; // JavaScript months are 0-based
+    const day = parseInt(dateParts[2], 10);
+
+    // Create a new Date object and add one day
+    const currentDate = new Date(year, month, day);
+    currentDate.setDate(currentDate.getDate() + 1);
+
+    // Format the new date as YYYY-MM-DD
+    const newYear = currentDate.getFullYear();
+    const newMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const newDay = currentDate.getDate().toString().padStart(2, '0');
+
+    const nextDate = `${newYear}-${newMonth}-${newDay}`;
+
+    // Navigate to the new URL
+    this.router.navigate(['/detail', nextDate]).then(() => {
+      // Update local variables if necessary
+      this.date = nextDate;
+      this.selectedYear = newYear;
+    });
+  }
+
+  onDateChangePrevious() {
+    const dateParts = this.date.split('-');
+    const year = parseInt(dateParts[0], 10);
+    const month = parseInt(dateParts[1], 10) - 1; // JavaScript months are 0-based
+    const day = parseInt(dateParts[2], 10);
+
+    // Create a new Date object and subtract one day
+    const currentDate = new Date(year, month, day);
+    currentDate.setDate(currentDate.getDate() - 1);
+
+    // Format the new date as YYYY-MM-DD
+    const newYear = currentDate.getFullYear();
+    const newMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const newDay = currentDate.getDate().toString().padStart(2, '0');
+
+    const previousDate = `${newYear}-${newMonth}-${newDay}`;
+
+    // Navigate to the new URL
+    this.router.navigate(['/detail', previousDate]).then(() => {
+      // Update local variables if necessary
+      this.date = previousDate;
+      this.selectedYear = newYear;
+    });
   }
 
   previousPage() {
@@ -126,15 +171,17 @@ export class CalendarDetailComponent implements OnInit {
       this.getFilms(this.result.page - 1);
     }
   }
+
   nextPage() {
     if (this.result.page < this.result.total_pages) {
       this.getFilms(this.result.page + 1);
     }
   }
+
   downloadICSCalendar(film: IFilm) {
     const eventDate = new Date(film.release_date);
     const eventEnd = new Date(film.release_date);
-    eventEnd.setDate(eventDate.getDate() + 1); // assuming event lasts 1 day
+    eventEnd.setDate(eventDate.getDate() + 1);
 
     const config = {
       title: film.title,
@@ -145,19 +192,13 @@ export class CalendarDetailComponent implements OnInit {
     };
 
     const icsCalendar = new ICalendar(config);
-
-    // Generate the calendar data
     const icsData = icsCalendar.render();
-
-    // Create a Blob from the ICS data
     const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
 
-    // Create a download link
     const downloadLink = document.createElement('a');
     downloadLink.href = window.URL.createObjectURL(blob);
     downloadLink.setAttribute('download', `${film.title}.ics`);
 
-    // Append link to the body, trigger click, and remove it after
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
@@ -168,23 +209,14 @@ export class CalendarDetailComponent implements OnInit {
     const eventYear = eventDate.getFullYear();
     const eventMonth = (eventDate.getMonth() + 1).toString().padStart(2, '0');
     const eventDay = eventDate.getDate().toString().padStart(2, '0');
-
-    // Format the date to YYYYMMDD
     const formattedDate = `${eventYear}${eventMonth}${eventDay}`;
-
-    // Event details
     const eventName = film.title;
-
-    // Generate a UID (you should generate a unique one for each event)
     const uid = '1234567890';
-
-    // Get the current date and time in UTC format
     const dtstamp = new Date()
       .toISOString()
       .replace(/[-:]/g, '')
       .replace(/\.\d{3}Z/, 'Z');
 
-    // Generate the ICS event for a single film
     const icsContent = `
     BEGIN:VCALENDAR
     VERSION:2.0
@@ -198,7 +230,6 @@ export class CalendarDetailComponent implements OnInit {
     END:VEVENT
     END:VCALENDAR
   `;
-
     return icsContent;
   }
 }

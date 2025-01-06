@@ -27,3 +27,10 @@
 .custom {
   padding-right: 33%;
 }
+
+.control {
+  display: flex;
+  justify-content: space-between; /* Positions the buttons at opposite ends */
+  align-items: center; /* Centers them vertically if there's extra height */
+  margin-bottom: 25px;
+}
