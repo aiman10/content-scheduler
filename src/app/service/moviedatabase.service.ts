@@ -22,7 +22,7 @@ export class MoviedatabaseService {
   searchFilm(title: string, releaseYear: number): Promise<Result> {
     return lastValueFrom(
       this.http.get<Result>(
-        `https://api.themoviedb.org/3/search/movie?api_key=${this.apiKey}&query=${title}&year&=${releaseYear}`
+        `https://api.themoviedb.org/3/search/movie?api_key=${this.apiKey}&query=${title}&year=${releaseYear}`
       )
     );
   }
