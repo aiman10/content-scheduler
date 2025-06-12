@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BookmarkService } from '../service/bookmarked.service';
 import { DatabaseService } from '../service/database.service';
 import { SelectdateService } from '../service/selectdate.service';
+import { ICalendar } from 'datebook';
 
 @Component({
   selector: 'app-cast-crew-detail',
@@ -84,5 +85,31 @@ export class CastCrewDetailComponent implements OnInit {
     return 'Unknown';
   }
 
-  downloadICSCalendar(CastCrew: CastCrew) {}
+  downloadICSCalendar(castCrew: CastCrew) {
+    const eventDate = new Date(castCrew.Birthday);
+    const eventEnd = new Date(castCrew.Birthday);
+    eventEnd.setDate(eventEnd.getDate() + 1);
+
+    const config = {
+      title: castCrew.Title,
+      description: 'Birthday',
+      start: eventDate,
+      end: eventEnd,
+      allDay: true,
+    };
+
+    const icsCalendar = new ICalendar(config);
+    const icsData = icsCalendar.render();
+    const blob = new Blob([icsData], {
+      type: 'text/calendar;charset=utf-8',
+    });
+
+    const downloadLink = document.createElement('a');
+    downloadLink.href = window.URL.createObjectURL(blob);
+    downloadLink.setAttribute('download', `${castCrew.Title}.ics`);
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }
 }
