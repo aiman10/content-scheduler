@@ -1,36 +1,15 @@
-.custom-image {
-  width: 80px; /* Adjust to your preferred width */
-  height: 80px; /* Adjust to your preferred height */
-}
-
-.text-center {
-  text-align: center;
-}
-
-.media-content {
-  position: relative; /* Position relative for bookmark-container */
-}
-
-.bookmark-container {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin-top: 5px; /* Adjust top margin for spacing */
-}
-
 .transparent-button {
   background-color: transparent;
   border: none; /* Optionally, remove the button border */
   padding: 0; /* Optionally, remove padding to make it as small as possible */
 }
 
-.custom {
-  padding-right: 33%;
+.movie-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.control {
-  display: flex;
-  justify-content: space-between; /* Positions the buttons at opposite ends */
-  align-items: center; /* Centers them vertically if there's extra height */
-  margin-bottom: 25px;
+.custom-select {
+  padding: 0.25rem;
 }
