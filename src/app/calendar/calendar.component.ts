@@ -102,7 +102,8 @@ export class CalendarComponent implements OnInit {
     const currentDate = new Date(this.selectedYear, this.selectedMonth, 1);
 
     // Find the first day of the week for the selected month
-    const firstDayOfWeek = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
+    // Adjust so the week starts on Monday instead of Sunday
+    const firstDayOfWeek = (currentDate.getDay() + 6) % 7; // 0 (Monday) to 6 (Sunday)
 
     // Get the number of days in the selected month
     const lastDayOfMonth = new Date(
@@ -160,7 +161,9 @@ export class CalendarComponent implements OnInit {
 
     // Assume that selectedDate is the date around which you want to build your week view.
     const startDate = new Date(this.selectedDate);
-    startDate.setDate(this.selectedDate.getDate() - this.selectedDate.getDay());
+    // Adjust so the week starts on Monday
+    const dayOfWeek = (this.selectedDate.getDay() + 6) % 7; // 0 (Monday) to 6 (Sunday)
+    startDate.setDate(this.selectedDate.getDate() - dayOfWeek);
 
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 6);
