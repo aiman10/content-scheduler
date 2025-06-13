@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
 import { IFilm } from '../filmresult';
 import { CastCrew } from '../cast-crew';
 import { Award } from '../awards';
@@ -14,61 +13,61 @@ export class DatabaseService {
 
   getAllFilms(): Promise<IFilm[]> {
     return lastValueFrom(
-      this.http.get<IFilm[]>(`${environment.apiBaseUrl}/movies`)
+      this.http.get<IFilm[]>('http://localhost:3000/movies')
     );
   }
 
   getFilm(id: string): Promise<IFilm> {
     return lastValueFrom(
-      this.http.get<IFilm>(`${environment.apiBaseUrl}/movies/${id}`)
+      this.http.get<IFilm>(`http://localhost:3000/movies/${id}`)
     );
   }
 
   getFilmByName(name: string): Promise<IFilm> {
     return lastValueFrom(
-      this.http.get<IFilm>(`${environment.apiBaseUrl}/movies/name/${name}`)
+      this.http.get<IFilm>(`http://localhost:3000/movies/name/${name}`)
     );
   }
 
   async updateFilm(id: string, film: IFilm) {
     await lastValueFrom(
-      this.http.put(`${environment.apiBaseUrl}/movies/${id}`, film)
+      this.http.put(`http://localhost:3000/movies/${id}`, film)
     );
     await this.getAllFilms();
   }
 
   async createFilm(film: IFilm) {
-    await lastValueFrom(this.http.post(`${environment.apiBaseUrl}/movies`, film));
+    await lastValueFrom(this.http.post('http://localhost:3000/movies', film));
     await this.getAllFilms();
   }
 
   async getActors() {
     return lastValueFrom(
-      this.http.get<CastCrew[]>(`${environment.apiBaseUrl}/cast-crew/actors`)
+      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/actors')
     );
   }
 
   async getAcresses() {
     return lastValueFrom(
-      this.http.get<CastCrew[]>(`${environment.apiBaseUrl}/cast-crew/actresses`)
+      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/actresses')
     );
   }
 
   async getDirectors() {
     return lastValueFrom(
-      this.http.get<CastCrew[]>(`${environment.apiBaseUrl}/cast-crew/directors`)
+      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/directors')
     );
   }
 
   async getComposer() {
     return lastValueFrom(
-      this.http.get<CastCrew[]>(`${environment.apiBaseUrl}/cast-crew/composers`)
+      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/composers')
     );
   }
 
   async getAwards() {
     return lastValueFrom(
-      this.http.get<Award[]>(`${environment.apiBaseUrl}/awards`)
+      this.http.get<Award[]>('http://localhost:3000/awards')
     );
   }
 }
