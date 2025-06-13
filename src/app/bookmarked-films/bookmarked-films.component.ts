@@ -16,6 +16,15 @@ export class BookmarkedFilmsComponent implements OnInit {
   bookmarkedMovies: IFilm[] = [];
   filterValues: string[] = ['All', 'Bookmarked'];
   selectedValue = 'All';
+  yearOptions: string[] = ['All Years'];
+  selectedYear = 'All Years';
+  sortOptions: string[] = [
+    'Year Desc',
+    'Year Asc',
+    'Alphabetical A-Z',
+    'Alphabetical Z-A',
+  ];
+  selectedSort = 'Year Desc';
   isLoading = true;
   constructor(
     private route: ActivatedRoute,
@@ -26,44 +35,54 @@ export class BookmarkedFilmsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.selectedValue);
     this.getFilms();
-    this.sortBookmarkedMoviesByDate();
   }
 
   async getFilms() {
     this.isLoading = true;
     const allMovies = await this.databaseService.getAllFilms();
+    this.updateYearOptions(allMovies);
 
-    if (this.selectedValue === 'All') {
-      this.bookmarkedMovies = allMovies;
-    } else if (this.selectedValue === 'Bookmarked') {
-      this.bookmarkedMovies = allMovies.filter((movie) => movie.isBookmarked);
+    let filtered = allMovies;
+    if (this.selectedValue === 'Bookmarked') {
+      filtered = filtered.filter((movie) => movie.isBookmarked);
     }
 
-    this.sortBookmarkedMoviesByDate();
+    if (this.selectedYear !== 'All Years') {
+      filtered = filtered.filter((movie) =>
+        movie.release_date.startsWith(this.selectedYear)
+      );
+    }
+
+    this.bookmarkedMovies = filtered;
+    this.applySort();
     this.isLoading = false;
   }
 
-  sortBookmarkedMoviesByDate() {
+  updateYearOptions(movies: IFilm[]) {
+    const years = Array.from(
+      new Set(movies.map((m) => m.release_date.slice(0, 4)))
+    ).sort((a, b) => Number(b) - Number(a));
+    this.yearOptions = ['All Years', ...years];
+  }
+
+  applySort() {
+    const option = this.selectedSort;
     this.bookmarkedMovies.sort((a, b) => {
-      const dateA = new Date(a.release_date);
-      const dateB = new Date(b.release_date);
-
-      // Compare years
-      const yearDifference = dateA.getFullYear() - dateB.getFullYear();
-      if (yearDifference !== 0) {
-        return yearDifference;
+      if (option === 'Alphabetical A-Z') {
+        return a.title.localeCompare(b.title);
+      } else if (option === 'Alphabetical Z-A') {
+        return b.title.localeCompare(a.title);
+      } else if (option === 'Year Asc') {
+        return (
+          new Date(a.release_date).getTime() -
+          new Date(b.release_date).getTime()
+        );
       }
-
-      // Compare months if years are equal
-      const monthDifference = dateA.getMonth() - dateB.getMonth();
-      if (monthDifference !== 0) {
-        return monthDifference;
-      }
-
-      // Compare days if years and months are equal
-      return dateA.getDate() - dateB.getDate();
+      return (
+        new Date(b.release_date).getTime() -
+        new Date(a.release_date).getTime()
+      );
     });
   }
 
@@ -77,6 +96,10 @@ export class BookmarkedFilmsComponent implements OnInit {
 
   onFilterChange(): void {
     this.getFilms();
+  }
+
+  onSortChange(): void {
+    this.applySort();
   }
   //add a dropdown list to filter movies on favorites, release year
 }

@@ -4,7 +4,7 @@
     style="display: flex; align-items: center; justify-content: space-between"
   >
     <h1 class="title">All Movies</h1>
-    <div class="select-wrapper" style="position: relative">
+    <div style="display: flex; gap: 0.5rem">
       <select
         [(ngModel)]="selectedValue"
         (change)="onFilterChange()"
@@ -12,10 +12,27 @@
       >
         <option
           *ngFor="let value of filterValues"
-          [ngClass]="{ 'is-selected': value === selectedValue }"
           [value]="value"
         >
           {{ value }}
+        </option>
+      </select>
+      <select
+        [(ngModel)]="selectedYear"
+        (change)="onFilterChange()"
+        class="custom-select"
+      >
+        <option *ngFor="let year of yearOptions" [value]="year">
+          {{ year }}
+        </option>
+      </select>
+      <select
+        [(ngModel)]="selectedSort"
+        (change)="onSortChange()"
+        class="custom-select"
+      >
+        <option *ngFor="let opt of sortOptions" [value]="opt">
+          {{ opt }}
         </option>
       </select>
     </div>
