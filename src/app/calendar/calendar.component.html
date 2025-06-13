@@ -5,37 +5,26 @@
 <div *ngIf="!loading">
   <div class="container">
     <div class="calendar">
-      <div class="date-selector">
-        <div class="field is-grouped">
-          <div class="control">
-            <div class="select">
-              <select [(ngModel)]="selectedMonth" (change)="onDateChange()">
-                <option *ngFor="let month of months; let i = index" [value]="i">
-                  {{ month }}
-                </option>
-              </select>
-            </div>
-          </div>
-          <div class="control">
-            <div class="select">
-              <select [(ngModel)]="selectedView">
-                <option>Month</option>
-                <option>Week</option>
-              </select>
-              <!--
-            <select [(ngModel)]="selectedYear" (change)="onDateChange()">
-              <option *ngFor="let year of years" [value]="year">
-                {{ year }}
-              </option>
-            </select>
-            --></div>
-          </div>
-          <div class="month-title title">
-            <h1>
-              Releasedates for {{ months[selectedMonth] }} {{ selectedYear }}
-            </h1>
-          </div>
+      <div class="date-selector flex flex-wrap items-center justify-between mb-4">
+        <div class="flex items-center space-x-2">
+          <button class="p-2" (click)="previousYear()">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span class="text-lg font-semibold">{{ selectedYear }}</span>
+          <button class="p-2" (click)="nextYear()">
+            <i class="fas fa-chevron-right"></i>
+          </button>
         </div>
+        <div class="flex items-center space-x-2">
+          <select [(ngModel)]="selectedMonth" (change)="onDateChange()" class="border rounded p-1">
+            <option *ngFor="let month of months; let i = index" [value]="i">{{ month }}</option>
+          </select>
+          <select [(ngModel)]="selectedView" class="border rounded p-1">
+            <option>Month</option>
+            <option>Week</option>
+          </select>
+        </div>
+        <h1 class="text-xl font-bold ml-4">Releasedates for {{ months[selectedMonth] }} {{ selectedYear }}</h1>
       </div>
 
       <div class="week">
@@ -51,7 +40,7 @@
         <div class="week" *ngFor="let week of weeks">
           <ng-container *ngFor="let day of week; let i = index">
             <div
-              class="day square"
+              class="day square rounded-md shadow-sm hover:shadow-md transition"
               [ngClass]="{ 'weekend-day': i === 5 || i === 6 }"
               (click)="onDayClick(day)"
               (mouseenter)="onDayMouseEnter(day)"
@@ -64,16 +53,22 @@
 
                 <div *ngFor="let movie of getMoviesForDay(day); let i = index">
                   <div
-                    class="small-text"
+                    class="small-text flex items-center justify-between"
                     [ngClass]="{
                       'bookmarked-movie': movie.isBookmarked,
                       'film-background': !movie.isBookmarked
                     }"
                   >
-                    <strong style="color: white">{{
-                      movie.title | slice : 0 : 25
-                    }}</strong>
-                    <!-- ({{ movie.release_date | date : "yyyy" }}) -->
+                    <span class="truncate text-white">{{ movie.title | slice:0:25 }}</span>
+                    <div class="flex items-center space-x-1">
+                      <button class="text-yellow-400" (click)="toggleBookmark(movie); $event.stopPropagation();">
+                        <i class="fa-solid fa-bookmark" *ngIf="movie.isBookmarked"></i>
+                        <i class="fa-regular fa-bookmark" *ngIf="!movie.isBookmarked"></i>
+                      </button>
+                      <button class="text-blue-200" (click)="downloadICSCalendar(movie); $event.stopPropagation();">
+                        <i class="fas fa-download"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div *ngIf="getMovieCountForDay(day) >= 1" class="movie-count">
@@ -111,7 +106,7 @@
         </div>
         <div
           *ngFor="let day of weeks[0]; let i = index"
-          class="day square week-square"
+          class="day square week-square rounded-md shadow-sm hover:shadow-md transition"
           [ngClass]="{ 'weekend-day': i === 5 || i === 6 }"
           (click)="onDayClick(day)"
         >
@@ -120,15 +115,22 @@
 
             <div *ngFor="let movie of getMoviesForWeek(day); let i = index">
               <div
-                class="small-text"
+                class="small-text flex items-center justify-between"
                 [ngClass]="{
                   'bookmarked-movie': movie.isBookmarked,
                   'film-background': !movie.isBookmarked
                 }"
               >
-                <strong style="color: white">
-                  {{ movie.title | slice : 0 : 25 }}
-                </strong>
+                <span class="truncate text-white">{{ movie.title | slice:0:25 }}</span>
+                <div class="flex items-center space-x-1">
+                  <button class="text-yellow-400" (click)="toggleBookmark(movie); $event.stopPropagation();">
+                    <i class="fa-solid fa-bookmark" *ngIf="movie.isBookmarked"></i>
+                    <i class="fa-regular fa-bookmark" *ngIf="!movie.isBookmarked"></i>
+                  </button>
+                  <button class="text-blue-200" (click)="downloadICSCalendar(movie); $event.stopPropagation();">
+                    <i class="fas fa-download"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </ng-container>

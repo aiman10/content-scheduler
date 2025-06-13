@@ -14,6 +14,7 @@ import {
   animate,
 } from '@angular/animations';
 import { DatabaseService } from '../service/database.service';
+import { ICalendar } from 'datebook';
 
 @Component({
   selector: 'app-calendar',
@@ -82,9 +83,12 @@ export class CalendarComponent implements OnInit {
   }
 
   async getFilms() {
-    // this.loading = true; // Set loading to true at the start of the function
-    this.bookmarkedMovies = await this.databaseService.getAllFilms();
-    this.loading = false; // Set loading to false after the data has loaded
+    this.loading = true;
+    const allMovies = await this.databaseService.getAllFilms();
+    this.bookmarkedMovies = allMovies.filter(
+      (m) => new Date(m.release_date).getFullYear() === this.selectedYear
+    );
+    this.loading = false;
   }
 
   async getActors() {
@@ -275,6 +279,49 @@ export class CalendarComponent implements OnInit {
     this.selectedMonth = this.selectedDate.getMonth();
 
     this.generateWeekCalendar();
+  }
+
+  previousYear(): void {
+    this.selectedYear--;
+    this.generateMonthCalendar();
+  }
+
+  nextYear(): void {
+    this.selectedYear++;
+    this.generateMonthCalendar();
+  }
+
+  toggleBookmark(movie: IFilm) {
+    movie.isBookmarked = !movie.isBookmarked;
+    if (movie._id) {
+      this.databaseService.updateFilm(movie._id.toString(), movie);
+    }
+  }
+
+  downloadICSCalendar(movie: IFilm) {
+    const eventDate = new Date(movie.release_date);
+    const eventEnd = new Date(movie.release_date);
+    eventEnd.setDate(eventEnd.getDate() + 1);
+
+    const config = {
+      title: movie.title,
+      description: 'Movie release date',
+      start: eventDate,
+      end: eventEnd,
+      allDay: true,
+    };
+
+    const icsCalendar = new ICalendar(config);
+    const icsData = icsCalendar.render();
+    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+
+    const downloadLink = document.createElement('a');
+    downloadLink.href = window.URL.createObjectURL(blob);
+    downloadLink.setAttribute('download', `${movie.title}.ics`);
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   }
 
   isToday(day: number): boolean {

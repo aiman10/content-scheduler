@@ -1,14 +1,19 @@
-<div class="container">
-  <div
-    class="header-container"
-    style="display: flex; align-items: center; justify-content: space-between"
-  >
-    <h1 class="title">All Movies</h1>
-    <div class="select-wrapper" style="position: relative">
+<div class="container mx-auto p-4">
+  <div class="flex flex-wrap items-center justify-between mb-4">
+    <div class="flex items-center space-x-2">
+      <button class="p-2" (click)="previousYear()">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <span class="text-lg font-semibold">{{ selectedYear }}</span>
+      <button class="p-2" (click)="nextYear()">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+    <div class="flex items-center space-x-2">
       <select
         [(ngModel)]="selectedValue"
         (change)="onFilterChange()"
-        class="custom-select"
+        class="border rounded p-1"
       >
         <option
           *ngFor="let value of filterValues"
@@ -20,55 +25,30 @@
       </select>
     </div>
   </div>
-  <div class="columns is-multiline">
-    <div class="column is-half" *ngFor="let movie of bookmarkedMovies">
-      <div class="box" style="padding-bottom: 20px">
-        <article class="media">
-          <div class="media-left">
-            <figure class="image is-96x96">
-              <img
-                [src]="
-                  'https://image.tmdb.org/t/p/original' + movie.poster_path
-                "
-                alt="{{ movie.title }}"
-                style="max-width: 90%; max-height: 125%"
-              />
-            </figure>
-          </div>
-          <div class="media-content">
-            <div class="content">
-              <p>
-                <a
-                  href="https://www.themoviedb.org/movie/{{ movie.id }}"
-                  target="_blank"
-                >
-                  {{ movie.title }}
-                </a>
-                <br />
-                {{ movie.release_date }}
-                <br />
-                <br />
-                <button class="button">Download Calendar</button>
-              </p>
-              <div class="bookmark-container">
-                <button
-                  class="transparent-button"
-                  (click)="toggleBookmark(movie)"
-                >
-                  <i
-                    class="fa-solid fa-bookmark"
-                    *ngIf="movie.isBookmarked"
-                  ></i>
-                  <i
-                    class="fa-regular fa-bookmark"
-                    *ngIf="!movie.isBookmarked"
-                  ></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
+
+  <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div *ngFor="let movie of bookmarkedMovies" class="bg-white rounded shadow hover:shadow-lg transition p-4 relative">
+      <button
+        class="absolute top-2 right-2 text-yellow-500"
+        (click)="toggleBookmark(movie)"
+      >
+        <i class="fa-solid fa-bookmark" *ngIf="movie.isBookmarked"></i>
+        <i class="fa-regular fa-bookmark" *ngIf="!movie.isBookmarked"></i>
+      </button>
+      <img
+        [src]="'https://image.tmdb.org/t/p/original' + movie.poster_path"
+        alt="{{ movie.title }}"
+        loading="lazy"
+        class="w-full h-48 object-cover rounded mb-2"
+      />
+      <h2 class="text-lg font-semibold">{{ movie.title }}</h2>
+      <p class="text-sm text-gray-500">{{ movie.release_date }}</p>
+      <button
+        class="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+        (click)="downloadICSCalendar(movie)"
+      >
+        <i class="fas fa-calendar-plus mr-1"></i> Download Calendar
+      </button>
     </div>
   </div>
 

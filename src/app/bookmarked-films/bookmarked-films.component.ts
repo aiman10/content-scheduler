@@ -6,6 +6,7 @@ import { MoviedatabaseService } from '../service/moviedatabase.service';
 import { SelectdateService } from '../service/selectdate.service';
 import { HttpClient } from '@angular/common/http';
 import { DatabaseService } from '../service/database.service';
+import { ICalendar } from 'datebook';
 
 @Component({
   selector: 'app-bookmarked-films',
@@ -17,6 +18,7 @@ export class BookmarkedFilmsComponent implements OnInit {
   filterValues: string[] = ['All', 'Bookmarked'];
   selectedValue = 'All';
   isLoading = true;
+  selectedYear = new Date().getFullYear();
   constructor(
     private route: ActivatedRoute,
     private movieService: MoviedatabaseService,
@@ -34,11 +36,14 @@ export class BookmarkedFilmsComponent implements OnInit {
   async getFilms() {
     this.isLoading = true;
     const allMovies = await this.databaseService.getAllFilms();
+    const filteredByYear = allMovies.filter(
+      (m) => new Date(m.release_date).getFullYear() === this.selectedYear
+    );
 
     if (this.selectedValue === 'All') {
-      this.bookmarkedMovies = allMovies;
+      this.bookmarkedMovies = filteredByYear;
     } else if (this.selectedValue === 'Bookmarked') {
-      this.bookmarkedMovies = allMovies.filter((movie) => movie.isBookmarked);
+      this.bookmarkedMovies = filteredByYear.filter((movie) => movie.isBookmarked);
     }
 
     this.sortBookmarkedMoviesByDate();
@@ -73,6 +78,42 @@ export class BookmarkedFilmsComponent implements OnInit {
     if (movie._id) {
       this.databaseService.updateFilm(movie._id.toString(), movie);
     }
+  }
+
+  downloadICSCalendar(movie: IFilm) {
+    const eventDate = new Date(movie.release_date);
+    const eventEnd = new Date(movie.release_date);
+    eventEnd.setDate(eventEnd.getDate() + 1);
+
+    const config = {
+      title: movie.title,
+      description: 'Movie release date',
+      start: eventDate,
+      end: eventEnd,
+      allDay: true,
+    };
+
+    const icsCalendar = new ICalendar(config);
+    const icsData = icsCalendar.render();
+    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+
+    const downloadLink = document.createElement('a');
+    downloadLink.href = window.URL.createObjectURL(blob);
+    downloadLink.setAttribute('download', `${movie.title}.ics`);
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }
+
+  previousYear() {
+    this.selectedYear--;
+    this.getFilms();
+  }
+
+  nextYear() {
+    this.selectedYear++;
+    this.getFilms();
   }
 
   onFilterChange(): void {
