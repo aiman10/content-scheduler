@@ -71,30 +71,23 @@ export class CalendarComponent implements OnInit {
     const currentDate = new Date();
     this.selectedMonth = currentDate.getMonth();
     this.selectedYear = currentDate.getFullYear();
-    //this.selectedMonth = this.dateService.selectedDate.getMonth();
-    //this.selectedYear = this.dateService.selectedDate.getFullYear();
   }
 
   ngOnInit(): void {
     this.generateMonthCalendar();
-    //this.getActors();
-    //console.log(this.service.bookmarkedMovies);
   }
 
   async getFilms() {
-    // this.loading = true; // Set loading to true at the start of the function
     this.bookmarkedMovies = await this.databaseService.getAllFilms();
     this.loading = false; // Set loading to false after the data has loaded
   }
 
   async getActors() {
     this.actorList = await this.imdb.getActors(9, 2);
-    //console.log(this.actorList);
   }
 
   generateMonthCalendar(): void {
     // Clear the weeks array
-    //this.bookmarkedMovies = this.service.bookmarkedMovies;
     this.getFilms();
     this.weeks = [];
 
@@ -185,8 +178,7 @@ export class CalendarComponent implements OnInit {
     this.selectedDate.setFullYear(this.selectedYear, this.selectedMonth, day);
     this.dateService.selectedDate = this.selectedDate;
     const formattedDate = this.formatDateToISO(this.selectedDate);
-    //console.log(formattedDate);
-    //console.log(this.selectedDate);
+    // Navigate to the detail view for the selected date
     this.router.navigate(['/detail/', formattedDate]);
   }
 
@@ -255,10 +247,8 @@ export class CalendarComponent implements OnInit {
   public set selectedView(value) {
     this._selectedView = value;
     if (this.selectedView === 'Month') {
-      console.log('Month');
       this.generateMonthCalendar();
     } else {
-      console.log('Week');
       this.generateWeekCalendar();
     }
   }

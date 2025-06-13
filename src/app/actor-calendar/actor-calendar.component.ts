@@ -13,29 +13,5 @@ export class ActorCalendarComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  async ngOnInit(): Promise<void> {
-    /*
-    try {
-      // Make an HTTP request to the IMDb page
-      const response = await lastValueFrom(
-        this.http.get('https://www.imdb.com/name/nm0000206/', {
-          responseType: 'text',
-        })
-      );
-
-      if (typeof response === 'string') {
-        // Parse the HTML content using cheerio
-        const $ = cheerio.load(response);
-
-        // Extract the actor's name and birthdate (you need to inspect the page's HTML structure)
-        this.actorName = $('.header .itemprop').text();
-        this.actorBirthdate = $('[itemprop="birthDate"]').text();
-      } else {
-        console.error('Unexpected response format:', response);
-      }
-    } catch (error) {
-      console.error('Error fetching IMDb data:', error);
-    }
-    */
-  }
+  async ngOnInit(): Promise<void> {}
 }

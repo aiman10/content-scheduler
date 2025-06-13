@@ -10,16 +10,9 @@ import { tap } from 'rxjs/operators';
 export class BookmarkService {
   bookmarkedMovies: IFilm[] = [];
 
-  constructor(private http: HttpClient) {
-    // Retrieve the bookmarked movies from the JSON file during service initialization
-    //this.loadBookmarkedMovies().subscribe();
-  }
+  constructor(private http: HttpClient) {}
 
-  addBookmark(movie: IFilm) {
-    //this.bookmarkedMovies.push(movie);
-    // Save the updated array to local storage
-    //this.saveBookmarkedMovies();
-  }
+  addBookmark(movie: IFilm) {}
 
   removeBookmark(movie: IFilm) {
     const index = this.bookmarkedMovies.findIndex((m) => m.id === movie.id);

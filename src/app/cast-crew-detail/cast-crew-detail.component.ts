@@ -64,7 +64,6 @@ export class CastCrewDetailComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.date = params['date']; // Access the 'date' parameter
       const selectedMonthDay = this.date.substring(5);
-      //console.log(selectedMonthDay);
       this.allcastCrew = this.allcastCrew.filter((castCrew) => {
         const movieMonthDay = castCrew.Birthday.substring(5);
         return movieMonthDay === selectedMonthDay;

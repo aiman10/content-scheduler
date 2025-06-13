@@ -38,7 +38,6 @@ export class CastCrewComponent implements OnInit {
   selectedMonth: number;
   selectedYear: number;
   selectedDate = new Date();
-  //bookmarkedMovies: IFilm[] = [];
   actors: CastCrew[] = [];
   actresses: CastCrew[] = [];
   directors: CastCrew[] = [];
@@ -101,13 +100,11 @@ export class CastCrewComponent implements OnInit {
         index === self.findIndex((t) => t.Title === thing.Title)
     );
 
-    //console.log(this.allcastCrew);
   }
 
   generateMonthCalendar(): void {
     // Clear the weeks array
     this.weeks = [];
-    //this.getFilms();
     this.getCastCrew();
 
     // Create a new date for the selected month and year
@@ -193,8 +190,7 @@ export class CastCrewComponent implements OnInit {
     this.selectedDate.setFullYear(this.selectedYear, this.selectedMonth, day);
     this.dateService.selectedDate = this.selectedDate;
     const formattedDate = this.formatDateToISO(this.selectedDate);
-    console.log(formattedDate);
-    //console.log(this.selectedDate);
+    // Navigate to the selected date's detail page
     this.router.navigate(['/castcrew/', formattedDate]);
   }
 
@@ -232,7 +228,6 @@ export class CastCrewComponent implements OnInit {
     const moviesForDay = this.allcastCrew.filter(
       (person) => person.Birthday.slice(5) === dayStr
     );
-    //.sort((a, b) => (b.isBookmarked ? 1 : -1) - (a.isBookmarked ? 1 : -1)); // This line sorts the movies
     return moviesForDay.slice(0, 3);
   }
 
@@ -265,10 +260,8 @@ export class CastCrewComponent implements OnInit {
   public set selectedView(value) {
     this._selectedView = value;
     if (this.selectedView === 'Month') {
-      console.log('Month');
       this.generateMonthCalendar();
     } else {
-      console.log('Week');
       this.generateWeekCalendar();
     }
   }

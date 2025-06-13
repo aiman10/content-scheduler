@@ -16,6 +16,5 @@ export class AwardsComponent implements OnInit {
 
   async getAwards() {
     this.awards = await this.databaseService.getAwards();
-    console.log(this.awards);
   }
 }

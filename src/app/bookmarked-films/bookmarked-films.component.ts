@@ -88,7 +88,6 @@ export class BookmarkedFilmsComponent implements OnInit {
 
   toggleBookmark(movie: IFilm) {
     movie.isBookmarked = !movie.isBookmarked;
-    //console.log(movie);
     if (movie._id) {
       this.databaseService.updateFilm(movie._id.toString(), movie);
     }

@@ -74,7 +74,6 @@ export class NavbarComponent implements OnInit {
     } else {
       // Click occurred outside, hide the search results
       this.showDropdown = false;
-      //console.log('Hiding dropdown');
     }
   }
 
@@ -83,9 +82,8 @@ export class NavbarComponent implements OnInit {
     const isBookmarked = this.bookmarkedMovies.some(
       (bookmarkedMovie) => bookmarkedMovie.id === movie.id
     );
-    console.log(isBookmarked);
+    // Check if the movie is already bookmarked
     if (isBookmarked == true) {
-      console.log('true');
       const existingMovie = await this.databaseService.getFilmByName(
         movie.title
       );
@@ -104,7 +102,6 @@ export class NavbarComponent implements OnInit {
         return film;
       });
     } else {
-      console.log('false');
       movie.isBookmarked = !movie.isBookmarked;
       try {
         const releaseData = await this.service.getReleaseDates(movie.id);
@@ -126,7 +123,6 @@ export class NavbarComponent implements OnInit {
             );
           }
 
-          console.log(usReleaseDates);
           const formattedDate = new Date(usReleaseDates[0].release_date)
             .toISOString()
             .split('T')[0];
@@ -140,12 +136,8 @@ export class NavbarComponent implements OnInit {
             }
             return film;
           });
-        } else {
-          console.error('No US release data found');
         }
-      } catch (error) {
-        console.error('Error fetching release dates:', error);
-      }
+      } catch (error) {}
     }
   }
 }
