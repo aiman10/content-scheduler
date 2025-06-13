@@ -38,14 +38,15 @@
       <div class="day2 header">Wed</div>
       <div class="day2 header">Thu</div>
       <div class="day2 header">Fri</div>
-      <div class="day2 header">Sat</div>
-      <div class="day2 header">Sun</div>
+      <div class="day2 header weekend-header">Sat</div>
+      <div class="day2 header weekend-header">Sun</div>
     </div>
     <div *ngIf="selectedView === 'Month'" class="month-view">
       <div class="week" *ngFor="let week of weeks">
-        <ng-container *ngFor="let day of week">
+        <ng-container *ngFor="let day of week; let i = index">
           <div
             class="day square"
+            [ngClass]="{ 'weekend-day': i === 5 || i === 6 }"
             (click)="onDayClick(day)"
             (mouseenter)="onDayMouseEnter(day)"
             (mouseleave)="onDayMouseLeave()"
@@ -100,8 +101,9 @@
         </button>
       </div>
       <div
-        *ngFor="let day of weeks[0]"
+        *ngFor="let day of weeks[0]; let i = index"
         class="day square week-square"
+        [ngClass]="{ 'weekend-day': i === 5 || i === 6 }"
         (click)="onDayClick(day)"
       >
         <ng-container *ngIf="day !== 0">
