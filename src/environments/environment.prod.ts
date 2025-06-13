@@ -11,4 +11,5 @@ export const environment = {
 
   production: true,
   apiKey: '4789f3c0femshf2725f6d52bbd83p1ee145jsnafd5a39b1aa8',
+  apiBaseUrl: 'https://content-calender-ce797.azurewebsites.net',
 };
