@@ -48,3 +48,15 @@
   border: none; /* Optionally, remove the button border */
   padding: 0; /* Optionally, remove padding to make it as small as possible */
 }
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .is-wide {
+    width: 100%;
+  }
+
+  .centered-dropdown {
+    padding-right: 0;
+    height: auto;
+  }
+}

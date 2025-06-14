@@ -17,3 +17,9 @@
 .custom-select {
   padding: 0.25rem;
 }
+
+@media (max-width: 768px) {
+  .movie-card {
+    margin-bottom: 1rem;
+  }
+}

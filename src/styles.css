@@ -1,2 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~font-awesome/css/font-awesome.css";
+
+/* Global responsive styles */
+@media (max-width: 768px) {
+  /* Stack columns on mobile */
+  .column.is-half,
+  .column.is-one-quarter {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Ensure navbar collapses nicely */
+  .navbar-menu {
+    flex-direction: column;
+  }
+}

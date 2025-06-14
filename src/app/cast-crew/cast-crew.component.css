@@ -225,3 +225,18 @@
 .weekend-header {
   background-color: #eaeaea;
 }
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .day {
+    height: 120px;
+  }
+
+  .day2 {
+    height: 60px;
+  }
+
+  .week-square {
+    height: 300px;
+  }
+}
