@@ -33,7 +33,7 @@ import { DatabaseService } from '../service/database.service';
 })
 export class CalendarComponent implements OnInit {
   private _selectedView = 'Month';
-  loading = false;
+  loading = true;
   selectedMonth: number;
   selectedYear: number;
   selectedDate = new Date();
@@ -88,6 +88,7 @@ export class CalendarComponent implements OnInit {
 
   generateMonthCalendar(): void {
     // Clear the weeks array
+    this.loading = true;
     this.getFilms();
     this.weeks = [];
 

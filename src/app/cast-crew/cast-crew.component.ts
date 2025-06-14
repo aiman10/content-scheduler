@@ -35,6 +35,8 @@ import { CastCrew } from '../cast-crew';
 export class CastCrewComponent implements OnInit {
   private _selectedView = 'Month';
 
+  loading = true;
+
   selectedMonth: number;
   selectedYear: number;
   selectedDate = new Date();
@@ -85,6 +87,7 @@ export class CastCrewComponent implements OnInit {
   }
 
   async getCastCrew() {
+    this.loading = true;
     this.actors = await this.databaseService.getActors();
     this.actresses = await this.databaseService.getAcresses();
     this.directors = await this.databaseService.getDirectors();
@@ -96,14 +99,15 @@ export class CastCrewComponent implements OnInit {
     this.allcastCrew = this.allcastCrew.concat(this.composers);
     //remove duplicates from allcastCrew
     this.allcastCrew = this.allcastCrew.filter(
-      (thing, index, self) =>
-        index === self.findIndex((t) => t.Title === thing.Title)
+      (thing, index, self) => index === self.findIndex((t) => t.Title === thing.Title)
     );
 
+    this.loading = false;
   }
 
   generateMonthCalendar(): void {
     // Clear the weeks array
+    this.loading = true;
     this.weeks = [];
     this.getCastCrew();
 
@@ -166,7 +170,9 @@ export class CastCrewComponent implements OnInit {
 
   generateWeekCalendar(): void {
     // Clear the weeks array
+    this.loading = true;
     this.weeks = [];
+    this.getCastCrew();
 
     // Assume that selectedDate is the date around which you want to build your week view.
     const startDate = new Date(this.selectedDate);

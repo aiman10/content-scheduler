@@ -1,5 +1,9 @@
-<div class="container">
-  <div class="calendar">
+<div *ngIf="loading" class="loading-animation">
+  <div class="spinner"></div>
+</div>
+<div *ngIf="!loading">
+  <div class="container">
+    <div class="calendar">
     <div class="date-selector">
       <div class="field is-grouped">
         <div class="control">
