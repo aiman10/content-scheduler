@@ -33,6 +33,7 @@ import { DatabaseService } from '../service/database.service';
 })
 export class CalendarComponent implements OnInit {
   private _selectedView = 'Month';
+  isMobile = false;
   loading = true;
   selectedMonth: number;
   selectedYear: number;
@@ -74,7 +75,12 @@ export class CalendarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.generateMonthCalendar();
+    this.isMobile = window.innerWidth <= 768;
+    if (this.isMobile) {
+      this.selectedView = 'Week';
+    } else {
+      this.generateMonthCalendar();
+    }
   }
 
   async getFilms() {

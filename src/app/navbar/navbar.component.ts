@@ -24,6 +24,7 @@ export class NavbarComponent implements OnInit {
   imageUrl = 'https://image.tmdb.org/t/p/original';
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef; // Initialize searchInput
   @ViewChild('dropdownMenu', { static: false }) dropdownMenu!: ElementRef;
+  menuActive = false;
 
   bookmarkedMovies: IFilm[] = [];
   teller = 0;
@@ -58,6 +59,10 @@ export class NavbarComponent implements OnInit {
       this.filmResult = [];
     }
     this.showDropdown = query.length > 0;
+  }
+
+  toggleNavbar(): void {
+    this.menuActive = !this.menuActive;
   }
 
   @HostListener('document:click', ['$event'])

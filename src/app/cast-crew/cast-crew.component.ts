@@ -35,6 +35,8 @@ import { CastCrew } from '../cast-crew';
 export class CastCrewComponent implements OnInit {
   private _selectedView = 'Month';
 
+  isMobile = false;
+
   loading = true;
 
   selectedMonth: number;
@@ -79,7 +81,12 @@ export class CastCrewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.generateMonthCalendar();
+    this.isMobile = window.innerWidth <= 768;
+    if (this.isMobile) {
+      this.selectedView = 'Week';
+    } else {
+      this.generateMonthCalendar();
+    }
   }
 
   onDateChange(): void {

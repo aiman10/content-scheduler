@@ -2,7 +2,23 @@
   <!-- ... Navbar content ... -->
 
   <div class="container">
-    <div id="navbarBasicExample" class="navbar-menu">
+    <a
+      role="button"
+      class="navbar-burger"
+      aria-label="menu"
+      aria-expanded="false"
+      (click)="toggleNavbar()"
+      [ngClass]="{ 'is-active': menuActive }"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+    <div
+      id="navbarBasicExample"
+      class="navbar-menu"
+      [ngClass]="{ 'is-active': menuActive }"
+    >
       <div class="navbar-start">
         <a class="navbar-item" href="#">
           <!-- Your logo or brand name here -->

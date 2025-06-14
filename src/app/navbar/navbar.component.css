@@ -49,6 +49,10 @@
   padding: 0; /* Optionally, remove padding to make it as small as possible */
 }
 
+.navbar-burger {
+  display: none;
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .is-wide {
@@ -58,5 +62,17 @@
   .centered-dropdown {
     padding-right: 0;
     height: auto;
+  }
+
+  .navbar-burger {
+    display: block;
+  }
+
+  .navbar-menu {
+    display: none;
+  }
+
+  .navbar-menu.is-active {
+    display: block;
   }
 }

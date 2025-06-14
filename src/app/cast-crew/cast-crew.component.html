@@ -15,7 +15,7 @@
             </select>
           </div>
         </div>
-        <div class="control">
+        <div class="control" *ngIf="!isMobile">
           <div class="select">
             <select [(ngModel)]="selectedView">
               <option>Month</option>
