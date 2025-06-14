@@ -9,65 +9,70 @@ import { Award } from '../awards';
   providedIn: 'root',
 })
 export class DatabaseService {
+  private readonly baseUrl =
+    'https://content-schedule-backend.onrender.com';
+
   constructor(private http: HttpClient) {}
 
   getAllFilms(): Promise<IFilm[]> {
     return lastValueFrom(
-      this.http.get<IFilm[]>('http://localhost:3000/movies')
+      this.http.get<IFilm[]>(`${this.baseUrl}/movies`)
     );
   }
 
   getFilm(id: string): Promise<IFilm> {
     return lastValueFrom(
-      this.http.get<IFilm>(`http://localhost:3000/movies/${id}`)
+      this.http.get<IFilm>(`${this.baseUrl}/movies/${id}`)
     );
   }
 
   getFilmByName(name: string): Promise<IFilm> {
     return lastValueFrom(
-      this.http.get<IFilm>(`http://localhost:3000/movies/name/${name}`)
+      this.http.get<IFilm>(`${this.baseUrl}/movies/name/${name}`)
     );
   }
 
-  async updateFilm(id: string, film: IFilm) {
+  async updateFilm(id: string, film: IFilm): Promise<void> {
     await lastValueFrom(
-      this.http.put(`http://localhost:3000/movies/${id}`, film)
+      this.http.put(`${this.baseUrl}/movies/${id}`, film)
     );
     await this.getAllFilms();
   }
 
-  async createFilm(film: IFilm) {
-    await lastValueFrom(this.http.post('http://localhost:3000/movies', film));
+  async createFilm(film: IFilm): Promise<void> {
+    await lastValueFrom(
+      this.http.post(`${this.baseUrl}/movies`, film)
+    );
     await this.getAllFilms();
   }
 
-  async getActors() {
+  async getActors(): Promise<CastCrew[]> {
     return lastValueFrom(
-      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/actors')
+      this.http.get<CastCrew[]>(`${this.baseUrl}/cast-crew/actors`)
     );
   }
 
-  async getAcresses() {
+  async getAcresses(): Promise<CastCrew[]> {
     return lastValueFrom(
-      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/actresses')
+      this.http.get<CastCrew[]>(`${this.baseUrl}/cast-crew/actresses`)
     );
   }
 
-  async getDirectors() {
+  async getDirectors(): Promise<CastCrew[]> {
     return lastValueFrom(
-      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/directors')
+      this.http.get<CastCrew[]>(`${this.baseUrl}/cast-crew/directors`)
     );
   }
 
-  async getComposer() {
+  async getComposer(): Promise<CastCrew[]> {
     return lastValueFrom(
-      this.http.get<CastCrew[]>('http://localhost:3000/cast-crew/composers')
+      this.http.get<CastCrew[]>(`${this.baseUrl}/cast-crew/composers`)
     );
   }
 
-  async getAwards() {
+  async getAwards(): Promise<Award[]> {
     return lastValueFrom(
-      this.http.get<Award[]>('http://localhost:3000/awards')
+      this.http.get<Award[]>(`${this.baseUrl}/awards`)
     );
   }
 }
