@@ -107,7 +107,11 @@
           <div class="buttons">
             <!-- Conditionally show the logout button if authenticated -->
             <ng-container *ngIf="auth.isAuthenticated$">
-              <a class="button is-dark" href="#" (click)="auth.logout()">
+              <a
+                class="button is-dark"
+                href="#"
+                (click)="auth.logout({ logoutParams: { returnTo: window.location.origin } })"
+              >
                 Log out
               </a>
             </ng-container>
