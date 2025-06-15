@@ -176,9 +176,8 @@
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.today {
-  background-color: #363636; /* Darker shade for current day */
-
+.day.today {
+  background-color: #a1a1a1;
 }
 
 .bookmarked-movie {
