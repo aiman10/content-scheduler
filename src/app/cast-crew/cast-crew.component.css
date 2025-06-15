@@ -177,8 +177,8 @@
 }
 
 .today {
-  background-color: #4a4a4a; /* Darker shade for current day */
-  color: #ffffff;
+  background-color: #363636; /* Darker shade for current day */
+
 }
 
 .bookmarked-movie {
