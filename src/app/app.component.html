@@ -6,33 +6,39 @@
 </ng-container>
 
 <ng-template #loggedOut>
-  <section class="hero loggedout-hero">
+  <section class="hero is-light is-fullheight loggedout-hero">
     <div class="hero-body">
-      <div class="container has-text-centered">
-        <img
-          src="assets/Transparant%20profile_Tekengebied%201%20-%20Copy.png"
-          alt="The Film Enthusiast logo"
-          class="hero-logo"
-        />
-        <h1 class="title is-2">Welcome to The Film Enthusiast</h1>
-        <p class="subtitle is-5">
-          Join our community of movie lovers and discover new films together.
-        </p>
-        <div class="buttons is-centered loggedout-buttons">
-          <button
-            class="button is-dark is-medium"
-            (click)="auth.loginWithRedirect()"
-          >
-            Log in
-          </button>
-          <a
-            class="button is-link is-medium"
-            href="https://www.instagram.com/thefilmthusiasts"
-            target="_blank"
-            rel="noopener"
-          >
-            Instagram
-          </a>
+      <div class="container">
+        <div class="columns is-vcentered is-variable is-8">
+          <div class="column has-text-centered">
+            <img
+              src="assets/Transparant%20profile_Tekengebied%201%20-%20Copy.png"
+              alt="The Film Enthusiast logo"
+              class="hero-logo"
+            />
+          </div>
+          <div class="column has-text-centered">
+            <h1 class="title is-2">Welcome to The Film Enthusiast</h1>
+            <p class="subtitle is-5">
+              Join our community of movie lovers and discover new films together.
+            </p>
+            <div class="buttons is-centered loggedout-buttons">
+              <button
+                class="button is-primary is-medium"
+                (click)="auth.loginWithRedirect()"
+              >
+                Log in
+              </button>
+              <a
+                class="button is-light is-medium"
+                href="https://www.instagram.com/thefilmthusiasts"
+                target="_blank"
+                rel="noopener"
+              >
+                Instagram
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
