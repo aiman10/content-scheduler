@@ -6,30 +6,35 @@
 </ng-container>
 
 <ng-template #loggedOut>
-  <div class="hero is-fullheight">
+  <section class="hero loggedout-hero">
     <div class="hero-body">
       <div class="container has-text-centered">
-        <h1 class="title is-1">Welcome to The Film Enthusiast</h1>
-        <h2 class="subtitle is-4">Explore the world of cinema!</h2>
-        <div class="card">
-          <div class="card-content">
-            <div class="content">
-              <p>
-                Join our community to access exclusive content and features.
-              </p>
-              <!-- Log in button (if the user is not authenticated) -->
-              <div class="has-text-centered">
-                <button
-                  class="button is-dark"
-                  (click)="auth.loginWithRedirect()"
-                >
-                  Log in
-                </button>
-              </div>
-            </div>
-          </div>
+        <img
+          src="assets/Transparant%20profile_Tekengebied%201%20-%20Copy.png"
+          alt="The Film Enthusiast logo"
+          class="hero-logo"
+        />
+        <h1 class="title is-2">Welcome to The Film Enthusiast</h1>
+        <p class="subtitle is-5">
+          Join our community of movie lovers and discover new films together.
+        </p>
+        <div class="buttons is-centered loggedout-buttons">
+          <button
+            class="button is-dark is-medium"
+            (click)="auth.loginWithRedirect()"
+          >
+            Log in
+          </button>
+          <a
+            class="button is-link is-medium"
+            href="https://www.instagram.com/thefilmthusiasts"
+            target="_blank"
+            rel="noopener"
+          >
+            Instagram
+          </a>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </ng-template>

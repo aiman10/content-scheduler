@@ -1,0 +1,17 @@
+.loggedout-hero {
+  background: linear-gradient(135deg, #1f1c2c, #928dab);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.hero-logo {
+  max-width: 250px;
+  margin-bottom: 1rem;
+}
+
+.loggedout-buttons .button {
+  margin: 0 0.5rem;
+}
