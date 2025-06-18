@@ -233,15 +233,37 @@
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
+  .date-selector .field {
+    flex-wrap: wrap;
+  }
+
+  .week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  .day,
+  .day2 {
+    width: auto;
+    box-sizing: border-box;
+  }
+
   .day {
-    height: 120px;
+    height: 100px;
+    padding: 4px;
   }
 
   .day2 {
-    height: 60px;
+    height: 50px;
+    padding: 4px;
   }
 
   .week-square {
-    height: 300px;
+    height: 260px;
+  }
+
+  .month-title h1 {
+    font-size: 1.2rem;
   }
 }
