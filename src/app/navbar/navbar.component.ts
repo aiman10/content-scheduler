@@ -85,8 +85,10 @@ export class NavbarComponent implements OnInit {
   }
 
   initials(user: any): string {
-    const source: string = user?.name || user?.email || '';
-    const parts = source.trim().split(/[\s@.]+/).filter(Boolean);
+    const name: string = (user?.name || '').trim();
+    const email: string = user?.email || '';
+    const source = name || email.split('@')[0] || '';
+    const parts = source.split(/[\s._-]+/).filter(Boolean);
     const letters = parts.slice(0, 2).map((p: string) => p[0]).join('');
     return (letters || '?').toUpperCase();
   }

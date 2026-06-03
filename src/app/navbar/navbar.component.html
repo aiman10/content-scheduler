@@ -1,4 +1,4 @@
-<nav class="fe-nav">
+<nav class="fe-nav" aria-label="Main navigation">
   <div class="fe-nav__left">
     <a class="fe-nav__logo" [routerLink]="['home']">
       <img src="../../assets/Transparant profile_Tekengebied 1 - Copy.png" alt="Film Enthusiast" />
@@ -27,12 +27,12 @@
 
       <div class="fe-search__results" *ngIf="showDropdown" #dropdownMenu>
         <div *ngFor="let movie of filmResult" class="fe-result">
-          <img class="fe-result__img" [src]="imageUrl + movie.poster_path" alt="" />
+          <img class="fe-result__img" [src]="imageUrl + movie.poster_path" alt="{{ movie.title }} poster" />
           <div class="fe-result__meta">
             <div class="fe-result__title">{{ movie.title }}</div>
             <div class="fe-result__year">{{ movie.release_date }}</div>
           </div>
-          <button class="fe-result__bm" (click)="toggleBookmark(movie)">
+          <button class="fe-result__bm" [attr.aria-label]="(movie.isBookmarked ? 'Remove bookmark for ' : 'Bookmark ') + movie.title" (click)="toggleBookmark(movie)">
             <i class="fa-solid fa-bookmark" *ngIf="movie.isBookmarked"></i>
             <i class="fa-regular fa-bookmark" *ngIf="!movie.isBookmarked"></i>
           </button>
