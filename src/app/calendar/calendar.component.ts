@@ -149,7 +149,7 @@ export class CalendarComponent implements OnInit {
 
   get monthFilms(): IFilm[] {
     return this.displayMovies.filter(
-      (m) => Number(m.release_date.slice(5, 7)) === this.selectedMonth + 1
+      (m) => Number((m.release_date || '').slice(5, 7)) === this.selectedMonth + 1
     );
   }
 
@@ -361,7 +361,7 @@ export class CalendarComponent implements OnInit {
     const moviesForDay = this.displayMovies.filter(
       (movie) => movie.release_date.slice(5) === dayStr
     );
-    return moviesForDay.length - this.getMoviesForDay(day).length;
+    return moviesForDay.length - Math.min(moviesForDay.length, 3);
   }
 
   isHovered(day: number): boolean {
