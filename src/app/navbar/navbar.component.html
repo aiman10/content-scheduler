@@ -1,119 +1,64 @@
-<nav class="navbar is-dark" role="navigation" aria-label="main navigation">
-  <!-- ... Navbar content ... -->
-
-  <div class="container">
-    <a
-      role="button"
-      class="navbar-burger"
-      aria-label="menu"
-      aria-expanded="false"
-      (click)="toggleNavbar()"
-      [ngClass]="{ 'is-active': menuActive }"
-    >
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
+<nav class="fe-nav">
+  <div class="fe-nav__left">
+    <a class="fe-nav__logo" [routerLink]="['home']">
+      <img src="../../assets/Transparant profile_Tekengebied 1 - Copy.png" alt="Film Enthusiast" />
     </a>
-    <div
-      id="navbarBasicExample"
-      class="navbar-menu"
-      [ngClass]="{ 'is-active': menuActive }"
-    >
-      <div class="navbar-start">
-        <a class="navbar-item" href="#">
-          <!-- Your logo or brand name here -->
-          <img
-            src="../../assets/Transparant profile_Tekengebied 1 - Copy.png"
-            alt="Logo"
-          />
-        </a>
-        <a class="navbar-item" [routerLink]="['home']"> Movies </a>
+    <div class="fe-nav__divider"></div>
+    <div class="fe-nav__links">
+      <a [routerLink]="['home']" routerLinkActive="is-active" class="fe-nav__link">Calendar</a>
+      <a class="fe-nav__link is-placeholder">Movies</a>
+      <a [routerLink]="['castcrew']" routerLinkActive="is-active" class="fe-nav__link">Cast &amp; Crew</a>
+      <a [routerLink]="['bookmarked']" routerLinkActive="is-active" class="fe-nav__link">Bookmarked</a>
+      <a [routerLink]="['awards']" routerLinkActive="is-active" class="fe-nav__link">Awards</a>
+    </div>
+  </div>
 
-        <a class="navbar-item" [routerLink]="['castcrew']"> Cast & Crew </a>
-        <a class="navbar-item" [routerLink]="['bookmarked']"> Bookmarked </a>
-        <a class="navbar-item" [routerLink]="['awards']"> Awards </a>
-        <!-- <a class="navbar-item" [routerLink]="['actors']"> Actors </a> -->
-      </div>
+  <div class="fe-nav__right">
+    <div class="fe-search">
+      <i class="fas fa-search fe-search__icon"></i>
+      <input
+        class="fe-search__input"
+        type="text"
+        placeholder="Search films, people, awards"
+        (input)="onSearch($event)"
+        #searchInput
+      />
+      <span class="fe-search__kbd">⌘K</span>
 
-      <!-- Add the search field here -->
-      <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="field has-addons">
-            <p class="control is-wide">
-              <input
-                class="input"
-                type="text"
-                placeholder="Search online..."
-                (input)="onSearch($event)"
-                #searchInput
-              />
-            </p>
-            <p class="control">
-              <button class="button is-info">Search</button>
-            </p>
+      <div class="fe-search__results" *ngIf="showDropdown" #dropdownMenu>
+        <div *ngFor="let movie of filmResult" class="fe-result">
+          <img class="fe-result__img" [src]="imageUrl + movie.poster_path" alt="" />
+          <div class="fe-result__meta">
+            <div class="fe-result__title">{{ movie.title }}</div>
+            <div class="fe-result__year">{{ movie.release_date }}</div>
           </div>
-
-          <div
-            class="dropdown is-active is-right"
-            *ngIf="showDropdown"
-            #dropdownMenu
-          >
-            <div class="dropdown-menu centered-dropdown" style="width: 580px">
-              <div class="dropdown-content results-list">
-                <!-- Display search results here as a list of cards -->
-                <div *ngFor="let movie of filmResult" class="result-card">
-                  <div class="card-content">
-                    <div class="media">
-                      <div class="media-left">
-                        <figure class="image is-64x64">
-                          <img
-                            [src]="[imageUrl + movie.poster_path]"
-                            alt="Movie Poster"
-                          />
-                        </figure>
-                      </div>
-                      <div class="media-content">
-                        <p class="title is-5">
-                          {{ movie.title }}
-                        </p>
-                        <p class="subtitle is-6 release-year">
-                          {{ movie.release_date }}
-                        </p>
-                      </div>
-                      <div class="media-right">
-                        <button
-                          class="transparent-button"
-                          (click)="toggleBookmark(movie)"
-                        >
-                          <i
-                            class="fa-solid fa-bookmark"
-                            *ngIf="movie.isBookmarked"
-                          ></i>
-                          <i
-                            class="fa-regular fa-bookmark"
-                            *ngIf="!movie.isBookmarked"
-                          ></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Navbar items on the right -->
-        <div class="navbar-item">
-          <div class="buttons">
-            <!-- Conditionally show the logout button if authenticated -->
-            <ng-container *ngIf="auth.isAuthenticated$">
-              <a class="button is-dark" href="#" (click)="auth.logout()">
-                Log out
-              </a>
-            </ng-container>
-          </div>
+          <button class="fe-result__bm" (click)="toggleBookmark(movie)">
+            <i class="fa-solid fa-bookmark" *ngIf="movie.isBookmarked"></i>
+            <i class="fa-regular fa-bookmark" *ngIf="!movie.isBookmarked"></i>
+          </button>
         </div>
       </div>
     </div>
+
+    <div class="fe-theme-toggle">
+      <button
+        class="fe-theme-toggle__seg"
+        [class.is-active]="theme.current === 'light'"
+        (click)="theme.setTheme('light')"
+        aria-label="Light mode"
+      >☀</button>
+      <button
+        class="fe-theme-toggle__seg"
+        [class.is-active]="theme.current === 'dark'"
+        (click)="theme.setTheme('dark')"
+        aria-label="Dark mode"
+      >☾</button>
+    </div>
+
+    <ng-container *ngIf="auth.user$ | async as user">
+      <button class="fe-avatar" (click)="auth.logout()" [title]="'Log out ' + (user.name || '')">
+        {{ initials(user) }}
+      </button>
+    </ng-container>
   </div>
 </nav>

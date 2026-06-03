@@ -12,6 +12,7 @@ import { BookmarkService } from '../service/bookmarked.service';
 import { DOCUMENT } from '@angular/common';
 import { AuthService } from '@auth0/auth0-angular';
 import { DatabaseService } from '../service/database.service';
+import { ThemeService } from '../service/theme.service';
 
 @Component({
   selector: 'app-navbar',
@@ -33,7 +34,8 @@ export class NavbarComponent implements OnInit {
     private bookmarkService: BookmarkService,
     @Inject(DOCUMENT) public document: Document,
     public auth: AuthService,
-    private databaseService: DatabaseService
+    private databaseService: DatabaseService,
+    public theme: ThemeService
   ) {}
 
   async ngOnInit() {
@@ -80,6 +82,13 @@ export class NavbarComponent implements OnInit {
       // Click occurred outside, hide the search results
       this.showDropdown = false;
     }
+  }
+
+  initials(user: any): string {
+    const source: string = user?.name || user?.email || '';
+    const parts = source.trim().split(/[\s@.]+/).filter(Boolean);
+    const letters = parts.slice(0, 2).map((p: string) => p[0]).join('');
+    return (letters || '?').toUpperCase();
   }
 
   async toggleBookmark(movie: IFilm) {
