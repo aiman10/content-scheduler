@@ -6,13 +6,6 @@ import { BookmarkService } from '../service/bookmarked.service';
 import { IFilm } from '../filmresult';
 import { SelectdateService } from '../service/selectdate.service';
 import { ImdbService } from '../service/imdb.service';
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from '@angular/animations';
 import { DatabaseService } from '../service/database.service';
 import { ThemeService } from '../service/theme.service';
 import { genreColor, genreBucket, GenreBucket } from '../genres';
@@ -26,21 +19,9 @@ import {
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css'],
-  animations: [
-    trigger('fadeInOut', [
-      state(
-        'void',
-        style({
-          opacity: 0,
-        })
-      ),
-      transition('void <=> *', animate(400)),
-    ]),
-  ],
 })
 export class CalendarComponent implements OnInit {
   private _selectedView = 'Month';
-  isMobile = false;
   loading = true;
   selectedMonth: number;
   selectedYear: number;
@@ -67,9 +48,6 @@ export class CalendarComponent implements OnInit {
     { length: 62 }, // Change the length to cover a larger range of years
     (_, i) => new Date().getFullYear() - 60 + i
   );
-  hoveredDay: number | null = null;
-  hoverTimeout: any = null;
-
   filters: CalendarFilters = { ...DEFAULT_FILTERS };
   openChip: 'genre' | 'rating' | 'decade' | 'bookmarks' | null = null;
   displayMovies: IFilm[] = [];
@@ -211,12 +189,7 @@ export class CalendarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isMobile = window.innerWidth <= 768;
-    if (this.isMobile) {
-      this.selectedView = 'Week';
-    } else {
-      this.generateMonthCalendar();
-    }
+    this.generateMonthCalendar();
   }
 
   async getFilms() {
@@ -314,10 +287,6 @@ export class CalendarComponent implements OnInit {
     this.weeks.push(currentWeek);
   }
 
-  onDateChange(): void {
-    this.generateMonthCalendar();
-  }
-
   onDayClick(day: number): void {
     this.selectedDate.setFullYear(this.selectedYear, this.selectedMonth, day);
     this.dateService.selectedDate = this.selectedDate;
@@ -343,7 +312,7 @@ export class CalendarComponent implements OnInit {
   getMoviesForDay(day: number): any[] {
     const dayStr = this.formatDate(day);
     const moviesForDay = this.displayMovies
-      .filter((movie) => movie.release_date.slice(5) === dayStr)
+      .filter((movie) => (movie.release_date || '').slice(5) === dayStr)
       .sort((a, b) => (b.isBookmarked ? 1 : -1) - (a.isBookmarked ? 1 : -1)); // This line sorts the movies
     return moviesForDay.slice(0, 3);
   }
@@ -351,7 +320,7 @@ export class CalendarComponent implements OnInit {
   getMoviesForWeek(day: number): any[] {
     const dayStr = this.formatDate(day);
     const moviesForDay = this.displayMovies.filter(
-      (movie) => movie.release_date.slice(5) === dayStr
+      (movie) => (movie.release_date || '').slice(5) === dayStr
     );
     return moviesForDay;
   }
@@ -359,32 +328,11 @@ export class CalendarComponent implements OnInit {
   getMovieCountForDay(day: number): number {
     const dayStr = this.formatDate(day);
     const moviesForDay = this.displayMovies.filter(
-      (movie) => movie.release_date.slice(5) === dayStr
+      (movie) => (movie.release_date || '').slice(5) === dayStr
     );
     return moviesForDay.length - Math.min(moviesForDay.length, 3);
   }
 
-  isHovered(day: number): boolean {
-    return this.hoveredDay === day;
-  }
-
-  onDayMouseEnter(day: number): void {
-    this.hoverTimeout = setTimeout(() => {
-      this.hoveredDay = day;
-    }, 400); // 2000 milliseconds (2 seconds) delay
-  }
-
-  onDayMouseLeave(): void {
-    clearTimeout(this.hoverTimeout); // clear the timeout
-    this.hoveredDay = null;
-  }
-
-  getFullMoviesForDay(day: number): any[] {
-    const dayStr = this.formatDate(day);
-    return this.displayMovies.filter(
-      (movie) => movie.release_date.slice(5) === dayStr
-    );
-  }
   public get selectedView() {
     return this._selectedView;
   }

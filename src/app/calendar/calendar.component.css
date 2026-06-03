@@ -10,6 +10,11 @@
   padding: 40px var(--page-x) 24px;
 }
 
+.fe-cal__title-left {
+  display: flex;
+  flex-direction: column;
+}
+
 .fe-eyebrow {
   font-size: 12px;
   font-weight: 500;
