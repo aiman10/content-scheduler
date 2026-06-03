@@ -14,6 +14,13 @@ import {
   animate,
 } from '@angular/animations';
 import { DatabaseService } from '../service/database.service';
+import { ThemeService } from '../service/theme.service';
+import { genreColor, genreBucket, GenreBucket } from '../genres';
+import {
+  CalendarFilters,
+  DEFAULT_FILTERS,
+  applyFilters,
+} from './film-filter';
 
 @Component({
   selector: 'app-calendar',
@@ -62,12 +69,141 @@ export class CalendarComponent implements OnInit {
   );
   hoveredDay: number | null = null;
   hoverTimeout: any = null;
+
+  filters: CalendarFilters = { ...DEFAULT_FILTERS };
+  openChip: 'genre' | 'rating' | 'decade' | 'bookmarks' | null = null;
+  displayMovies: IFilm[] = [];
+  ratingOptions = [
+    { label: 'All', value: 0 },
+    { label: '≥ 6.0', value: 6 },
+    { label: '≥ 7.0', value: 7 },
+    { label: '≥ 8.0', value: 8 },
+  ];
+
+  private refreshDisplay(): void {
+    this.displayMovies = applyFilters(this.bookmarkedMovies, this.filters);
+  }
+
+  toggleChip(chip: 'genre' | 'rating' | 'decade' | 'bookmarks'): void {
+    this.openChip = this.openChip === chip ? null : chip;
+  }
+
+  setGenre(g: GenreBucket | null): void {
+    this.filters.genre = g;
+    this.openChip = null;
+    this.refreshDisplay();
+  }
+
+  setRating(v: number): void {
+    this.filters.minRating = v;
+    this.openChip = null;
+    this.refreshDisplay();
+  }
+
+  setDecade(d: number | null): void {
+    this.filters.decade = d;
+    this.openChip = null;
+    this.refreshDisplay();
+  }
+
+  setBookmarks(only: boolean): void {
+    this.filters.bookmarkedOnly = only;
+    this.openChip = null;
+    this.refreshDisplay();
+  }
+
+  clearFilters(): void {
+    this.filters = { ...DEFAULT_FILTERS };
+    this.openChip = null;
+    this.refreshDisplay();
+  }
+
+  get hasActiveFilters(): boolean {
+    return (
+      this.filters.genre !== null ||
+      this.filters.minRating !== 0 ||
+      this.filters.decade !== null ||
+      this.filters.bookmarkedOnly
+    );
+  }
+
+  availableGenres(): GenreBucket[] {
+    const set = new Set<GenreBucket>();
+    this.bookmarkedMovies.forEach((m) => set.add(genreBucket(m)));
+    return Array.from(set).sort();
+  }
+
+  availableDecades(): number[] {
+    const set = new Set<number>();
+    this.bookmarkedMovies.forEach((m) => {
+      const year = Number((m.release_date || '0').slice(0, 4));
+      if (year) set.add(Math.floor(year / 10) * 10);
+    });
+    return Array.from(set).sort((a, b) => b - a);
+  }
+
+  get ratingLabel(): string {
+    const opt = this.ratingOptions.find((o) => o.value === this.filters.minRating);
+    return opt ? opt.label : 'All';
+  }
+
+  get monthFilms(): IFilm[] {
+    return this.displayMovies.filter(
+      (m) => Number(m.release_date.slice(5, 7)) === this.selectedMonth + 1
+    );
+  }
+
+  get releaseCount(): number {
+    return this.monthFilms.length;
+  }
+
+  get anniversaryCount(): number {
+    return this.monthFilms.filter((m) => m.isBookmarked).length;
+  }
+
+  pillColor(movie: IFilm): string {
+    return genreColor(movie, this.theme.current === 'dark');
+  }
+
+  previousMonth(): void {
+    if (this.selectedMonth === 0) {
+      this.selectedMonth = 11;
+      this.selectedYear--;
+    } else {
+      this.selectedMonth--;
+    }
+    this.generateMonthCalendar();
+  }
+
+  nextMonth(): void {
+    if (this.selectedMonth === 11) {
+      this.selectedMonth = 0;
+      this.selectedYear++;
+    } else {
+      this.selectedMonth++;
+    }
+    this.generateMonthCalendar();
+  }
+
+  goToToday(): void {
+    const now = new Date();
+    this.selectedMonth = now.getMonth();
+    this.selectedYear = now.getFullYear();
+    this.generateMonthCalendar();
+  }
+
+  goToDayView(): void {
+    this.dateService.selectedDate = this.selectedDate;
+    this.router.navigate(['/detail/', this.formatDateToISO(this.selectedDate)]);
+  }
+
   constructor(
     private router: Router,
     private service: BookmarkService,
     private dateService: SelectdateService,
     private imdb: ImdbService,
-    private databaseService: DatabaseService
+    private databaseService: DatabaseService,
+    public theme: ThemeService
   ) {
     const currentDate = new Date();
     this.selectedMonth = currentDate.getMonth();
@@ -86,6 +222,7 @@ export class CalendarComponent implements OnInit {
   async getFilms() {
     this.bookmarkedMovies = await this.databaseService.getAllFilms();
     this.loading = false; // Set loading to false after the data has loaded
+    this.refreshDisplay();
   }
 
   async getActors() {
@@ -205,7 +342,7 @@ export class CalendarComponent implements OnInit {
 
   getMoviesForDay(day: number): any[] {
     const dayStr = this.formatDate(day);
-    const moviesForDay = this.bookmarkedMovies
+    const moviesForDay = this.displayMovies
       .filter((movie) => movie.release_date.slice(5) === dayStr)
       .sort((a, b) => (b.isBookmarked ? 1 : -1) - (a.isBookmarked ? 1 : -1)); // This line sorts the movies
     return moviesForDay.slice(0, 3);
@@ -213,7 +350,7 @@ export class CalendarComponent implements OnInit {
 
   getMoviesForWeek(day: number): any[] {
     const dayStr = this.formatDate(day);
-    const moviesForDay = this.bookmarkedMovies.filter(
+    const moviesForDay = this.displayMovies.filter(
       (movie) => movie.release_date.slice(5) === dayStr
     );
     return moviesForDay;
@@ -221,7 +358,7 @@ export class CalendarComponent implements OnInit {
 
   getMovieCountForDay(day: number): number {
     const dayStr = this.formatDate(day);
-    const moviesForDay = this.bookmarkedMovies.filter(
+    const moviesForDay = this.displayMovies.filter(
       (movie) => movie.release_date.slice(5) === dayStr
     );
     return moviesForDay.length - this.getMoviesForDay(day).length;
@@ -244,7 +381,7 @@ export class CalendarComponent implements OnInit {
 
   getFullMoviesForDay(day: number): any[] {
     const dayStr = this.formatDate(day);
-    return this.bookmarkedMovies.filter(
+    return this.displayMovies.filter(
       (movie) => movie.release_date.slice(5) === dayStr
     );
   }
