@@ -15,3 +15,55 @@
     flex-direction: column;
   }
 }
+
+/* ===== Modern Minimal design tokens ===== */
+:root[data-theme='light'] {
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --elev: #fdfbf7;
+  --border: #e8e2d6;
+  --border-strong: #d6cdbb;
+  --text: #1a1815;
+  --text-muted: #5c544a;
+  --muted: #a09689;
+  --red: #b53428;
+  --red-ink: #8c2a21;
+  --red-soft: #fbedea;
+}
+
+:root[data-theme='dark'] {
+  --bg: #141210;
+  --surface: #1c1916;
+  --elev: #221e1a;
+  --border: #2e2a24;
+  --border-strong: #3b362e;
+  --text: #f1e9dd;
+  --text-muted: #a89e8e;
+  --muted: #6e6557;
+  --red: #e04a3a;
+  --red-ink: #f26a5a;
+  --red-soft: rgba(224, 74, 58, 0.13);
+}
+
+:root {
+  --font-serif: 'Newsreader', Georgia, serif;
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --nav-height: 72px;
+  --page-x: 48px;
+  --card-radius: 12px;
+  --chip-radius: 999px;
+  --cell-min-h: 132px;
+}
+
+html[data-theme] body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+}
+
+html[data-theme] body,
+html[data-theme] body * {
+  transition: background-color 200ms ease, color 200ms ease,
+    border-color 200ms ease;
+}
