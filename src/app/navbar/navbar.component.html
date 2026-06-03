@@ -1,15 +1,15 @@
-<nav class="fe-nav" aria-label="Main navigation">
+<nav class="fe-nav" [class.is-open]="menuActive" aria-label="Main navigation">
   <div class="fe-nav__left">
     <a class="fe-nav__logo" [routerLink]="['home']">
       <img src="../../assets/Transparant profile_Tekengebied 1 - Copy.png" alt="Film Enthusiast" />
     </a>
     <div class="fe-nav__divider"></div>
     <div class="fe-nav__links">
-      <a [routerLink]="['home']" routerLinkActive="is-active" class="fe-nav__link">Calendar</a>
-      <a class="fe-nav__link is-placeholder">Movies</a>
-      <a [routerLink]="['castcrew']" routerLinkActive="is-active" class="fe-nav__link">Cast &amp; Crew</a>
-      <a [routerLink]="['bookmarked']" routerLinkActive="is-active" class="fe-nav__link">Bookmarked</a>
-      <a [routerLink]="['awards']" routerLinkActive="is-active" class="fe-nav__link">Awards</a>
+      <a [routerLink]="['home']" routerLinkActive="is-active" class="fe-nav__link" (click)="menuActive = false">Calendar</a>
+      <a class="fe-nav__link is-placeholder" (click)="menuActive = false">Movies</a>
+      <a [routerLink]="['castcrew']" routerLinkActive="is-active" class="fe-nav__link" (click)="menuActive = false">Cast &amp; Crew</a>
+      <a [routerLink]="['bookmarked']" routerLinkActive="is-active" class="fe-nav__link" (click)="menuActive = false">Bookmarked</a>
+      <a [routerLink]="['awards']" routerLinkActive="is-active" class="fe-nav__link" (click)="menuActive = false">Awards</a>
     </div>
   </div>
 
@@ -60,5 +60,14 @@
         {{ initials(user) }}
       </button>
     </ng-container>
+    <button
+      class="fe-nav__burger"
+      type="button"
+      (click)="toggleNavbar()"
+      [attr.aria-expanded]="menuActive"
+      aria-label="Toggle navigation menu"
+    >
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>

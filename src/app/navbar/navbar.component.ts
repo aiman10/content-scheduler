@@ -21,6 +21,11 @@ import { ThemeService } from '../service/theme.service';
 })
 export class NavbarComponent implements OnInit {
   showDropdown = false; // Control whether to show the dropdown
+  menuActive = false;
+
+  toggleNavbar(): void {
+    this.menuActive = !this.menuActive;
+  }
   filmResult: IFilm[] | undefined;
   imageUrl = 'https://image.tmdb.org/t/p/original';
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef; // Initialize searchInput
