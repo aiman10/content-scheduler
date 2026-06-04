@@ -1,53 +1,72 @@
-<div class="container">
-  <h1 class="title is-size-3">{{ date }}</h1>
-  <h1 class="title is-size-4">Cast and Crew</h1>
-  <div class="columns is-multiline">
-    <div class="column is-half" *ngFor="let person of allcastCrew">
-      <div class="box">
-        <article class="media">
-          <div class="media-left">
-            <figure class="image is-96x96">
-              <img [src]="person.Image" alt="{{ person.Title }}" />
-            </figure>
-          </div>
-          <div class="media-content">
-            <div class="content">
-              <p>
-                <a href="{{ person.Title_URL }}" target="_blank">{{
-                  person.Title
-                }}</a>
-                <br />
-                {{ person.Birthday }} |
-                <strong>{{ calculateAge(person.Birthday) }}</strong>
-                <br />
-                {{ findType(person) }}
-                <br />
-                <br />
-                <button (click)="downloadICSCalendar(person)" class="button">
-                  Download Calendar
-                </button>
-              </p>
-              <div class="bookmark-container">
-                <!--
-                <button
-                  class="transparent-button"
-                  (click)="toggleBookmark(movie)"
-                >
-                  <i
-                    class="fa-solid fa-bookmark"
-                    *ngIf="movie.isBookmarked"
-                  ></i>
-                  <i
-                    class="fa-regular fa-bookmark"
-                    *ngIf="!movie.isBookmarked"
-                  ></i>
-                </button>
-                  -->
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
+<div class="fe-bday">
+  <!-- Header -->
+  <header class="fe-bday__header">
+    <div class="fe-breadcrumb">
+      <a [routerLink]="['/castcrew']" class="fe-breadcrumb__back">
+        ← {{ monthName }} {{ headerYear }}
+      </a>
+      <span class="fe-breadcrumb__sep">·</span>
+      <span class="fe-breadcrumb__meta">{{ weekdayName }} · Week {{ weekNumber }}</span>
     </div>
+
+    <h1 class="fe-h1">
+      Birthdays <i class="fe-h1__accent">· {{ dayLabel }}</i>
+    </h1>
+
+    <p class="fe-bday__subtitle">
+      <ng-container *ngIf="!loading">
+        {{ allcastCrew.length }}
+        {{ allcastCrew.length === 1 ? 'person' : 'people' }} you follow
+        {{ allcastCrew.length === 1 ? 'is' : 'are' }} celebrating today
+      </ng-container>
+    </p>
+  </header>
+
+  <div *ngIf="loading" class="fe-loading-inline">Loading birthdays…</div>
+
+  <!-- Person cards -->
+  <div class="fe-bday__grid" *ngIf="!loading">
+    <article class="fe-person" *ngFor="let person of allcastCrew">
+      <div class="fe-person__avatar">
+        <img
+          *ngIf="person.Image"
+          [src]="person.Image"
+          alt="{{ person.Title }}"
+          loading="lazy"
+        />
+        <span *ngIf="!person.Image" class="fe-person__initials">{{
+          initials(person)
+        }}</span>
+      </div>
+
+      <div class="fe-person__body">
+        <div class="fe-person__top">
+          <h3 class="fe-person__name">{{ person.Title }}</h3>
+          <span class="fe-person__badge">Turns {{ turnsAge(person) }}</span>
+        </div>
+
+        <div class="fe-person__sub">
+          Born {{ person.Birthday }} · {{ role(person) }}
+        </div>
+
+        <div class="fe-person__actions">
+          <button class="fe-btn fe-btn--solid" (click)="downloadYearlyReminder(person)">
+            <i class="fas fa-download"></i> Yearly reminder
+          </button>
+          <a
+            class="fe-btn fe-btn--ghost"
+            [href]="person.Title_URL"
+            target="_blank"
+            rel="noopener"
+          >
+            Filmography
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <p *ngIf="allcastCrew.length === 0" class="fe-empty">
+      No tracked birthdays on this day.
+    </p>
   </div>
 </div>

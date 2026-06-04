@@ -1,134 +1,86 @@
 <div *ngIf="loading" class="loading-animation">
   <div class="spinner"></div>
 </div>
-<div *ngIf="!loading">
-  <div class="container">
-    <div class="calendar">
-    <div class="date-selector">
-      <div class="field is-grouped">
-        <div class="control">
-          <div class="select">
-            <select [(ngModel)]="selectedMonth" (change)="onDateChange()">
-              <option *ngFor="let month of months; let i = index" [value]="i">
-                {{ month }}
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="control" *ngIf="!isMobile">
-          <div class="select">
-            <select [(ngModel)]="selectedView">
-              <option>Month</option>
-              <option>Week</option>
-            </select>
-            <!--
-              <select [(ngModel)]="selectedYear" (change)="onDateChange()">
-                <option *ngFor="let year of years" [value]="year">
-                  {{ year }}
-                </option>
-              </select>
-              -->
-          </div>
-        </div>
-        <div class="month-title title">
-          <h1>Birthdays for {{ months[selectedMonth] }} {{ selectedYear }}</h1>
-        </div>
-      </div>
+
+<div *ngIf="!loading" class="fe-cal">
+  <!-- Title row -->
+  <header class="fe-cal__title">
+    <div class="fe-cal__title-left">
+      <div class="fe-eyebrow">BIRTHDAY CALENDAR</div>
+      <h1 class="fe-h1">
+        {{ months[selectedMonth] }} <i>{{ selectedYear }}</i>
+      </h1>
+      <p class="fe-subtitle">{{ birthdaysThisMonth }} birthdays this month</p>
     </div>
 
-    <div class="week">
-      <div class="day2 header">Mon</div>
-      <div class="day2 header">Tue</div>
-      <div class="day2 header">Wed</div>
-      <div class="day2 header">Thu</div>
-      <div class="day2 header">Fri</div>
-      <div class="day2 header weekend-header">Sat</div>
-      <div class="day2 header weekend-header">Sun</div>
-    </div>
-    <div *ngIf="selectedView === 'Month'" class="month-view">
-      <div class="week" *ngFor="let week of weeks">
-        <ng-container *ngFor="let day of week; let i = index">
-          <div
-            class="day square"
-            [ngClass]="{ 'weekend-day': i === 5 || i === 6 }"
-            (click)="onDayClick(day)"
-            (mouseenter)="onDayMouseEnter(day)"
-            (mouseleave)="onDayMouseLeave()"
-            [class.hovered]="isHovered(day)"
-            [class.today]="isToday(day)"
-          >
-            <ng-container *ngIf="day !== 0">
-              <div class="day-title">{{ day }}</div>
-
-              <div *ngFor="let person of getMoviesForDay(day); let i = index">
-                <div
-                  class="small-text"
-                  [ngClass]="{
-                    'bookmarked-movie': person.isBookmarked,
-                    'film-background': !person.isBookmarked
-                  }"
-                >
-                  <strong style="color: white">{{
-                    person.Title | slice : 0 : 25
-                  }}</strong>
-                  <!-- ({{ movie.release_date | date : "yyyy" }}) -->
-                </div>
-              </div>
-              <div *ngIf="getMovieCountForDay(day) >= 1" class="movie-count">
-                <div class="more-movies">
-                  {{ getMovieCountForDay(day) }} more
-                </div>
-                <!-- Tooltip div -->
-                <div class="tooltip" *ngIf="isHovered(day)" [@fadeInOut]>
-                  <div
-                    *ngFor="let person of getFullMoviesForDay(day)"
-                    class="small-text film-background"
-                  >
-                    {{ person.Title }}
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-          </div>
-        </ng-container>
+    <div class="fe-cal__controls">
+      <button class="fe-iconbtn" (click)="previousMonth()" aria-label="Previous month">‹</button>
+      <button class="fe-textbtn" (click)="goToToday()">Today</button>
+      <button class="fe-iconbtn" (click)="nextMonth()" aria-label="Next month">›</button>
+      <div class="fe-vdivider"></div>
+      <div class="fe-segment">
+        <button class="fe-segment__seg" [class.is-active]="selectedView === 'Month'" (click)="selectedView = 'Month'">Month</button>
+        <button class="fe-segment__seg" [class.is-active]="selectedView === 'Week'" (click)="selectedView = 'Week'">Week</button>
+        <button class="fe-segment__seg" (click)="goToDayView()">Day</button>
       </div>
     </div>
-    <div *ngIf="selectedView === 'Week'" class="week">
-      <div class="week-navigation">
-        <button class="nav-button prev-button" (click)="previousWeek()">
-          <i class="fas fa-arrow-left"></i>
-          <!-- Left arrow icon (using FontAwesome) -->
-        </button>
-        <button class="nav-button next-button" (click)="nextWeek()">
-          <i class="fas fa-arrow-right"></i>
-          <!-- Right arrow icon (using FontAwesome) -->
-        </button>
-      </div>
-      <div
-        *ngFor="let day of weeks[0]; let i = index"
-        class="day square week-square"
-        [ngClass]="{ 'weekend-day': i === 5 || i === 6 }"
-        (click)="onDayClick(day)"
-      >
-        <ng-container *ngIf="day !== 0">
-          <div class="day-title">{{ day }}</div>
+  </header>
 
-          <div *ngFor="let person of getMoviesForWeek(day); let i = index">
-            <div
-              class="small-text"
-              [ngClass]="{
-                'bookmarked-movie': person.isBookmarked,
-                'film-background': !person.isBookmarked
-              }"
-            >
-              <strong style="color: white">
-                {{ person.Title | slice : 0 : 25 }}
-              </strong>
+  <!-- Calendar grid -->
+  <div class="fe-grid-card">
+    <div class="fe-grid fe-grid--head">
+      <div class="fe-dayhead">MONDAY</div>
+      <div class="fe-dayhead">TUESDAY</div>
+      <div class="fe-dayhead">WEDNESDAY</div>
+      <div class="fe-dayhead">THURSDAY</div>
+      <div class="fe-dayhead">FRIDAY</div>
+      <div class="fe-dayhead fe-dayhead--wknd">SATURDAY</div>
+      <div class="fe-dayhead fe-dayhead--wknd">SUNDAY</div>
+    </div>
+
+    <div *ngIf="selectedView === 'Month'">
+      <div class="fe-grid" *ngFor="let week of weeks">
+        <div
+          class="fe-cell"
+          *ngFor="let day of week"
+          [class.is-empty]="day === 0"
+          [class.is-today]="isToday(day)"
+          (click)="onDayClick(day)"
+        >
+          <ng-container *ngIf="day !== 0">
+            <div class="fe-cell__date">{{ day }}</div>
+            <div class="fe-pill" *ngFor="let person of getPeopleForDay(day)">
+              <span class="fe-pill__bar"></span>
+              <span class="fe-pill__title">{{ person.Title }}</span>
             </div>
-          </div>
-        </ng-container>
+            <div class="fe-more" *ngIf="getPersonCountForDay(day) >= 1">
+              +{{ getPersonCountForDay(day) }} more
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="selectedView === 'Week'" class="fe-week">
+      <div class="fe-week__nav">
+        <button class="fe-iconbtn" (click)="previousWeek()" aria-label="Previous week">‹</button>
+        <button class="fe-iconbtn" (click)="nextWeek()" aria-label="Next week">›</button>
+      </div>
+      <div class="fe-grid">
+        <div
+          class="fe-cell fe-cell--week"
+          *ngFor="let day of weeks[0]"
+          (click)="onDayClick(day)"
+        >
+          <ng-container *ngIf="day !== 0">
+            <div class="fe-cell__date">{{ day }}</div>
+            <div class="fe-pill" *ngFor="let person of getPeopleForWeek(day)">
+              <span class="fe-pill__bar"></span>
+              <span class="fe-pill__title">{{ person.Title }}</span>
+            </div>
+          </ng-container>
+        </div>
       </div>
     </div>
   </div>
 </div>
-<br />

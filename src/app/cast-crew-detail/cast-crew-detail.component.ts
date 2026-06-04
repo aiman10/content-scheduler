@@ -5,6 +5,7 @@ import { BookmarkService } from '../service/bookmarked.service';
 import { DatabaseService } from '../service/database.service';
 import { SelectdateService } from '../service/selectdate.service';
 import { ICalendar } from 'datebook';
+import { MONTH_NAMES, WEEKDAY_NAMES, getIsoWeek } from '../date-utils';
 
 @Component({
   selector: 'app-cast-crew-detail',
@@ -18,7 +19,8 @@ export class CastCrewDetailComponent implements OnInit {
   composers: CastCrew[] = [];
   allcastCrew: CastCrew[] = [];
   date = '';
-  age = 0;
+  loading = true;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -31,81 +33,114 @@ export class CastCrewDetailComponent implements OnInit {
     this.getCastCrew();
   }
 
-  calculateAge(birthday: string) {
-    const birthDate = new Date(birthday);
-    const currentDate = new Date();
-    let age = currentDate.getFullYear() - birthDate.getFullYear();
-    const monthDifference = currentDate.getMonth() - birthDate.getMonth();
-    if (
-      monthDifference < 0 ||
-      (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-    return age;
+  // ----- Header view-model (computed from this.date, YYYY-MM-DD) -----
+
+  private dateObj(): Date {
+    const [y, m, d] = (this.date || '1970-01-01')
+      .split('-')
+      .map((p) => parseInt(p, 10));
+    return new Date(y, m - 1, d);
+  }
+
+  get monthName(): string {
+    return MONTH_NAMES[this.dateObj().getMonth()];
+  }
+
+  get dayNumber(): number {
+    return this.dateObj().getDate();
+  }
+
+  get headerYear(): number {
+    return this.dateObj().getFullYear();
+  }
+
+  get weekdayName(): string {
+    return WEEKDAY_NAMES[this.dateObj().getDay()];
+  }
+
+  get weekNumber(): number {
+    return getIsoWeek(this.dateObj());
+  }
+
+  get dayLabel(): string {
+    return `${this.monthName} ${this.dayNumber}`;
+  }
+
+  // ----- Person card helpers -----
+
+  initials(person: CastCrew): string {
+    const parts = (person.Title || '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    const letters = parts.slice(0, 2).map((p) => p[0]).join('');
+    return (letters || '?').toUpperCase();
+  }
+
+  // Age the person turns on this birthday.
+  turnsAge(person: CastCrew): number {
+    return new Date().getFullYear() - new Date(person.Birthday).getFullYear();
+  }
+
+  role(person: CastCrew): string {
+    if (this.actors.includes(person)) return 'Actor';
+    if (this.actresses.includes(person)) return 'Actress';
+    if (this.directors.includes(person)) return 'Director';
+    if (this.composers.includes(person)) return 'Composer';
+    return 'Cast & Crew';
   }
 
   async getCastCrew() {
+    this.loading = true;
     this.actors = await this.databaseService.getActors();
     this.actresses = await this.databaseService.getAcresses();
     this.directors = await this.databaseService.getDirectors();
     this.composers = await this.databaseService.getComposer();
-    //add to all to allcastCrew
-    this.allcastCrew = this.allcastCrew.concat(this.actors);
-    this.allcastCrew = this.allcastCrew.concat(this.actresses);
-    this.allcastCrew = this.allcastCrew.concat(this.directors);
-    this.allcastCrew = this.allcastCrew.concat(this.composers);
-    //remove duplicates from allcastCrew
-    this.allcastCrew = this.allcastCrew.filter(
+
+    let all: CastCrew[] = [
+      ...this.actors,
+      ...this.actresses,
+      ...this.directors,
+      ...this.composers,
+    ];
+    // de-duplicate by Title
+    all = all.filter(
       (thing, index, self) =>
         index === self.findIndex((t) => t.Title === thing.Title)
     );
-    //filter by date
+
     this.route.params.subscribe((params) => {
-      this.date = params['date']; // Access the 'date' parameter
+      this.date = params['date'];
       const selectedMonthDay = this.date.substring(5);
-      this.allcastCrew = this.allcastCrew.filter((castCrew) => {
-        const movieMonthDay = castCrew.Birthday.substring(5);
-        return movieMonthDay === selectedMonthDay;
-      });
+      this.allcastCrew = all.filter(
+        (person) => person.Birthday.substring(5) === selectedMonthDay
+      );
+      this.loading = false;
     });
   }
 
-  findType(castCrew: CastCrew) {
-    if (this.actors.includes(castCrew)) {
-      return 'Actor';
-    } else if (this.actresses.includes(castCrew)) {
-      return 'Actress';
-    } else if (this.directors.includes(castCrew)) {
-      return 'Director';
-    } else if (this.composers.includes(castCrew)) {
-      return 'Composer';
-    }
-    return 'Unknown';
-  }
-
-  downloadICSCalendar(castCrew: CastCrew) {
-    const eventDate = new Date(castCrew.Birthday);
-    const eventEnd = new Date(castCrew.Birthday);
+  // Download an .ics with a yearly-recurring birthday reminder.
+  downloadYearlyReminder(person: CastCrew) {
+    const eventDate = new Date(person.Birthday);
+    const eventEnd = new Date(person.Birthday);
     eventEnd.setDate(eventEnd.getDate() + 1);
 
     const config = {
-      title: castCrew.Title,
-      description: 'Birthday',
+      title: `${person.Title}'s birthday`,
+      description: `${this.role(person)} · born ${person.Birthday}`,
       start: eventDate,
       end: eventEnd,
       allDay: true,
+      recurrence: { frequency: 'YEARLY' },
     };
 
     const icsCalendar = new ICalendar(config);
     const icsData = icsCalendar.render();
-    const blob = new Blob([icsData], {
-      type: 'text/calendar;charset=utf-8',
-    });
+    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
 
     const downloadLink = document.createElement('a');
     downloadLink.href = window.URL.createObjectURL(blob);
-    downloadLink.setAttribute('download', `${castCrew.Title}.ics`);
+    downloadLink.setAttribute('download', `${person.Title}-birthday.ics`);
 
     document.body.appendChild(downloadLink);
     downloadLink.click();
