@@ -1,37 +1,94 @@
-<div class="container">
-  <div
-    class="header-container"
-    style="display: flex; align-items: center; justify-content: space-between"
-  >
-    <h1 class="title">Awards</h1>
-  </div>
-  <div class="columns is-multiline">
-    <div class="column is-half" *ngFor="let award of awards">
-      <div class="box" style="padding-bottom: 20px">
-        <article class="media">
-          <div class="media-left">
-            <figure class="image is-96x96">
-              <img
-                [src]="award.url || 'path/to/default/image.png'"
-                alt="logo"
-              />
-            </figure>
-          </div>
-          <div class="media-content">
-            <div class="content">
-              <p>
-                <strong>
-                  <a href="{{ award.imdb }}" target="_blank">{{
-                    award.name
-                  }}</a>
-                </strong>
-                <br />
-                Date: {{ award.date }}
-              </p>
-            </div>
-          </div>
+<div class="fe-awards">
+  <!-- Header -->
+  <header class="fe-awards__header">
+    <div class="fe-eyebrow">AWARDS SEASON</div>
+    <h1 class="fe-h1">Awards</h1>
+    <p class="fe-awards__subtitle" *ngIf="!loading">
+      {{ upcomingAwards.length }} upcoming · {{ awards.length }} ceremonies tracked
+    </p>
+  </header>
+
+  <div *ngIf="loading" class="fe-loading-inline">Loading awards…</div>
+
+  <ng-container *ngIf="!loading">
+    <!-- Upcoming -->
+    <section class="fe-section" *ngIf="upcomingAwards.length">
+      <h2 class="fe-section__title">Upcoming</h2>
+      <div class="fe-awards__grid">
+        <article class="fe-award" *ngFor="let award of upcomingAwards">
+          <ng-container
+            *ngTemplateOutlet="card; context: { $implicit: award, upcoming: true }"
+          ></ng-container>
         </article>
       </div>
+    </section>
+
+    <!-- Past -->
+    <section class="fe-section" *ngIf="pastAwards.length">
+      <h2 class="fe-section__title">Past</h2>
+      <div class="fe-awards__grid">
+        <article class="fe-award" *ngFor="let award of pastAwards">
+          <ng-container
+            *ngTemplateOutlet="card; context: { $implicit: award, upcoming: false }"
+          ></ng-container>
+        </article>
+      </div>
+    </section>
+
+    <p
+      *ngIf="!upcomingAwards.length && !pastAwards.length"
+      class="fe-empty"
+    >
+      No awards ceremonies to show yet.
+    </p>
+  </ng-container>
+</div>
+
+<!-- Reusable card body -->
+<ng-template #card let-award let-upcoming="upcoming">
+  <div class="fe-award__logo">
+    <img
+      *ngIf="award.url"
+      [src]="award.url"
+      alt="{{ award.name }}"
+      loading="lazy"
+    />
+    <span *ngIf="!award.url" class="fe-award__initials">{{
+      initials(award)
+    }}</span>
+  </div>
+
+  <div class="fe-award__body">
+    <div class="fe-award__top">
+      <h3 class="fe-award__name">{{ award.name }}</h3>
+      <span
+        class="fe-award__badge"
+        [class.is-upcoming]="upcoming"
+      >{{ upcoming ? 'Upcoming' : 'Past' }}</span>
+    </div>
+
+    <div class="fe-award__meta">
+      {{ displayDate(award) }}
+      <span class="fe-award__rel" *ngIf="relative(award)"> · {{ relative(award) }}</span>
+    </div>
+
+    <div class="fe-award__actions">
+      <button
+        class="fe-btn fe-btn--solid"
+        *ngIf="parse(award)"
+        (click)="downloadICSCalendar(award)"
+      >
+        <i class="fas fa-download"></i> Add to calendar
+      </button>
+      <a
+        class="fe-btn fe-btn--ghost"
+        *ngIf="award.imdb"
+        [href]="award.imdb"
+        target="_blank"
+        rel="noopener"
+      >
+        Details
+      </a>
     </div>
   </div>
-</div>
+</ng-template>
