@@ -51,8 +51,6 @@ export class CalendarComponent implements OnInit {
   filters: CalendarFilters = { ...DEFAULT_FILTERS };
   openChip: 'genre' | 'rating' | 'decade' | 'bookmarks' | null = null;
   displayMovies: IFilm[] = [];
-  hoveredDay: number | null = null;
-  private hoverTimeout: any = null;
   ratingOptions = [
     { label: 'All', value: 0 },
     { label: '≥ 6.0', value: 6 },
@@ -359,28 +357,6 @@ export class CalendarComponent implements OnInit {
     this.selectedMonth = this.selectedDate.getMonth();
 
     this.generateWeekCalendar();
-  }
-
-  isHovered(day: number): boolean {
-    return this.hoveredDay === day;
-  }
-
-  onDayMouseEnter(day: number): void {
-    this.hoverTimeout = setTimeout(() => {
-      this.hoveredDay = day;
-    }, 350);
-  }
-
-  onDayMouseLeave(): void {
-    clearTimeout(this.hoverTimeout);
-    this.hoveredDay = null;
-  }
-
-  getFullMoviesForDay(day: number): IFilm[] {
-    const dayStr = this.formatDate(day);
-    return this.displayMovies
-      .filter((m) => (m.release_date || '').slice(5) === dayStr)
-      .sort((a, b) => (b.isBookmarked ? 1 : -1) - (a.isBookmarked ? 1 : -1));
   }
 
   isToday(day: number): boolean {
