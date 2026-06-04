@@ -15,6 +15,7 @@
 ## File Structure
 
 **New files**
+
 - `src/app/genres.ts` — TMDB genre-id → bucket name + oklch dot color (pure).
 - `src/app/genres.spec.ts` — tests for the above.
 - `src/app/calendar/film-filter.ts` — `CalendarFilters`, `DEFAULT_FILTERS`, `applyFilters` (pure).
@@ -23,6 +24,7 @@
 - `src/app/service/theme.service.spec.ts` — tests.
 
 **Modified files**
+
 - `src/index.html` — fonts + pre-paint theme script + title.
 - `src/styles.css` — design tokens, base typography, transitions.
 - `src/app/app.component.ts` — initialise `ThemeService` on startup.
@@ -30,6 +32,7 @@
 - `src/app/calendar/calendar.component.{html,css,ts}` — redesigned month view + filters + restyled week view.
 
 **Test commands**
+
 - Unit: `npm test -- --watch=false --browsers=ChromeHeadless`
 - Build: `npm run build`
 
@@ -38,6 +41,7 @@
 ## Task 1: Genre map & dot colors
 
 **Files:**
+
 - Create: `src/app/genres.ts`
 - Test: `src/app/genres.spec.ts`
 
@@ -45,37 +49,46 @@
 
 ```typescript
 // src/app/genres.spec.ts
-import { IFilm } from './filmresult';
-import { genreBucket, genreName, genreColor } from './genres';
+import { IFilm } from "./filmresult";
+import { genreBucket, genreName, genreColor } from "./genres";
 
 function film(genre_ids: number[]): IFilm {
   return {
-    adult: false, genre_ids, id: 1, original_language: 'en',
-    original_title: '', overview: '', popularity: 0, poster_path: '',
-    release_date: '2026-06-05', title: '', video: false,
-    vote_average: 0, vote_count: 0,
+    adult: false,
+    genre_ids,
+    id: 1,
+    original_language: "en",
+    original_title: "",
+    overview: "",
+    popularity: 0,
+    poster_path: "",
+    release_date: "2026-06-05",
+    title: "",
+    video: false,
+    vote_average: 0,
+    vote_count: 0,
   };
 }
 
-describe('genres', () => {
-  it('maps a known TMDB id to its bucket name', () => {
-    expect(genreBucket(film([27]))).toBe('Horror');        // 27 = Horror
-    expect(genreBucket(film([878]))).toBe('Sci-Fi');       // 878 = Science Fiction
-    expect(genreBucket(film([35, 18]))).toBe('Comedy');    // first known id wins
+describe("genres", () => {
+  it("maps a known TMDB id to its bucket name", () => {
+    expect(genreBucket(film([27]))).toBe("Horror"); // 27 = Horror
+    expect(genreBucket(film([878]))).toBe("Sci-Fi"); // 878 = Science Fiction
+    expect(genreBucket(film([35, 18]))).toBe("Comedy"); // first known id wins
   });
 
-  it('falls back to Drama for unknown/empty ids', () => {
-    expect(genreBucket(film([]))).toBe('Drama');
-    expect(genreBucket(film([999999]))).toBe('Drama');
+  it("falls back to Drama for unknown/empty ids", () => {
+    expect(genreBucket(film([]))).toBe("Drama");
+    expect(genreBucket(film([999999]))).toBe("Drama");
   });
 
-  it('exposes the bucket name via genreName', () => {
-    expect(genreName(film([28]))).toBe('Action');
+  it("exposes the bucket name via genreName", () => {
+    expect(genreName(film([28]))).toBe("Action");
   });
 
-  it('returns an oklch color, brighter in dark mode', () => {
-    expect(genreColor(film([28]), false)).toBe('oklch(0.62 0.16 12)');
-    expect(genreColor(film([28]), true)).toBe('oklch(0.68 0.16 12)');
+  it("returns an oklch color, brighter in dark mode", () => {
+    expect(genreColor(film([28]), false)).toBe("oklch(0.62 0.16 12)");
+    expect(genreColor(film([28]), true)).toBe("oklch(0.68 0.16 12)");
   });
 });
 ```
@@ -89,28 +102,43 @@ Expected: FAIL — cannot find module `./genres`.
 
 ```typescript
 // src/app/genres.ts
-import { IFilm } from './filmresult';
+import { IFilm } from "./filmresult";
 
-export type GenreBucket =
-  | 'Action' | 'Comedy' | 'Drama' | 'Romance'
-  | 'Horror' | 'Sci-Fi' | 'Family' | 'Classic';
+export type GenreBucket = "Action" | "Comedy" | "Drama" | "Romance" | "Horror" | "Sci-Fi" | "Family" | "Classic";
 
 // Hue per README; chroma fixed at 0.16; lightness 0.62 light / 0.68 dark.
 const BUCKET_HUE: Record<GenreBucket, number> = {
-  Action: 12, Comedy: 50, Drama: 270, Romance: 350,
-  Horror: 150, 'Sci-Fi': 220, Family: 180, Classic: 80,
+  Action: 12,
+  Comedy: 50,
+  Drama: 270,
+  Romance: 350,
+  Horror: 150,
+  "Sci-Fi": 220,
+  Family: 180,
+  Classic: 80,
 };
 
 // TMDB movie genre id -> design bucket (nearest reasonable hue for the long tail).
 const TMDB_TO_BUCKET: Record<number, GenreBucket> = {
-  28: 'Action', 12: 'Action', 53: 'Action', 80: 'Action', 10752: 'Action',
-  35: 'Comedy', 10402: 'Comedy', 10770: 'Comedy',
-  18: 'Drama', 36: 'Drama', 9648: 'Drama',
-  10749: 'Romance',
-  27: 'Horror',
-  878: 'Sci-Fi', 14: 'Sci-Fi',
-  10751: 'Family', 16: 'Family',
-  99: 'Classic', 37: 'Classic',
+  28: "Action",
+  12: "Action",
+  53: "Action",
+  80: "Action",
+  10752: "Action",
+  35: "Comedy",
+  10402: "Comedy",
+  10770: "Comedy",
+  18: "Drama",
+  36: "Drama",
+  9648: "Drama",
+  10749: "Romance",
+  27: "Horror",
+  878: "Sci-Fi",
+  14: "Sci-Fi",
+  10751: "Family",
+  16: "Family",
+  99: "Classic",
+  37: "Classic",
 };
 
 export function genreBucket(film: IFilm): GenreBucket {
@@ -118,7 +146,7 @@ export function genreBucket(film: IFilm): GenreBucket {
     const bucket = TMDB_TO_BUCKET[id];
     if (bucket) return bucket;
   }
-  return 'Drama';
+  return "Drama";
 }
 
 export function genreName(film: IFilm): string {
@@ -148,6 +176,7 @@ git commit -m "feat: add genre bucket + oklch dot color map"
 ## Task 2: Calendar filter functions
 
 **Files:**
+
 - Create: `src/app/calendar/film-filter.ts`
 - Test: `src/app/calendar/film-filter.spec.ts`
 
@@ -155,45 +184,52 @@ git commit -m "feat: add genre bucket + oklch dot color map"
 
 ```typescript
 // src/app/calendar/film-filter.spec.ts
-import { IFilm } from '../filmresult';
-import { applyFilters, DEFAULT_FILTERS, CalendarFilters } from './film-filter';
+import { IFilm } from "../filmresult";
+import { applyFilters, DEFAULT_FILTERS, CalendarFilters } from "./film-filter";
 
 function film(over: Partial<IFilm>): IFilm {
   return {
-    adult: false, genre_ids: [18], id: 1, original_language: 'en',
-    original_title: '', overview: '', popularity: 0, poster_path: '',
-    release_date: '1994-06-05', title: 'x', video: false,
-    vote_average: 7.5, vote_count: 0, isBookmarked: true, ...over,
+    adult: false,
+    genre_ids: [18],
+    id: 1,
+    original_language: "en",
+    original_title: "",
+    overview: "",
+    popularity: 0,
+    poster_path: "",
+    release_date: "1994-06-05",
+    title: "x",
+    video: false,
+    vote_average: 7.5,
+    vote_count: 0,
+    isBookmarked: true,
+    ...over,
   };
 }
 
-describe('applyFilters', () => {
-  const films = [
-    film({ id: 1, genre_ids: [27], vote_average: 6.0, release_date: '1980-06-01', isBookmarked: true }),
-    film({ id: 2, genre_ids: [878], vote_average: 8.2, release_date: '1999-06-02', isBookmarked: false }),
-    film({ id: 3, genre_ids: [35], vote_average: 7.1, release_date: '2010-06-03', isBookmarked: true }),
-  ];
+describe("applyFilters", () => {
+  const films = [film({ id: 1, genre_ids: [27], vote_average: 6.0, release_date: "1980-06-01", isBookmarked: true }), film({ id: 2, genre_ids: [878], vote_average: 8.2, release_date: "1999-06-02", isBookmarked: false }), film({ id: 3, genre_ids: [35], vote_average: 7.1, release_date: "2010-06-03", isBookmarked: true })];
 
-  it('returns everything with default filters', () => {
+  it("returns everything with default filters", () => {
     expect(applyFilters(films, DEFAULT_FILTERS).length).toBe(3);
   });
 
-  it('filters by genre bucket', () => {
-    const f: CalendarFilters = { ...DEFAULT_FILTERS, genre: 'Sci-Fi' };
+  it("filters by genre bucket", () => {
+    const f: CalendarFilters = { ...DEFAULT_FILTERS, genre: "Sci-Fi" };
     expect(applyFilters(films, f).map((x) => x.id)).toEqual([2]);
   });
 
-  it('filters by minimum rating', () => {
+  it("filters by minimum rating", () => {
     const f: CalendarFilters = { ...DEFAULT_FILTERS, minRating: 7 };
     expect(applyFilters(films, f).map((x) => x.id)).toEqual([2, 3]);
   });
 
-  it('filters by decade', () => {
+  it("filters by decade", () => {
     const f: CalendarFilters = { ...DEFAULT_FILTERS, decade: 1990 };
     expect(applyFilters(films, f).map((x) => x.id)).toEqual([2]);
   });
 
-  it('filters bookmarked only', () => {
+  it("filters bookmarked only", () => {
     const f: CalendarFilters = { ...DEFAULT_FILTERS, bookmarkedOnly: true };
     expect(applyFilters(films, f).map((x) => x.id)).toEqual([1, 3]);
   });
@@ -209,13 +245,13 @@ Expected: FAIL — cannot find module `./film-filter`.
 
 ```typescript
 // src/app/calendar/film-filter.ts
-import { IFilm } from '../filmresult';
-import { genreBucket, GenreBucket } from '../genres';
+import { IFilm } from "../filmresult";
+import { genreBucket, GenreBucket } from "../genres";
 
 export interface CalendarFilters {
   genre: GenreBucket | null; // null = All
-  minRating: number;         // 0 = All
-  decade: number | null;     // e.g. 1990; null = All
+  minRating: number; // 0 = All
+  decade: number | null; // e.g. 1990; null = All
   bookmarkedOnly: boolean;
 }
 
@@ -231,7 +267,7 @@ export function applyFilters(films: IFilm[], f: CalendarFilters): IFilm[] {
     if (f.genre && genreBucket(film) !== f.genre) return false;
     if (f.minRating && (film.vote_average || 0) < f.minRating) return false;
     if (f.decade != null) {
-      const year = Number((film.release_date || '0').slice(0, 4));
+      const year = Number((film.release_date || "0").slice(0, 4));
       if (Math.floor(year / 10) * 10 !== f.decade) return false;
     }
     if (f.bookmarkedOnly && !film.isBookmarked) return false;
@@ -257,6 +293,7 @@ git commit -m "feat: add calendar film-filter functions"
 ## Task 3: ThemeService
 
 **Files:**
+
 - Create: `src/app/service/theme.service.ts`
 - Test: `src/app/service/theme.service.spec.ts`
 
@@ -264,36 +301,36 @@ git commit -m "feat: add calendar film-filter functions"
 
 ```typescript
 // src/app/service/theme.service.spec.ts
-import { ThemeService } from './theme.service';
+import { ThemeService } from "./theme.service";
 
-describe('ThemeService', () => {
+describe("ThemeService", () => {
   let svc: ThemeService;
 
   beforeEach(() => {
     localStorage.clear();
-    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.removeAttribute("data-theme");
     svc = new ThemeService();
   });
 
-  it('defaults to light and applies the attribute on init', () => {
+  it("defaults to light and applies the attribute on init", () => {
     svc.init();
-    expect(svc.current).toBe('light');
-    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(svc.current).toBe("light");
+    expect(document.documentElement.getAttribute("data-theme")).toBe("light");
   });
 
-  it('reads a persisted dark theme on init', () => {
-    localStorage.setItem('fe-theme', 'dark');
+  it("reads a persisted dark theme on init", () => {
+    localStorage.setItem("fe-theme", "dark");
     svc.init();
-    expect(svc.current).toBe('dark');
-    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(svc.current).toBe("dark");
+    expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
   });
 
-  it('toggle flips theme, persists it, and updates the attribute', () => {
+  it("toggle flips theme, persists it, and updates the attribute", () => {
     svc.init();
     svc.toggle();
-    expect(svc.current).toBe('dark');
-    expect(localStorage.getItem('fe-theme')).toBe('dark');
-    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(svc.current).toBe("dark");
+    expect(localStorage.getItem("fe-theme")).toBe("dark");
+    expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
   });
 });
 ```
@@ -307,18 +344,18 @@ Expected: FAIL — cannot find module `./theme.service`.
 
 ```typescript
 // src/app/service/theme.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
-export type Theme = 'light' | 'dark';
+export type Theme = "light" | "dark";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class ThemeService {
-  private readonly key = 'fe-theme';
-  current: Theme = 'light';
+  private readonly key = "fe-theme";
+  current: Theme = "light";
 
   init(): void {
     const saved = localStorage.getItem(this.key);
-    this.current = saved === 'dark' ? 'dark' : 'light';
+    this.current = saved === "dark" ? "dark" : "light";
     this.apply();
   }
 
@@ -329,11 +366,11 @@ export class ThemeService {
   }
 
   toggle(): void {
-    this.setTheme(this.current === 'light' ? 'dark' : 'light');
+    this.setTheme(this.current === "light" ? "dark" : "light");
   }
 
   private apply(): void {
-    document.documentElement.setAttribute('data-theme', this.current);
+    document.documentElement.setAttribute("data-theme", this.current);
   }
 }
 ```
@@ -355,6 +392,7 @@ git commit -m "feat: add ThemeService with localStorage persistence"
 ## Task 4: Global design tokens + fonts
 
 **Files:**
+
 - Modify: `src/index.html`
 - Modify: `src/styles.css`
 
@@ -365,14 +403,11 @@ In `src/index.html` `<head>`, after the favicon `<link>`, add:
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
-  rel="stylesheet"
-/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
 <script>
   (function () {
-    var t = localStorage.getItem('fe-theme') || 'light';
-    document.documentElement.setAttribute('data-theme', t);
+    var t = localStorage.getItem("fe-theme") || "light";
+    document.documentElement.setAttribute("data-theme", t);
   })();
 </script>
 ```
@@ -385,7 +420,7 @@ Append to `src/styles.css`:
 
 ```css
 /* ===== Modern Minimal design tokens ===== */
-:root[data-theme='light'] {
+:root[data-theme="light"] {
   --bg: #faf8f4;
   --surface: #ffffff;
   --elev: #fdfbf7;
@@ -399,7 +434,7 @@ Append to `src/styles.css`:
   --red-soft: #fbedea;
 }
 
-:root[data-theme='dark'] {
+:root[data-theme="dark"] {
   --bg: #141210;
   --surface: #1c1916;
   --elev: #221e1a;
@@ -414,9 +449,9 @@ Append to `src/styles.css`:
 }
 
 :root {
-  --font-serif: 'Newsreader', Georgia, serif;
-  --font-ui: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: "Newsreader", Georgia, serif;
+  --font-ui: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
   --nav-height: 72px;
   --page-x: 48px;
   --card-radius: 12px;
@@ -432,7 +467,9 @@ html[data-theme] body {
 
 html[data-theme] body,
 html[data-theme] body * {
-  transition: background-color 200ms ease, color 200ms ease,
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
     border-color 200ms ease;
 }
 ```
@@ -454,6 +491,7 @@ git commit -m "feat: add design tokens, Google Fonts, pre-paint theme script"
 ## Task 5: Initialise ThemeService at startup
 
 **Files:**
+
 - Modify: `src/app/app.component.ts`
 
 - [ ] **Step 1: Inject and init ThemeService**
@@ -461,23 +499,23 @@ git commit -m "feat: add design tokens, Google Fonts, pre-paint theme script"
 Replace the contents of `src/app/app.component.ts` with:
 
 ```typescript
-import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
-import { ThemeService } from './service/theme.service';
+import { DOCUMENT } from "@angular/common";
+import { Component, Inject, OnInit } from "@angular/core";
+import { AuthService } from "@auth0/auth0-angular";
+import { ThemeService } from "./service/theme.service";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
 })
 export class AppComponent implements OnInit {
-  title = 'content-cal';
+  title = "content-cal";
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
     public auth: AuthService,
-    private theme: ThemeService
+    private theme: ThemeService,
   ) {}
 
   ngOnInit(): void {
@@ -503,6 +541,7 @@ git commit -m "feat: initialise ThemeService on app startup"
 ## Task 6: Redesign the nav shell
 
 **Files:**
+
 - Modify: `src/app/navbar/navbar.component.ts`
 - Modify: `src/app/navbar/navbar.component.html`
 - Modify: `src/app/navbar/navbar.component.css`
@@ -510,6 +549,7 @@ git commit -m "feat: initialise ThemeService on app startup"
 - [ ] **Step 1: Add theme toggle + initials to the component**
 
 In `src/app/navbar/navbar.component.ts`:
+
 - Add import: `import { ThemeService } from '../service/theme.service';`
 - Add `public theme: ThemeService` to the constructor parameters.
 - Add these members to the class body:
@@ -546,13 +586,7 @@ Replace the entire contents of `src/app/navbar/navbar.component.html` with:
   <div class="fe-nav__right">
     <div class="fe-search">
       <i class="fas fa-search fe-search__icon"></i>
-      <input
-        class="fe-search__input"
-        type="text"
-        placeholder="Search films, people, awards"
-        (input)="onSearch($event)"
-        #searchInput
-      />
+      <input class="fe-search__input" type="text" placeholder="Search films" (input)="onSearch($event)" #searchInput />
       <span class="fe-search__kbd">⌘K</span>
 
       <div class="fe-search__results" *ngIf="showDropdown" #dropdownMenu>
@@ -571,24 +605,12 @@ Replace the entire contents of `src/app/navbar/navbar.component.html` with:
     </div>
 
     <div class="fe-theme-toggle">
-      <button
-        class="fe-theme-toggle__seg"
-        [class.is-active]="theme.current === 'light'"
-        (click)="theme.setTheme('light')"
-        aria-label="Light mode"
-      >☀</button>
-      <button
-        class="fe-theme-toggle__seg"
-        [class.is-active]="theme.current === 'dark'"
-        (click)="theme.setTheme('dark')"
-        aria-label="Dark mode"
-      >☾</button>
+      <button class="fe-theme-toggle__seg" [class.is-active]="theme.current === 'light'" (click)="theme.setTheme('light')" aria-label="Light mode">☀</button>
+      <button class="fe-theme-toggle__seg" [class.is-active]="theme.current === 'dark'" (click)="theme.setTheme('dark')" aria-label="Dark mode">☾</button>
     </div>
 
     <ng-container *ngIf="auth.user$ | async as user">
-      <button class="fe-avatar" (click)="auth.logout()" [title]="'Log out ' + (user.name || '')">
-        {{ initials(user) }}
-      </button>
+      <button class="fe-avatar" (click)="auth.logout()" [title]="'Log out ' + (user.name || '')">{{ initials(user) }}</button>
     </ng-container>
   </div>
 </nav>
@@ -621,7 +643,7 @@ Replace the entire contents of `src/app/navbar/navbar.component.css` with:
   display: block;
 }
 
-:root[data-theme='dark'] .fe-nav__logo img {
+:root[data-theme="dark"] .fe-nav__logo img {
   filter: invert(1);
 }
 
@@ -829,6 +851,7 @@ git commit -m "feat: redesign nav shell to Modern Minimal"
 ## Task 7: Calendar component logic (filters, counts, helpers)
 
 **Files:**
+
 - Modify: `src/app/calendar/calendar.component.ts`
 
 - [ ] **Step 1: Add imports and filter state**
@@ -836,13 +859,9 @@ git commit -m "feat: redesign nav shell to Modern Minimal"
 In `src/app/calendar/calendar.component.ts`, add imports near the top:
 
 ```typescript
-import { ThemeService } from '../service/theme.service';
-import { genreColor, genreBucket, GenreBucket } from '../genres';
-import {
-  CalendarFilters,
-  DEFAULT_FILTERS,
-  applyFilters,
-} from './film-filter';
+import { ThemeService } from "../service/theme.service";
+import { genreColor, genreBucket, GenreBucket } from "../genres";
+import { CalendarFilters, DEFAULT_FILTERS, applyFilters } from "./film-filter";
 ```
 
 Add `public theme: ThemeService` as the last constructor parameter.
@@ -1017,6 +1036,7 @@ git commit -m "feat: add calendar filters, counts, and month navigation logic"
 ## Task 8: Calendar month-view template
 
 **Files:**
+
 - Modify: `src/app/calendar/calendar.component.html`
 
 - [ ] **Step 1: Replace the template**
@@ -1033,12 +1053,8 @@ Replace the entire contents of `src/app/calendar/calendar.component.html` with:
   <header class="fe-cal__title">
     <div class="fe-cal__title-left">
       <div class="fe-eyebrow">RELEASE CALENDAR</div>
-      <h1 class="fe-h1">
-        {{ months[selectedMonth] }} <i>{{ selectedYear }}</i>
-      </h1>
-      <p class="fe-subtitle">
-        {{ releaseCount }} releases · {{ anniversaryCount }} anniversaries you've bookmarked
-      </p>
+      <h1 class="fe-h1">{{ months[selectedMonth] }} <i>{{ selectedYear }}</i></h1>
+      <p class="fe-subtitle">{{ releaseCount }} releases · {{ anniversaryCount }} anniversaries you've bookmarked</p>
     </div>
 
     <div class="fe-cal__controls">
@@ -1057,9 +1073,7 @@ Replace the entire contents of `src/app/calendar/calendar.component.html` with:
   <!-- Filter chips -->
   <div class="fe-filters">
     <div class="fe-chip-wrap">
-      <button class="fe-chip" [class.is-active]="filters.genre" (click)="toggleChip('genre')">
-        Genre: {{ filters.genre || 'All' }} <span class="fe-chip__caret">⌄</span>
-      </button>
+      <button class="fe-chip" [class.is-active]="filters.genre" (click)="toggleChip('genre')">Genre: {{ filters.genre || 'All' }} <span class="fe-chip__caret">⌄</span></button>
       <div class="fe-menu" *ngIf="openChip === 'genre'">
         <button class="fe-menu__item" (click)="setGenre(null)">All</button>
         <button class="fe-menu__item" *ngFor="let g of availableGenres()" (click)="setGenre(g)">{{ g }}</button>
@@ -1067,18 +1081,14 @@ Replace the entire contents of `src/app/calendar/calendar.component.html` with:
     </div>
 
     <div class="fe-chip-wrap">
-      <button class="fe-chip" [class.is-active]="filters.minRating" (click)="toggleChip('rating')">
-        Rating: {{ ratingLabel }} <span class="fe-chip__caret">⌄</span>
-      </button>
+      <button class="fe-chip" [class.is-active]="filters.minRating" (click)="toggleChip('rating')">Rating: {{ ratingLabel }} <span class="fe-chip__caret">⌄</span></button>
       <div class="fe-menu" *ngIf="openChip === 'rating'">
         <button class="fe-menu__item" *ngFor="let o of ratingOptions" (click)="setRating(o.value)">{{ o.label }}</button>
       </div>
     </div>
 
     <div class="fe-chip-wrap">
-      <button class="fe-chip" [class.is-active]="filters.decade" (click)="toggleChip('decade')">
-        Decade: {{ filters.decade ? filters.decade + 's' : 'All' }} <span class="fe-chip__caret">⌄</span>
-      </button>
+      <button class="fe-chip" [class.is-active]="filters.decade" (click)="toggleChip('decade')">Decade: {{ filters.decade ? filters.decade + 's' : 'All' }} <span class="fe-chip__caret">⌄</span></button>
       <div class="fe-menu" *ngIf="openChip === 'decade'">
         <button class="fe-menu__item" (click)="setDecade(null)">All</button>
         <button class="fe-menu__item" *ngFor="let d of availableDecades()" (click)="setDecade(d)">{{ d }}s</button>
@@ -1086,9 +1096,7 @@ Replace the entire contents of `src/app/calendar/calendar.component.html` with:
     </div>
 
     <div class="fe-chip-wrap">
-      <button class="fe-chip" [class.is-active]="filters.bookmarkedOnly" (click)="toggleChip('bookmarks')">
-        Bookmarks: {{ filters.bookmarkedOnly ? 'Bookmarked only' : 'Show all' }} <span class="fe-chip__caret">⌄</span>
-      </button>
+      <button class="fe-chip" [class.is-active]="filters.bookmarkedOnly" (click)="toggleChip('bookmarks')">Bookmarks: {{ filters.bookmarkedOnly ? 'Bookmarked only' : 'Show all' }} <span class="fe-chip__caret">⌄</span></button>
       <div class="fe-menu" *ngIf="openChip === 'bookmarks'">
         <button class="fe-menu__item" (click)="setBookmarks(false)">Show all</button>
         <button class="fe-menu__item" (click)="setBookmarks(true)">Bookmarked only</button>
@@ -1112,22 +1120,14 @@ Replace the entire contents of `src/app/calendar/calendar.component.html` with:
 
     <div *ngIf="selectedView === 'Month'">
       <div class="fe-grid" *ngFor="let week of weeks">
-        <div
-          class="fe-cell"
-          *ngFor="let day of week"
-          [class.is-empty]="day === 0"
-          [class.is-today]="isToday(day)"
-          (click)="day !== 0 && onDayClick(day)"
-        >
+        <div class="fe-cell" *ngFor="let day of week" [class.is-empty]="day === 0" [class.is-today]="isToday(day)" (click)="day !== 0 && onDayClick(day)">
           <ng-container *ngIf="day !== 0">
             <div class="fe-cell__date">{{ day }}</div>
             <div class="fe-pill" *ngFor="let movie of getMoviesForDay(day)">
               <span class="fe-pill__bar" [style.background]="pillColor(movie)"></span>
               <span class="fe-pill__title">{{ movie.title }}</span>
             </div>
-            <div class="fe-more" *ngIf="getMovieCountForDay(day) >= 1">
-              +{{ getMovieCountForDay(day) }} more
-            </div>
+            <div class="fe-more" *ngIf="getMovieCountForDay(day) >= 1">+{{ getMovieCountForDay(day) }} more</div>
           </ng-container>
         </div>
       </div>
@@ -1139,11 +1139,7 @@ Replace the entire contents of `src/app/calendar/calendar.component.html` with:
         <button class="fe-iconbtn" (click)="nextWeek()" aria-label="Next week">›</button>
       </div>
       <div class="fe-grid">
-        <div
-          class="fe-cell fe-cell--week"
-          *ngFor="let day of weeks[0]"
-          (click)="day !== 0 && onDayClick(day)"
-        >
+        <div class="fe-cell fe-cell--week" *ngFor="let day of weeks[0]" (click)="day !== 0 && onDayClick(day)">
           <ng-container *ngIf="day !== 0">
             <div class="fe-cell__date">{{ day }}</div>
             <div class="fe-pill" *ngFor="let movie of getMoviesForWeek(day)">
@@ -1175,6 +1171,7 @@ git commit -m "feat: rebuild calendar month-view template"
 ## Task 9: Calendar styles
 
 **Files:**
+
 - Modify: `src/app/calendar/calendar.component.css`
 
 - [ ] **Step 1: Replace the stylesheet**
@@ -1313,7 +1310,9 @@ Replace the entire contents of `src/app/calendar/calendar.component.css` with:
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 150ms ease, border-color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
 }
 
 .fe-chip.is-active {
@@ -1567,9 +1566,10 @@ Expected: all specs pass (genres, film-filter, theme.service, plus any existing 
 Run: `npm start` and open `http://localhost:4200/#/home`.
 
 Confirm each of these against the spec/screenshot:
+
 - Nav: logo, links with red active underline on Calendar, search box, ☀/☾ toggle, avatar initials.
 - Theme toggle flips light/dark instantly and survives a page refresh.
-- Title row: eyebrow, "June *2026*" (year italic red), real release/anniversary counts.
+- Title row: eyebrow, "June _2026_" (year italic red), real release/anniversary counts.
 - Prev/Next month and Today buttons change the grid; Month/Week toggle switches views; Day routes to the detail page.
 - Filter chips open menus; selecting Genre/Rating/Decade/Bookmarks filters the cells and updates counts; active chips turn red; "Clear filters" appears only when a filter is active and resets everything.
 - Grid: weekday headers (Sat/Sun red), today's cell red-tinted with red date number, up to 3 genre-colored pills per day, "+N more", day-click → `/detail/:date`.

@@ -1,15 +1,46 @@
 <nav class="fe-nav" [class.is-open]="menuActive" aria-label="Main navigation">
   <div class="fe-nav__left">
     <a class="fe-nav__logo" [routerLink]="['home']">
-      <img src="../../assets/Transparant profile_Tekengebied 1 - Copy.png" alt="Film Enthusiast" />
+      <img
+        [src]="theme.current === 'dark'
+          ? '../../assets/Transparant profile_Tekengebied 1 - Copy cropped.png'
+          : '../../assets/Transparant profile_Tekengebied 1 - Copy.png'"
+        alt="Film Enthusiast"
+      />
     </a>
     <div class="fe-nav__divider"></div>
     <div class="fe-nav__links">
-      <a [routerLink]="['home']" routerLinkActive="is-active" class="fe-nav__link" (click)="menuActive = false">Calendar</a>
-      <a class="fe-nav__link is-placeholder" (click)="menuActive = false">Movies</a>
-      <a [routerLink]="['castcrew']" routerLinkActive="is-active" class="fe-nav__link" (click)="menuActive = false">Cast &amp; Crew</a>
-      <a [routerLink]="['bookmarked']" routerLinkActive="is-active" class="fe-nav__link" (click)="menuActive = false">Bookmarked</a>
-      <a [routerLink]="['awards']" routerLinkActive="is-active" class="fe-nav__link" (click)="menuActive = false">Awards</a>
+      <a
+        [routerLink]="['home']"
+        routerLinkActive="is-active"
+        class="fe-nav__link"
+        (click)="menuActive = false"
+        >Calendar</a
+      >
+      <a class="fe-nav__link is-placeholder" (click)="menuActive = false"
+        >Movies</a
+      >
+      <a
+        [routerLink]="['castcrew']"
+        routerLinkActive="is-active"
+        class="fe-nav__link"
+        (click)="menuActive = false"
+        >Cast &amp; Crew</a
+      >
+      <a
+        [routerLink]="['bookmarked']"
+        routerLinkActive="is-active"
+        class="fe-nav__link"
+        (click)="menuActive = false"
+        >Bookmarked</a
+      >
+      <a
+        [routerLink]="['awards']"
+        routerLinkActive="is-active"
+        class="fe-nav__link"
+        (click)="menuActive = false"
+        >Awards</a
+      >
     </div>
   </div>
 
@@ -19,7 +50,7 @@
       <input
         class="fe-search__input"
         type="text"
-        placeholder="Search films, people, awards"
+        placeholder="Search films"
         (input)="onSearch($event)"
         #searchInput
       />
@@ -27,12 +58,23 @@
 
       <div class="fe-search__results" *ngIf="showDropdown" #dropdownMenu>
         <div *ngFor="let movie of filmResult" class="fe-result">
-          <img class="fe-result__img" [src]="imageUrl + movie.poster_path" alt="{{ movie.title }} poster" />
+          <img
+            class="fe-result__img"
+            [src]="imageUrl + movie.poster_path"
+            alt="{{ movie.title }} poster"
+          />
           <div class="fe-result__meta">
             <div class="fe-result__title">{{ movie.title }}</div>
             <div class="fe-result__year">{{ movie.release_date }}</div>
           </div>
-          <button class="fe-result__bm" [attr.aria-label]="(movie.isBookmarked ? 'Remove bookmark for ' : 'Bookmark ') + movie.title" (click)="toggleBookmark(movie)">
+          <button
+            class="fe-result__bm"
+            [attr.aria-label]="
+              (movie.isBookmarked ? 'Remove bookmark for ' : 'Bookmark ') +
+              movie.title
+            "
+            (click)="toggleBookmark(movie)"
+          >
             <i class="fa-solid fa-bookmark" *ngIf="movie.isBookmarked"></i>
             <i class="fa-regular fa-bookmark" *ngIf="!movie.isBookmarked"></i>
           </button>
@@ -46,17 +88,25 @@
         [class.is-active]="theme.current === 'light'"
         (click)="theme.setTheme('light')"
         aria-label="Light mode"
-      >☀</button>
+      >
+        ☀
+      </button>
       <button
         class="fe-theme-toggle__seg"
         [class.is-active]="theme.current === 'dark'"
         (click)="theme.setTheme('dark')"
         aria-label="Dark mode"
-      >☾</button>
+      >
+        ☾
+      </button>
     </div>
 
     <ng-container *ngIf="auth.user$ | async as user">
-      <button class="fe-avatar" (click)="auth.logout()" [title]="'Log out ' + (user.name || '')">
+      <button
+        class="fe-avatar"
+        (click)="auth.logout()"
+        [title]="'Log out ' + (user.name || '')"
+      >
         {{ initials(user) }}
       </button>
     </ng-container>

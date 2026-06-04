@@ -20,9 +20,6 @@
   display: block;
 }
 
-:root[data-theme='dark'] .fe-nav__logo img {
-  filter: invert(1);
-}
 
 .fe-nav__divider {
   width: 1px;
