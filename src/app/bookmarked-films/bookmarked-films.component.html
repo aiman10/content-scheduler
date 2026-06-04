@@ -1,91 +1,128 @@
-<div class="container">
-  <div
-    class="header-container"
-    style="display: flex; align-items: center; justify-content: space-between"
-  >
-    <h1 class="title">All Movies</h1>
-    <div style="display: flex; gap: 0.5rem">
-      <select
-        [(ngModel)]="selectedValue"
-        (change)="onFilterChange()"
-        class="custom-select"
-      >
-        <option
-          *ngFor="let value of filterValues"
-          [value]="value"
-        >
-          {{ value }}
-        </option>
-      </select>
-      <select
-        [(ngModel)]="selectedYear"
-        (change)="onFilterChange()"
-        class="custom-select"
-      >
-        <option *ngFor="let year of yearOptions" [value]="year">
-          {{ year }}
-        </option>
-      </select>
-      <select
-        [(ngModel)]="selectedSort"
-        (change)="onSortChange()"
-        class="custom-select"
-      >
-        <option *ngFor="let opt of sortOptions" [value]="opt">
-          {{ opt }}
-        </option>
-      </select>
+<div class="fe-coll">
+  <!-- Header + toolbar -->
+  <header class="fe-coll__header">
+    <div class="fe-coll__heading">
+      <div class="fe-eyebrow">YOUR COLLECTION</div>
+      <h1 class="fe-h1">Bookmarked<span class="fe-h1__dot">.</span></h1>
+      <p class="fe-coll__subtitle" *ngIf="!isLoading">
+        {{ collection.length }} film{{ collection.length === 1 ? '' : 's' }} in your collection
+      </p>
     </div>
-  </div>
-  <div class="columns is-multiline">
-    <div class="column is-one-quarter" *ngFor="let movie of bookmarkedMovies">
-      <div class="card movie-card">
-        <div class="card-image">
-          <figure class="image is-2by3">
-            <img
-              [src]="'https://image.tmdb.org/t/p/original' + movie.poster_path"
-              alt="{{ movie.title }}"
-            />
-          </figure>
+
+    <div class="fe-coll__tools" *ngIf="!isLoading">
+      <!-- Genre dropdown -->
+      <div class="fe-dd">
+        <button class="fe-dd__btn" (click)="toggleMenu('genre')">
+          {{ selectedGenre === 'All' ? 'All genres' : selectedGenre }}
+          <span class="fe-dd__caret">⌄</span>
+        </button>
+        <div class="fe-menu" *ngIf="openMenu === 'genre'">
+          <button class="fe-menu__item" (click)="setGenre('All')">All genres</button>
+          <button class="fe-menu__item" *ngFor="let g of availableGenres()" (click)="setGenre(g)">{{ g }}</button>
         </div>
-        <div class="card-content">
-          <p class="title is-5">
-            <a
-              href="https://www.themoviedb.org/movie/{{ movie.id }}"
-              target="_blank"
-            >
-              {{ movie.title }}
-            </a>
-          </p>
-          <p class="subtitle is-6">{{ movie.release_date }}</p>
-          <p class="overview">{{ movie.overview | slice:0:100 }}...</p>
+      </div>
+
+      <!-- Year dropdown -->
+      <div class="fe-dd">
+        <button class="fe-dd__btn" (click)="toggleMenu('year')">
+          {{ selectedYear }} <span class="fe-dd__caret">⌄</span>
+        </button>
+        <div class="fe-menu" *ngIf="openMenu === 'year'">
+          <button class="fe-menu__item" *ngFor="let y of yearOptions" (click)="setYear(y)">{{ y }}</button>
         </div>
-        <footer class="card-footer">
-          <a class="card-footer-item" (click)="toggleBookmark(movie)">
-            <i class="fa-solid fa-bookmark" *ngIf="movie.isBookmarked"></i>
-            <i class="fa-regular fa-bookmark" *ngIf="!movie.isBookmarked"></i>
-          </a>
-          <a class="card-footer-item">Download Calendar</a>
-        </footer>
+      </div>
+
+      <!-- Sort dropdown -->
+      <div class="fe-dd">
+        <button class="fe-dd__btn" (click)="toggleMenu('sort')">
+          {{ sortLabel }} <span class="fe-dd__caret">⌄</span>
+        </button>
+        <div class="fe-menu fe-menu--wide" *ngIf="openMenu === 'sort'">
+          <button class="fe-menu__item" *ngFor="let o of sortOptions" (click)="setSort(o.key)">{{ o.label }}</button>
+        </div>
+      </div>
+
+      <!-- View toggle -->
+      <div class="fe-viewtoggle">
+        <button class="fe-viewtoggle__btn" [class.is-active]="viewMode === 'grid'" (click)="setView('grid')" aria-label="Grid view">
+          <i class="fas fa-th"></i>
+        </button>
+        <button class="fe-viewtoggle__btn" [class.is-active]="viewMode === 'list'" (click)="setView('list')" aria-label="List view">
+          <i class="fas fa-list"></i>
+        </button>
       </div>
     </div>
+  </header>
+
+  <!-- Genre filter chips -->
+  <div class="fe-coll__filters" *ngIf="!isLoading && collection.length">
+    <span class="fe-coll__filterlabel">Filter:</span>
+    <button class="fe-chip" [class.is-active]="selectedGenre === 'All'" (click)="setGenre('All')">All</button>
+    <button
+      class="fe-chip"
+      *ngFor="let g of availableGenres()"
+      [class.is-active]="selectedGenre === g"
+      (click)="setGenre(g)"
+    >{{ g }}</button>
+    <span class="fe-coll__showing">{{ showingLabel }}</span>
   </div>
 
-  <div *ngIf="!isLoading">
-    <!-- Only show the following content if not loading -->
-    <div *ngIf="bookmarkedMovies.length == 0" class="column is-full">
-      <h2 class="title is-5 has-text-centered">
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        You have no bookmarked movies
-      </h2>
+  <!-- States -->
+  <div *ngIf="isLoading" class="fe-loading-inline">Loading your collection…</div>
+  <p *ngIf="!isLoading && collection.length === 0" class="fe-empty">
+    You haven’t bookmarked any films yet.
+  </p>
+  <p *ngIf="!isLoading && collection.length && displayed.length === 0" class="fe-empty">
+    No bookmarks match these filters.
+  </p>
+
+  <!-- Grid view -->
+  <div class="fe-grid-view" *ngIf="!isLoading && viewMode === 'grid' && displayed.length">
+    <article class="fe-pcard" *ngFor="let movie of displayed" [style.--g]="pillColor(movie)">
+      <div class="fe-pcard__poster">
+        <img *ngIf="posterUrl(movie)" [src]="posterUrl(movie)" alt="{{ movie.title }}" loading="lazy" />
+        <span *ngIf="!posterUrl(movie)" class="fe-pcard__label">{{ posterLabel(movie) }}</span>
+        <button
+          class="fe-bm"
+          [class.is-on]="movie.isBookmarked"
+          [attr.aria-label]="(movie.isBookmarked ? 'Remove bookmark for ' : 'Bookmark ') + movie.title"
+          (click)="toggleBookmark(movie)"
+        >
+          <i class="fas fa-bookmark" *ngIf="movie.isBookmarked"></i>
+          <i class="far fa-bookmark" *ngIf="!movie.isBookmarked"></i>
+        </button>
+      </div>
+      <a class="fe-pcard__title" href="https://www.themoviedb.org/movie/{{ movie.id }}" target="_blank" rel="noopener">
+        {{ movie.title }}
+      </a>
+      <div class="fe-pcard__meta">
+        <span class="fe-pcard__date">{{ movie.release_date }}</span>
+        <span class="fe-tag">{{ genre(movie) }}</span>
+      </div>
+    </article>
+  </div>
+
+  <!-- List view -->
+  <div class="fe-list-view" *ngIf="!isLoading && viewMode === 'list' && displayed.length">
+    <div class="fe-row" *ngFor="let movie of displayed" [style.--g]="pillColor(movie)">
+      <div class="fe-row__thumb">
+        <img *ngIf="posterUrl(movie)" [src]="posterUrl(movie)" alt="{{ movie.title }}" loading="lazy" />
+        <span *ngIf="!posterUrl(movie)" class="fe-pcard__label">{{ posterLabel(movie) }}</span>
+      </div>
+      <a class="fe-row__title" href="https://www.themoviedb.org/movie/{{ movie.id }}" target="_blank" rel="noopener">
+        {{ movie.title }}
+      </a>
+      <span class="fe-row__date">{{ movie.release_date }}</span>
+      <span class="fe-tag">{{ genre(movie) }}</span>
+      <button
+        class="fe-bm fe-bm--inline"
+        [class.is-on]="movie.isBookmarked"
+        [attr.aria-label]="(movie.isBookmarked ? 'Remove bookmark for ' : 'Bookmark ') + movie.title"
+        (click)="toggleBookmark(movie)"
+      >
+        <i class="fa-solid fa-bookmark" *ngIf="movie.isBookmarked"></i>
+        <i class="fa-regular fa-bookmark" *ngIf="!movie.isBookmarked"></i>
+      </button>
     </div>
-    <!-- ...rest of your template... -->
   </div>
-
-  <div *ngIf="isLoading" class="loading-indicator">Loading...</div>
 </div>
