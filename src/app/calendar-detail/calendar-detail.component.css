@@ -81,11 +81,11 @@
   border-color: var(--border-strong);
 }
 
-/* Grid */
+/* Grid — stacked: bookmarks on top, watchlist underneath */
 .fe-detail__grid {
-  display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
   padding: 36px var(--page-x) 48px;
 }
 
@@ -262,10 +262,10 @@
   border-color: var(--border-strong);
 }
 
-/* Cards */
+/* Cards — horizontal wrapping grid (left to right) */
 .fe-cards {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 12px;
 }
 
@@ -449,8 +449,11 @@
   }
 
   .fe-detail__grid {
-    grid-template-columns: 1fr;
     gap: 32px;
     padding: 24px 20px 40px;
+  }
+
+  .fe-cards {
+    grid-template-columns: 1fr;
   }
 }
