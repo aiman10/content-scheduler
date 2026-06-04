@@ -2,10 +2,25 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MoviedatabaseService } from '../service/moviedatabase.service';
 import { IFilm, Result } from '../filmresult';
-import { BookmarkService } from '../service/bookmarked.service';
 import { ICalendar } from 'datebook';
 import { SelectdateService } from '../service/selectdate.service';
 import { DatabaseService } from '../service/database.service';
+import { genreName, genreBucket, GenreBucket } from '../genres';
+
+export function getIsoWeek(date: Date): number {
+  // ISO-8601 week number (weeks start Monday; week 1 contains the first Thursday).
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  );
+  const dayNum = (d.getUTCDay() + 6) % 7; // Mon=0 .. Sun=6
+  d.setUTCDate(d.getUTCDate() - dayNum + 3); // nearest Thursday
+  const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+  const firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
+  return (
+    1 + Math.round((d.getTime() - firstThursday.getTime()) / (7 * 24 * 3600 * 1000))
+  );
+}
 
 @Component({
   selector: 'app-calendar-detail',
@@ -15,21 +30,32 @@ import { DatabaseService } from '../service/database.service';
 export class CalendarDetailComponent implements OnInit {
   selectedYear!: number;
   bookmarkedMovies: IFilm[] = [];
-  isLoadingBookmarked = false; // <-- NEW FLAG
+  isLoadingBookmarked = false;
 
   years: number[] = Array.from(
     { length: 61 },
     (_, i) => new Date().getFullYear() - 60 + i
-  );
+  ).reverse();
+
+  months: string[] = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+  weekdays: string[] = [
+    'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+  ];
+
   date = '';
   films: IFilm[] = [];
   result: Result = { page: 1, total_pages: 1, results: [], total_results: 0 };
-  editing: { [key: string]: boolean } = {};
+
+  // Watchlist genre filter (client-side, within the current page).
+  watchlistGenre: GenreBucket | null = null;
+  genreMenuOpen = false;
 
   constructor(
     private route: ActivatedRoute,
     private movieService: MoviedatabaseService,
-    //private bookmarkService: BookmarkService,
     private dateService: SelectdateService,
     private databaseService: DatabaseService,
     private router: Router
@@ -37,52 +63,125 @@ export class CalendarDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      this.date = params['date']; // Access the 'date' parameter
+      this.date = params['date'];
       this.selectedYear = Number(this.date.substring(0, 4));
 
-      // Extract the month and day from the date parameter
       const selectedMonthDay = this.date.substring(5);
 
-      // Get all bookmarked movies from the database
       this.getDatabaseFilms().then(() => {
-        // Filter the bookmarkedMovies array to only include movies released on the selected day and month
-        this.bookmarkedMovies = this.bookmarkedMovies.filter((movie) => {
-          const movieMonthDay = movie.release_date.substring(5);
-          return movieMonthDay === selectedMonthDay;
-        });
+        this.bookmarkedMovies = this.bookmarkedMovies.filter(
+          (movie) => movie.release_date.substring(5) === selectedMonthDay
+        );
       });
 
+      this.watchlistGenre = null;
       this.getFilms(1);
     });
   }
 
-  enableEditing(movie: IFilm) {
-    this.editing[movie.id] = true;
+  // ----- Header view-model (computed from this.date) -----
+
+  private dateObj(offsetDays = 0): Date {
+    const [y, m, d] = this.date.split('-').map((p) => parseInt(p, 10));
+    const dt = new Date(y, m - 1, d);
+    if (offsetDays) dt.setDate(dt.getDate() + offsetDays);
+    return dt;
   }
 
-  disableEditing(movie: IFilm) {
-    this.editing[movie.id] = false;
+  get monthName(): string {
+    return this.months[this.dateObj().getMonth()];
   }
 
-  updateReleaseDate(event: any, movie: IFilm) {
-    const newDate = event.target.value;
-    movie.release_date = newDate;
-    this.disableEditing(movie);
-    if (movie._id) {
-      this.databaseService.updateFilm(movie._id.toString(), movie);
-    }
+  get dayNumber(): number {
+    return this.dateObj().getDate();
+  }
+
+  get headerYear(): number {
+    return this.dateObj().getFullYear();
+  }
+
+  get weekdayName(): string {
+    return this.weekdays[this.dateObj().getDay()];
+  }
+
+  get weekNumber(): number {
+    return getIsoWeek(this.dateObj());
+  }
+
+  private dayLabel(offsetDays: number): string {
+    const d = this.dateObj(offsetDays);
+    return `${this.months[d.getMonth()]} ${d.getDate()}`;
+  }
+
+  get prevDayLabel(): string {
+    return this.dayLabel(-1);
+  }
+
+  get nextDayLabel(): string {
+    return this.dayLabel(1);
+  }
+
+  get watchlistDateLabel(): string {
+    return `${this.monthName} ${this.dayNumber}`;
+  }
+
+  // ----- Card display helpers -----
+
+  posterUrl(movie: IFilm): string | null {
+    return movie.poster_path
+      ? `https://image.tmdb.org/t/p/w185${movie.poster_path}`
+      : null;
+  }
+
+  posterInitials(movie: IFilm): string {
+    const letters = (movie.title || '')
+      .replace(/[^a-zA-Z0-9 ]/g, '')
+      .replace(/\s+/g, '')
+      .slice(0, 4);
+    return (letters || '?').toUpperCase();
+  }
+
+  genreLabel(movie: IFilm): string {
+    return genreName(movie);
   }
 
   calculateReleasedYearsAgo(movie: IFilm): number {
     const releaseYear = new Date(movie.release_date).getFullYear();
-    const currentYear = new Date().getFullYear();
-    return currentYear - releaseYear;
+    return new Date().getFullYear() - releaseYear;
   }
 
+  tmdbUrl(movie: IFilm): string {
+    return `https://www.themoviedb.org/movie/${movie.id}`;
+  }
+
+  // ----- Watchlist genre filter -----
+
+  get filteredFilms(): IFilm[] {
+    if (!this.watchlistGenre) return this.films;
+    return this.films.filter((m) => genreBucket(m) === this.watchlistGenre);
+  }
+
+  availableWatchlistGenres(): GenreBucket[] {
+    const set = new Set<GenreBucket>();
+    this.films.forEach((m) => set.add(genreBucket(m)));
+    return Array.from(set).sort();
+  }
+
+  toggleGenreMenu(): void {
+    this.genreMenuOpen = !this.genreMenuOpen;
+  }
+
+  setWatchlistGenre(g: GenreBucket | null): void {
+    this.watchlistGenre = g;
+    this.genreMenuOpen = false;
+  }
+
+  // ----- Data -----
+
   async getDatabaseFilms() {
-    this.isLoadingBookmarked = true; // <-- TURN ON LOADING
+    this.isLoadingBookmarked = true;
     this.bookmarkedMovies = (await this.databaseService.getAllFilms()) || [];
-    this.isLoadingBookmarked = false; // <-- TURN OFF LOADING
+    this.isLoadingBookmarked = false;
   }
 
   async getFilms(id: number) {
@@ -92,6 +191,7 @@ export class CalendarDetailComponent implements OnInit {
     );
   }
 
+  // Toggle bookmark on a film already stored in our DB (left column).
   toggleBookmark(movie: IFilm) {
     movie.isBookmarked = !movie.isBookmarked;
     if (movie._id) {
@@ -99,8 +199,40 @@ export class CalendarDetailComponent implements OnInit {
     }
   }
 
-  //TODO: add toggleBookmark for new movies
-  addToggleBookmark(movie: IFilm) {}
+  // Add a TMDB release to the DB as a bookmark (right column).
+  // Mirrors navbar.component.ts#toggleBookmark create flow.
+  async addToggleBookmark(movie: IFilm) {
+    if (movie.isBookmarked) return;
+    try {
+      const releaseData = await this.movieService.getReleaseDates(movie.id);
+      const usReleaseData = releaseData.results.find(
+        (result) => result.iso_3166_1 === 'US'
+      );
+
+      if (usReleaseData) {
+        let usReleaseDates = usReleaseData.release_dates.filter(
+          (d) => d.type === 3
+        );
+        if (usReleaseDates.length === 0) {
+          usReleaseDates = usReleaseData.release_dates.filter(
+            (d) => d.type === 4
+          );
+        }
+        if (usReleaseDates.length > 0) {
+          movie.release_date = new Date(usReleaseDates[0].release_date)
+            .toISOString()
+            .split('T')[0];
+        }
+      }
+
+      movie.isBookmarked = true;
+      await this.databaseService.createFilm(movie);
+    } catch (error) {
+      movie.isBookmarked = false;
+    }
+  }
+
+  // ----- Day / page navigation -----
 
   onDateChange() {
     this.date = this.selectedYear + this.date.substring(4);
@@ -109,61 +241,25 @@ export class CalendarDetailComponent implements OnInit {
     const year = parseInt(dateParts[0]);
     const month = parseInt(dateParts[1]) - 1;
     const day = parseInt(dateParts[2]);
-    const newDate = new Date(year, month, day);
-
-    this.dateService.selectedDate = newDate;
+    this.dateService.selectedDate = new Date(year, month, day);
+    this.watchlistGenre = null;
     this.getFilms(1);
   }
 
-  //change date for page to next day
   onDateChangeNext() {
-    const dateParts = this.date.split('-');
-    const year = parseInt(dateParts[0], 10);
-    const month = parseInt(dateParts[1], 10) - 1; // JavaScript months are 0-based
-    const day = parseInt(dateParts[2], 10);
-
-    // Create a new Date object and add one day
-    const currentDate = new Date(year, month, day);
-    currentDate.setDate(currentDate.getDate() + 1);
-
-    // Format the new date as YYYY-MM-DD
-    const newYear = currentDate.getFullYear();
-    const newMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const newDay = currentDate.getDate().toString().padStart(2, '0');
-
-    const nextDate = `${newYear}-${newMonth}-${newDay}`;
-
-    // Navigate to the new URL
-    this.router.navigate(['/detail', nextDate]).then(() => {
-      // Update local variables if necessary
-      this.date = nextDate;
-      this.selectedYear = newYear;
-    });
+    this.navigateToDay(1);
   }
 
   onDateChangePrevious() {
-    const dateParts = this.date.split('-');
-    const year = parseInt(dateParts[0], 10);
-    const month = parseInt(dateParts[1], 10) - 1; // JavaScript months are 0-based
-    const day = parseInt(dateParts[2], 10);
+    this.navigateToDay(-1);
+  }
 
-    // Create a new Date object and subtract one day
-    const currentDate = new Date(year, month, day);
-    currentDate.setDate(currentDate.getDate() - 1);
-
-    // Format the new date as YYYY-MM-DD
-    const newYear = currentDate.getFullYear();
-    const newMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const newDay = currentDate.getDate().toString().padStart(2, '0');
-
-    const previousDate = `${newYear}-${newMonth}-${newDay}`;
-
-    // Navigate to the new URL
-    this.router.navigate(['/detail', previousDate]).then(() => {
-      // Update local variables if necessary
-      this.date = previousDate;
-      this.selectedYear = newYear;
-    });
+  private navigateToDay(offsetDays: number) {
+    const next = this.dateObj(offsetDays);
+    const y = next.getFullYear();
+    const m = (next.getMonth() + 1).toString().padStart(2, '0');
+    const d = next.getDate().toString().padStart(2, '0');
+    this.router.navigate(['/detail', `${y}-${m}-${d}`]);
   }
 
   previousPage() {
@@ -202,34 +298,5 @@ export class CalendarDetailComponent implements OnInit {
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
-  }
-
-  generateICSCalendar(film: IFilm): string {
-    const eventDate = new Date(this.date);
-    const eventYear = eventDate.getFullYear();
-    const eventMonth = (eventDate.getMonth() + 1).toString().padStart(2, '0');
-    const eventDay = eventDate.getDate().toString().padStart(2, '0');
-    const formattedDate = `${eventYear}${eventMonth}${eventDay}`;
-    const eventName = film.title;
-    const uid = '1234567890';
-    const dtstamp = new Date()
-      .toISOString()
-      .replace(/[-:]/g, '')
-      .replace(/\.\d{3}Z/, 'Z');
-
-    const icsContent = `
-    BEGIN:VCALENDAR
-    VERSION:2.0
-    PRODID:My Angular Calendar App
-    BEGIN:VEVENT
-    DTSTAMP:${dtstamp}
-    DTSTART:${formattedDate}T000000Z
-    DTEND:${formattedDate}T235959Z
-    SUMMARY:${eventName}
-    UID:${uid}
-    END:VEVENT
-    END:VCALENDAR
-  `;
-    return icsContent;
   }
 }

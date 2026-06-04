@@ -1,157 +1,164 @@
-<div class="container">
-  <h1 class="title is-size-3">{{ date }}</h1>
-  <h1 class="title is-size-4">Bookmarked Movies</h1>
-  <div class="control">
-    <button (click)="onDateChangePrevious()" class="button left">
-      <i class="fas fa-arrow-left"></i>
-    </button>
-    <button (click)="onDateChangeNext()" class="button right">
-      <i class="fas fa-arrow-right"></i>
-    </button>
-  </div>
-
-  <div *ngIf="isLoadingBookmarked" class="has-text-centered">
-    <button class="button is-large is-loading is-white">
-      Loading Bookmarked Movies...
-    </button>
-  </div>
-
-  <div class="columns is-multiline">
-    <div class="column is-half" *ngFor="let movie of bookmarkedMovies">
-      <div class="box">
-        <article class="media">
-          <div class="media-left">
-            <figure class="image is-96x96">
-              <img
-                [src]="
-                  'https://image.tmdb.org/t/p/original' + movie.poster_path
-                "
-                alt="{{ movie.title }}"
-              />
-            </figure>
-          </div>
-          <div class="media-content">
-            <div class="content">
-              <p>
-                <a
-                  href="https://www.themoviedb.org/movie/{{ movie.id }}"
-                  target="_blank"
-                  >{{ movie.title }}</a
-                >
-                <br />
-                <span *ngIf="!editing[movie.id]" (click)="enableEditing(movie)">
-                  {{ movie.release_date }} |
-                  <strong>
-                    {{ calculateReleasedYearsAgo(movie) }} year(s) ago
-                  </strong>
-                </span>
-                <input
-                  *ngIf="editing[movie.id]"
-                  type="text"
-                  [value]="movie.release_date"
-                  (keyup.enter)="updateReleaseDate($event, movie)"
-                  (blur)="disableEditing(movie)"
-                />
-
-                <br />
-                <br />
-                <button (click)="downloadICSCalendar(movie)" class="button">
-                  Download Calendar
-                </button>
-              </p>
-              <div class="bookmark-container">
-                <button
-                  class="transparent-button"
-                  (click)="toggleBookmark(movie)"
-                >
-                  <i
-                    class="fa-solid fa-bookmark"
-                    *ngIf="movie.isBookmarked"
-                  ></i>
-                  <i
-                    class="fa-regular fa-bookmark"
-                    *ngIf="!movie.isBookmarked"
-                  ></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </article>
+<div class="fe-detail">
+  <!-- Header -->
+  <header class="fe-detail__header">
+    <div class="fe-detail__head-left">
+      <div class="fe-breadcrumb">
+        <a [routerLink]="['/home']" class="fe-breadcrumb__back">
+          ← {{ monthName }} {{ headerYear }}
+        </a>
+        <span class="fe-breadcrumb__sep">·</span>
+        <span class="fe-breadcrumb__meta">{{ weekdayName }} · Week {{ weekNumber }}</span>
       </div>
-    </div>
-  </div>
-  <h1 class="title is-size-4">Add bookmarked Movies</h1>
-  <div class="field is-grouped">
-    <div class="control custom">
-      <div class="select is-inline">
-        <select [(ngModel)]="selectedYear" (change)="onDateChange()">
-          <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-        </select>
-      </div>
+      <h1 class="fe-h1">
+        <span class="fe-h1__month">{{ monthName }}</span>
+        <span class="fe-h1__day">{{ dayNumber }}</span><i class="fe-h1__dot">.</i>
+      </h1>
     </div>
 
-    <div class="control" style="margin-left: 55px">
-      <button (click)="previousPage()" class="button">
-        <i class="fas fa-arrow-left"></i>
+    <div class="fe-detail__daynav">
+      <button class="fe-textbtn" (click)="onDateChangePrevious()" aria-label="Previous day">
+        ‹ {{ prevDayLabel }}
+      </button>
+      <button class="fe-textbtn" (click)="onDateChangeNext()" aria-label="Next day">
+        {{ nextDayLabel }} ›
       </button>
     </div>
-    <div class="control">{{ result.page }}/{{ result.total_pages }}</div>
-    <div class="control">
-      <button (click)="nextPage()" class="button">
-        <i class="fas fa-arrow-right"></i>
-      </button>
-    </div>
-  </div>
-  <div class="columns is-multiline">
-    <div class="column is-half" *ngFor="let movie of films">
-      <div class="box">
-        <article class="media">
-          <div class="media-left">
-            <figure class="image is-96x96">
-              <img
-                [src]="
-                  'https://image.tmdb.org/t/p/original' + movie.poster_path
-                "
-                alt="{{ movie.title }}"
-                loading="lazy"
-              />
-            </figure>
-          </div>
-          <div class="media-content">
-            <div class="content">
-              <p>
-                <a
-                  href="https://www.themoviedb.org/movie/{{ movie.id }}"
-                  target="_blank"
-                  >{{ movie.title }}</a
-                >
-                <br />
-                {{ movie.release_date }}
-                <br />
-                <br />
-                <button (click)="downloadICSCalendar(movie)" class="button">
-                  Download Calendar
-                </button>
-              </p>
-              <div class="bookmark-container">
-                <button
-                  class="transparent-button"
-                  (click)="addToggleBookmark(movie)"
-                >
-                  <i
-                    class="fa-solid fa-bookmark"
-                    *ngIf="movie.isBookmarked"
-                  ></i>
-                  <i
-                    class="fa-regular fa-bookmark"
-                    *ngIf="!movie.isBookmarked"
-                  ></i>
-                </button>
-              </div>
+  </header>
+
+  <!-- Two-column grid -->
+  <div class="fe-detail__grid">
+    <!-- Left: Your bookmarks -->
+    <section class="fe-col">
+      <h2 class="fe-section__title">
+        Your bookmarks
+        <span class="fe-section__count">{{ bookmarkedMovies.length }} anniversaries</span>
+      </h2>
+
+      <div *ngIf="isLoadingBookmarked" class="fe-loading-inline">Loading bookmarks…</div>
+
+      <div class="fe-cards">
+        <ng-container *ngFor="let movie of bookmarkedMovies">
+          <ng-container
+            *ngTemplateOutlet="card; context: { movie: movie, watchlist: false }"
+          ></ng-container>
+        </ng-container>
+        <p
+          *ngIf="!isLoadingBookmarked && bookmarkedMovies.length === 0"
+          class="fe-empty"
+        >
+          No bookmarked anniversaries on this day.
+        </p>
+      </div>
+    </section>
+
+    <!-- Right: Add to watchlist -->
+    <section class="fe-col">
+      <h2 class="fe-section__title">
+        Add to watchlist
+        <span class="fe-section__count">Releases on {{ watchlistDateLabel }}</span>
+      </h2>
+
+      <div class="fe-watch-controls">
+        <div class="fe-watch-filters">
+          <label class="fe-select">
+            <span class="fe-select__label">Year:</span>
+            <select [(ngModel)]="selectedYear" (change)="onDateChange()">
+              <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+            </select>
+            <span class="fe-select__caret">⌄</span>
+          </label>
+
+          <div class="fe-chip-wrap">
+            <button
+              class="fe-chip"
+              [class.is-active]="watchlistGenre"
+              (click)="toggleGenreMenu()"
+            >
+              Genre: {{ watchlistGenre || 'All' }}
+              <span class="fe-chip__caret">⌄</span>
+            </button>
+            <div class="fe-menu" *ngIf="genreMenuOpen">
+              <button class="fe-menu__item" (click)="setWatchlistGenre(null)">All</button>
+              <button
+                class="fe-menu__item"
+                *ngFor="let g of availableWatchlistGenres()"
+                (click)="setWatchlistGenre(g)"
+              >
+                {{ g }}
+              </button>
             </div>
           </div>
-        </article>
+        </div>
+
+        <div class="fe-pager">
+          <button class="fe-iconbtn" (click)="previousPage()" aria-label="Previous page">‹</button>
+          <span class="fe-pager__label">{{ result.page }} / {{ result.total_pages }}</span>
+          <button class="fe-iconbtn" (click)="nextPage()" aria-label="Next page">›</button>
+        </div>
       </div>
-    </div>
+
+      <div class="fe-cards">
+        <ng-container *ngFor="let movie of filteredFilms">
+          <ng-container
+            *ngTemplateOutlet="card; context: { movie: movie, watchlist: true }"
+          ></ng-container>
+        </ng-container>
+        <p *ngIf="filteredFilms.length === 0" class="fe-empty">
+          No releases match this filter.
+        </p>
+      </div>
+    </section>
   </div>
 </div>
+
+<!-- Shared movie card -->
+<ng-template #card let-movie="movie" let-watchlist="watchlist">
+  <article class="fe-card">
+    <div class="fe-card__poster" [class.is-empty]="!posterUrl(movie)">
+      <img
+        *ngIf="posterUrl(movie)"
+        [src]="posterUrl(movie)"
+        alt="{{ movie.title }} poster"
+        loading="lazy"
+      />
+      <span *ngIf="!posterUrl(movie)" class="fe-card__poster-label">{{
+        posterInitials(movie)
+      }}</span>
+    </div>
+
+    <div class="fe-card__body">
+      <div class="fe-card__top">
+        <h3 class="fe-card__title">{{ movie.title }}</h3>
+        <button
+          class="fe-bm"
+          [class.is-on]="movie.isBookmarked"
+          [attr.aria-label]="(movie.isBookmarked ? 'Bookmarked ' : 'Bookmark ') + movie.title"
+          (click)="watchlist ? addToggleBookmark(movie) : toggleBookmark(movie)"
+        >
+          <i class="fa-solid fa-bookmark" *ngIf="movie.isBookmarked"></i>
+          <i class="fa-regular fa-bookmark" *ngIf="!movie.isBookmarked"></i>
+        </button>
+      </div>
+
+      <div class="fe-card__meta">
+        {{ movie.release_date | date: 'yyyy' }}
+        <span class="fe-card__meta-sep">·</span>
+        <span class="is-anniv">{{ calculateReleasedYearsAgo(movie) }} years ago today</span>
+      </div>
+
+      <div class="fe-card__tags">
+        <span class="fe-tag">{{ genreLabel(movie) }}</span>
+        <span class="fe-tag fe-tag--rating">★ {{ movie.vote_average | number: '1.1-1' }}</span>
+      </div>
+
+      <div class="fe-card__actions">
+        <button class="fe-btn fe-btn--solid" (click)="downloadICSCalendar(movie)">
+          <i class="fas fa-download"></i> Add to calendar
+        </button>
+        <a class="fe-btn fe-btn--ghost" [href]="tmdbUrl(movie)" target="_blank" rel="noopener">
+          Details
+        </a>
+      </div>
+    </div>
+  </article>
+</ng-template>
