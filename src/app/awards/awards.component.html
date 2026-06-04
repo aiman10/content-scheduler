@@ -6,6 +6,10 @@
     <p class="fe-awards__subtitle" *ngIf="!loading">
       {{ upcomingAwards.length }} upcoming · {{ awards.length }} ceremonies tracked
     </p>
+    <p class="fe-awards__note">
+      <i class="fas fa-circle-info"></i>
+      Dates are estimates and vary year to year.
+    </p>
   </header>
 
   <div *ngIf="loading" class="fe-loading-inline">Loading awards…</div>
@@ -67,22 +71,11 @@
       >{{ upcoming ? 'Upcoming' : 'Past' }}</span>
     </div>
 
-    <div class="fe-award__meta">
-      {{ displayDate(award) }}
-      <span class="fe-award__rel" *ngIf="relative(award)"> · {{ relative(award) }}</span>
-    </div>
+    <div class="fe-award__meta">{{ displayDate(award) }}</div>
 
-    <div class="fe-award__actions">
-      <button
-        class="fe-btn fe-btn--solid"
-        *ngIf="parse(award)"
-        (click)="downloadICSCalendar(award)"
-      >
-        <i class="fas fa-download"></i> Add to calendar
-      </button>
+    <div class="fe-award__actions" *ngIf="award.imdb">
       <a
         class="fe-btn fe-btn--ghost"
-        *ngIf="award.imdb"
         [href]="award.imdb"
         target="_blank"
         rel="noopener"

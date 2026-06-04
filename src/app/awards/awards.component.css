@@ -31,6 +31,16 @@
   margin: 10px 0 0;
 }
 
+.fe-awards__note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+
 .fe-loading-inline,
 .fe-empty {
   color: var(--muted);
@@ -149,10 +159,6 @@
   margin-top: 6px;
 }
 
-.fe-award__rel {
-  color: var(--muted);
-}
-
 .fe-award__actions {
   display: flex;
   gap: 8px;
@@ -171,15 +177,6 @@
   cursor: pointer;
   text-decoration: none;
   border: 1px solid transparent;
-}
-
-.fe-btn--solid {
-  background: var(--text);
-  color: var(--surface);
-}
-
-.fe-btn--solid:hover {
-  opacity: 0.9;
 }
 
 .fe-btn--ghost {
