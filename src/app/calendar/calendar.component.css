@@ -198,7 +198,15 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--card-radius);
-  overflow: hidden;
+  overflow: visible; /* allow hover popups to escape the card boundary */
+}
+
+/* Round the outer-edge cells so they conform to the card corners */
+.fe-grid--head .fe-dayhead:first-child {
+  border-top-left-radius: var(--card-radius);
+}
+.fe-grid--head .fe-dayhead:last-child {
+  border-top-right-radius: var(--card-radius);
 }
 
 .fe-grid {
@@ -229,12 +237,13 @@
 }
 
 .fe-cell {
+  position: relative;
   min-height: var(--cell-min-h);
   padding: 12px;
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   cursor: pointer;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .fe-cell:nth-child(7n) {
@@ -336,6 +345,53 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Hover popup */
+.fe-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  width: max-content;
+  max-width: 260px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  padding: 8px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.fe-tooltip__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 2px;
+}
+
+.fe-tooltip__bar {
+  flex: none;
+  width: 3px;
+  height: 14px;
+  border-radius: 1px;
+}
+
+.fe-tooltip__title {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fe-tooltip__bm {
+  flex: none;
+  font-size: 10px;
+  color: var(--red);
 }
 
 @media (max-width: 768px) {

@@ -92,6 +92,8 @@
           [class.is-empty]="day === 0"
           [class.is-today]="isToday(day)"
           (click)="day !== 0 && onDayClick(day)"
+          (mouseenter)="day !== 0 && onDayMouseEnter(day)"
+          (mouseleave)="onDayMouseLeave()"
         >
           <ng-container *ngIf="day !== 0">
             <div class="fe-cell__date">{{ day }}</div>
@@ -101,6 +103,15 @@
             </div>
             <div class="fe-more" *ngIf="getMovieCountForDay(day) >= 1">
               +{{ getMovieCountForDay(day) }} more
+            </div>
+
+            <!-- Hover popup: full movie list -->
+            <div class="fe-tooltip" *ngIf="isHovered(day)">
+              <div class="fe-tooltip__row" *ngFor="let movie of getFullMoviesForDay(day)">
+                <span class="fe-tooltip__bar" [style.background]="pillColor(movie)"></span>
+                <span class="fe-tooltip__title">{{ movie.title }}</span>
+                <i class="fas fa-bookmark fe-tooltip__bm" *ngIf="movie.isBookmarked"></i>
+              </div>
             </div>
           </ng-container>
         </div>
