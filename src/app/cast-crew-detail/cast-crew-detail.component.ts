@@ -30,6 +30,9 @@ export class CastCrewDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Set date immediately from the snapshot so the header renders correctly
+    // before the async DB load completes (prevents "January 1" flash).
+    this.date = this.route.snapshot.params['date'] || '';
     this.getCastCrew();
   }
 
