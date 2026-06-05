@@ -37,6 +37,7 @@ export class CastCrewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getCastCrew(); // fetch the dataset once
     this.generateMonthCalendar();
   }
 
@@ -61,9 +62,8 @@ export class CastCrewComponent implements OnInit {
   }
 
   generateMonthCalendar(): void {
-    this.loading = true;
+    // Rebuild from the already-loaded dataset (no re-fetch on navigation).
     this.weeks = [];
-    this.getCastCrew();
 
     const currentDate = new Date(this.selectedYear, this.selectedMonth, 1);
     const firstDayOfWeek = (currentDate.getDay() + 6) % 7; // Mon=0 .. Sun=6
@@ -95,16 +95,10 @@ export class CastCrewComponent implements OnInit {
     if (currentWeek.length > 0) {
       this.weeks.push(currentWeek);
     }
-    while (this.weeks.length < 5) {
-      this.weeks.push(currentWeek);
-      currentWeek = [];
-    }
   }
 
   generateWeekCalendar(): void {
-    this.loading = true;
     this.weeks = [];
-    this.getCastCrew();
 
     const startDate = new Date(this.selectedDate);
     const dayOfWeek = (this.selectedDate.getDay() + 6) % 7;
@@ -165,9 +159,11 @@ export class CastCrewComponent implements OnInit {
 
   onDayClick(day: number): void {
     if (day === 0) return;
-    this.selectedDate.setFullYear(this.selectedYear, this.selectedMonth, day);
-    this.dateService.selectedDate = this.selectedDate;
-    this.router.navigate(['/castcrew/', this.formatDateToISO(this.selectedDate)]);
+    // Fresh Date instead of mutating the shared selectedDate in place.
+    const selected = new Date(this.selectedYear, this.selectedMonth, day);
+    this.selectedDate = selected;
+    this.dateService.selectedDate = selected;
+    this.router.navigate(['/castcrew/', this.formatDateToISO(selected)]);
   }
 
   formatDateToISO(inputDate: Date): string {

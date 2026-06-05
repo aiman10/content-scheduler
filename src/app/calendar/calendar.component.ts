@@ -186,6 +186,7 @@ export class CalendarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getFilms(); // fetch the dataset once
     this.generateMonthCalendar();
   }
 
@@ -196,9 +197,8 @@ export class CalendarComponent implements OnInit {
   }
 
   generateMonthCalendar(): void {
-    // Clear the weeks array
-    this.loading = true;
-    this.getFilms();
+    // Rebuild the grid from the already-loaded dataset (no re-fetch — the full
+    // film set is reused across months, so navigation just re-lays out days).
     this.weeks = [];
 
     // Create a new date for the selected month and year
@@ -250,12 +250,6 @@ export class CalendarComponent implements OnInit {
     if (currentWeek.length > 0) {
       this.weeks.push(currentWeek); // Ensure that the last week gets added to the weeks array
     }
-
-    // Add the weeks to ensure you have a total of 5 weeks
-    while (this.weeks.length < 5) {
-      this.weeks.push(currentWeek);
-      currentWeek = [];
-    }
   }
 
   generateWeekCalendar(): void {
@@ -281,11 +275,12 @@ export class CalendarComponent implements OnInit {
   }
 
   onDayClick(day: number): void {
-    this.selectedDate.setFullYear(this.selectedYear, this.selectedMonth, day);
-    this.dateService.selectedDate = this.selectedDate;
-    const formattedDate = this.formatDateToISO(this.selectedDate);
-    // Navigate to the detail view for the selected date
-    this.router.navigate(['/detail/', formattedDate]);
+    // Use a fresh Date rather than mutating the shared selectedDate in place
+    // (the same reference is handed to SelectdateService → aliasing bugs).
+    const selected = new Date(this.selectedYear, this.selectedMonth, day);
+    this.selectedDate = selected;
+    this.dateService.selectedDate = selected;
+    this.router.navigate(['/detail/', this.formatDateToISO(selected)]);
   }
 
   formatDateToISO(inputDate: Date): string {
