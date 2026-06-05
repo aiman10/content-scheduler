@@ -22,19 +22,21 @@ export class DatabaseService {
 
   getFilm(id: string): Promise<IFilm> {
     return lastValueFrom(
-      this.http.get<IFilm>(`${this.baseUrl}/movies/${id}`)
+      this.http.get<IFilm>(`${this.baseUrl}/movies/${encodeURIComponent(id)}`)
     );
   }
 
   getFilmByName(name: string): Promise<IFilm> {
     return lastValueFrom(
-      this.http.get<IFilm>(`${this.baseUrl}/movies/name/${name}`)
+      this.http.get<IFilm>(
+        `${this.baseUrl}/movies/name/${encodeURIComponent(name)}`
+      )
     );
   }
 
   async updateFilm(id: string, film: IFilm): Promise<void> {
     await lastValueFrom(
-      this.http.put(`${this.baseUrl}/movies/${id}`, film)
+      this.http.put(`${this.baseUrl}/movies/${encodeURIComponent(id)}`, film)
     );
     await this.getAllFilms();
   }
