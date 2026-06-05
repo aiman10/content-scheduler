@@ -291,12 +291,14 @@ export class CalendarDetailComponent implements OnInit {
     const icsData = icsCalendar.render();
     const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
 
+    const url = window.URL.createObjectURL(blob);
     const downloadLink = document.createElement('a');
-    downloadLink.href = window.URL.createObjectURL(blob);
+    downloadLink.href = url;
     downloadLink.setAttribute('download', `${film.title}.ics`);
 
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
+    window.URL.revokeObjectURL(url);
   }
 }
