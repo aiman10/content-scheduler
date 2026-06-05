@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { BookmarkedFilmsComponent } from './bookmarked-films/bookmarked-films.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AuthModule } from '@auth0/auth0-angular';
+import { AuthModule, AuthGuard } from '@auth0/auth0-angular';
 import { LoginComponent } from './login/login.component';
 import { ActorCalendarComponent } from './actor-calendar/actor-calendar.component';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
@@ -70,30 +70,37 @@ export function momentAdapterFactory() {
         {
           path: 'home',
           component: CalendarComponent,
+          canActivate: [AuthGuard],
         },
         {
           path: 'detail/:date',
           component: CalendarDetailComponent,
+          canActivate: [AuthGuard],
         },
         {
           path: 'bookmarked',
           component: BookmarkedFilmsComponent,
+          canActivate: [AuthGuard],
         },
         {
           path: 'actors',
           component: ActorCalendarComponent,
+          canActivate: [AuthGuard],
         },
         {
           path: 'castcrew',
           component: CastCrewComponent,
+          canActivate: [AuthGuard],
         },
         {
           path: 'castcrew/:date',
           component: CastCrewDetailComponent,
+          canActivate: [AuthGuard],
         },
         {
           path: 'awards',
           component: AwardsComponent,
+          canActivate: [AuthGuard],
         },
         {
           path: '',
