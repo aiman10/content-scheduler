@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { CalendarComponent } from './calendar/calendar.component';
@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { BookmarkedFilmsComponent } from './bookmarked-films/bookmarked-films.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AuthModule, AuthGuard } from '@auth0/auth0-angular';
+import { AuthModule, AuthGuard, AuthHttpInterceptor } from '@auth0/auth0-angular';
 import { LoginComponent } from './login/login.component';
 import { ActorCalendarComponent } from './actor-calendar/actor-calendar.component';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
@@ -62,7 +62,15 @@ export function momentAdapterFactory() {
       domain: 'dev-sipsml8vb00v5eww.us.auth0.com',
       clientId: 'fV4butLWkV6RudKUFqBahesWfwjquf4r',
       authorizationParams: {
+        // Audience of the backend API (Auth0 API identifier). Required so the
+        // SDK issues a JWT access token the backend can validate — without it
+        // Auth0 returns an opaque token and the interceptor won't attach it.
+        audience: 'https://api.film-enthusiast',
         redirect_uri: window.location.origin,
+      },
+      // Attach the access token (Authorization: Bearer) to backend calls.
+      httpInterceptor: {
+        allowedList: ['https://content-schedule-backend.onrender.com/*'],
       },
     }),
     RouterModule.forRoot(
@@ -124,7 +132,11 @@ export function momentAdapterFactory() {
     provideStorage(() => getStorage()),
   ],
 
-  providers: [ScreenTrackingService, UserTrackingService],
+  providers: [
+    ScreenTrackingService,
+    UserTrackingService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
