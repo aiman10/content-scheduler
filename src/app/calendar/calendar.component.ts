@@ -5,7 +5,6 @@ import * as moment from 'moment';
 import { BookmarkService } from '../service/bookmarked.service';
 import { IFilm } from '../filmresult';
 import { SelectdateService } from '../service/selectdate.service';
-import { ImdbService } from '../service/imdb.service';
 import { DatabaseService } from '../service/database.service';
 import { ThemeService } from '../service/theme.service';
 import { genreColor, genreBucket, GenreBucket } from '../genres';
@@ -28,7 +27,6 @@ export class CalendarComponent implements OnInit {
   selectedDate = new Date();
   bookmarkedMovies: IFilm[] = [];
   weeks: number[][] = [];
-  actorList: String[] = [];
   months: string[] = [
     'January',
     'February',
@@ -179,7 +177,6 @@ export class CalendarComponent implements OnInit {
     private router: Router,
     private service: BookmarkService,
     private dateService: SelectdateService,
-    private imdb: ImdbService,
     private databaseService: DatabaseService,
     public theme: ThemeService
   ) {
@@ -196,10 +193,6 @@ export class CalendarComponent implements OnInit {
     this.bookmarkedMovies = await this.databaseService.getAllFilms();
     this.loading = false; // Set loading to false after the data has loaded
     this.refreshDisplay();
-  }
-
-  async getActors() {
-    this.actorList = await this.imdb.getActors(9, 2);
   }
 
   generateMonthCalendar(): void {
