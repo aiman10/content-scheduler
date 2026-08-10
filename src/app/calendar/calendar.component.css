@@ -297,6 +297,111 @@
   margin-top: 3px;
 }
 
+/* Day hover popup */
+.fe-daypop {
+  position: fixed;
+  width: 260px;
+  z-index: 40;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--card-radius);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  /* Read-only glance: the cursor never touches it, so the cell underneath
+     keeps its own hover state and stays clickable. */
+  pointer-events: none;
+  animation: daypop-in 120ms ease-out;
+}
+
+@keyframes daypop-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.fe-daypop__head {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 12px;
+  background: var(--red-soft);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+.fe-daypop__count {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--red);
+  text-transform: none;
+}
+
+.fe-daypop__list {
+  padding: 6px 0;
+}
+
+.fe-daypop__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 12px;
+}
+
+.fe-daypop__bar {
+  flex: none;
+  width: 3px;
+  height: 14px;
+  border-radius: 1px;
+}
+
+.fe-daypop__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fe-daypop__year {
+  flex: none;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.fe-daypop__more {
+  height: 24px;
+  padding: 0 12px 0 23px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* The cell being previewed keeps its highlight while the popup is open. */
+.fe-cell.is-peeked {
+  background: var(--elev);
+}
+
+.fe-cell.is-today.is-peeked {
+  background: var(--red-soft);
+}
+
+/* Belt-and-braces: mobile browsers synthesise mouseenter on tap. */
+@media (hover: none) {
+  .fe-daypop {
+    display: none;
+  }
+}
+
 /* Week view */
 .fe-week {
   position: relative;

@@ -89,9 +89,13 @@
         <div
           class="fe-cell"
           *ngFor="let day of week"
+          #cellEl
           [class.is-empty]="day === 0"
           [class.is-today]="isToday(day)"
+          [class.is-peeked]="popupDay === day"
           (click)="day !== 0 && onDayClick(day)"
+          (mouseenter)="onDayHover(day, cellEl)"
+          (mouseleave)="onDayLeave()"
         >
           <ng-container *ngIf="day !== 0">
             <div class="fe-cell__date">{{ day }}</div>
@@ -127,6 +131,30 @@
           </ng-container>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Hover popup: bookmarked films on the hovered day. Read-only overlay, so
+       it lives outside .fe-grid-card (which clips) and ignores the pointer. -->
+  <div
+    class="fe-daypop"
+    *ngIf="popupDay"
+    [style.top.px]="popupTop"
+    [style.left.px]="popupLeft"
+    role="presentation"
+    aria-hidden="true"
+  >
+    <div class="fe-daypop__head">
+      {{ popupDayLabel }}
+      <span class="fe-daypop__count">· {{ popupFilms.length }} bookmarked</span>
+    </div>
+    <div class="fe-daypop__list">
+      <div class="fe-daypop__row" *ngFor="let movie of popupFilms">
+        <span class="fe-daypop__bar" [style.background]="pillColor(movie)"></span>
+        <span class="fe-daypop__title">{{ movie.title }}</span>
+        <span class="fe-daypop__year">{{ movie.release_date | slice: 0:4 }}</span>
+      </div>
+      <div class="fe-daypop__more" *ngIf="popupHidden">+{{ popupHidden }} more</div>
     </div>
   </div>
 </div>

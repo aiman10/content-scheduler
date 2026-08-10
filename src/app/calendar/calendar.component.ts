@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CalendarEvent, CalendarMonthViewDay } from 'angular-calendar';
 import * as moment from 'moment';
@@ -13,13 +13,21 @@ import {
   DEFAULT_FILTERS,
   applyFilters,
 } from './film-filter';
+import {
+  HOVER_DELAY_MS,
+  MAX_POPUP_ROWS,
+  POPUP_WIDTH,
+  bookmarkedFilmsOnDay,
+  estimatePopupHeight,
+  popupPlacement,
+} from './day-popup';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css'],
 })
-export class CalendarComponent implements OnInit {
+export class CalendarComponent implements OnInit, OnDestroy {
   private _selectedView = 'Month';
   loading = true;
   selectedMonth: number;
@@ -55,6 +63,14 @@ export class CalendarComponent implements OnInit {
     { label: '≥ 7.0', value: 7 },
     { label: '≥ 8.0', value: 8 },
   ];
+
+  // Hover popup: a read-only glance at the bookmarks on one day.
+  popupDay: number | null = null;
+  popupFilms: IFilm[] = [];
+  popupHidden = 0;
+  popupTop = 0;
+  popupLeft = 0;
+  private hoverTimer: ReturnType<typeof setTimeout> | null = null;
 
   private refreshDisplay(): void {
     this.displayMovies = applyFilters(this.bookmarkedMovies, this.filters);
@@ -297,28 +313,96 @@ export class CalendarComponent implements OnInit {
     return `${formattedMonth}-${formattedDay}`;
   }
 
-  getMoviesForDay(day: number): any[] {
+  private filmsOnDay(day: number): IFilm[] {
     const dayStr = this.formatDate(day);
-    const moviesForDay = this.displayMovies
-      .filter((movie) => (movie.release_date || '').slice(5) === dayStr)
-      .sort((a, b) => (b.isBookmarked ? 1 : -1) - (a.isBookmarked ? 1 : -1)); // This line sorts the movies
-    return moviesForDay.slice(0, 3);
+    return this.displayMovies.filter(
+      (movie) => (movie.release_date || '').slice(5) === dayStr
+    );
+  }
+
+  getMoviesForDay(day: number): any[] {
+    return this.filmsOnDay(day)
+      .sort((a, b) => (b.isBookmarked ? 1 : -1) - (a.isBookmarked ? 1 : -1)) // This line sorts the movies
+      .slice(0, 3);
   }
 
   getMoviesForWeek(day: number): any[] {
-    const dayStr = this.formatDate(day);
-    const moviesForDay = this.displayMovies.filter(
-      (movie) => (movie.release_date || '').slice(5) === dayStr
-    );
-    return moviesForDay;
+    return this.filmsOnDay(day);
   }
 
   getMovieCountForDay(day: number): number {
-    const dayStr = this.formatDate(day);
-    const moviesForDay = this.displayMovies.filter(
-      (movie) => (movie.release_date || '').slice(5) === dayStr
-    );
-    return moviesForDay.length - Math.min(moviesForDay.length, 3);
+    const count = this.filmsOnDay(day).length;
+    return count - Math.min(count, 3);
+  }
+
+  // ----- Hover popup -----
+
+  onDayHover(day: number, cell: HTMLElement): void {
+    this.clearHoverTimer();
+    if (day === 0 || !this.canHover()) return;
+
+    this.hoverTimer = setTimeout(() => {
+      const films = bookmarkedFilmsOnDay(this.displayMovies, this.formatDate(day));
+      // Nothing bookmarked on this day — stay closed rather than show an empty box.
+      if (films.length === 0) {
+        this.closePopup();
+        return;
+      }
+
+      this.popupFilms = films.slice(0, MAX_POPUP_ROWS);
+      this.popupHidden = films.length - this.popupFilms.length;
+
+      const rect = cell.getBoundingClientRect();
+      const { top, left } = popupPlacement(
+        rect,
+        { width: window.innerWidth, height: window.innerHeight },
+        {
+          width: POPUP_WIDTH,
+          height: estimatePopupHeight(this.popupFilms.length, this.popupHidden > 0),
+        }
+      );
+      this.popupTop = top;
+      this.popupLeft = left;
+      this.popupDay = day;
+    }, HOVER_DELAY_MS);
+  }
+
+  onDayLeave(): void {
+    this.clearHoverTimer();
+    this.closePopup();
+  }
+
+  // A fixed-position popup would otherwise drift away from its cell.
+  @HostListener('window:scroll')
+  @HostListener('window:resize')
+  onViewportChange(): void {
+    this.onDayLeave();
+  }
+
+  get popupDayLabel(): string {
+    if (!this.popupDay) return '';
+    return `${this.months[this.selectedMonth]} ${this.popupDay}`.toUpperCase();
+  }
+
+  private canHover(): boolean {
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  }
+
+  private clearHoverTimer(): void {
+    if (this.hoverTimer !== null) {
+      clearTimeout(this.hoverTimer);
+      this.hoverTimer = null;
+    }
+  }
+
+  private closePopup(): void {
+    this.popupDay = null;
+    this.popupFilms = [];
+    this.popupHidden = 0;
+  }
+
+  ngOnDestroy(): void {
+    this.clearHoverTimer();
   }
 
   public get selectedView() {
