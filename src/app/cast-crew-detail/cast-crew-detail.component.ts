@@ -5,7 +5,7 @@ import { BookmarkService } from '../service/bookmarked.service';
 import { DatabaseService } from '../service/database.service';
 import { SelectdateService } from '../service/selectdate.service';
 import { ICalendar } from 'datebook';
-import { MONTH_NAMES, WEEKDAY_NAMES, getIsoWeek } from '../date-utils';
+import { MONTH_NAMES, WEEKDAY_NAMES, getIsoWeek, toIsoDate } from '../date-utils';
 
 @Component({
   selector: 'app-cast-crew-detail',
@@ -38,11 +38,13 @@ export class CastCrewDetailComponent implements OnInit {
 
   // ----- Header view-model (computed from this.date, YYYY-MM-DD) -----
 
-  private dateObj(): Date {
+  private dateObj(offsetDays = 0): Date {
     const [y, m, d] = (this.date || '1970-01-01')
       .split('-')
       .map((p) => parseInt(p, 10));
-    return new Date(y, m - 1, d);
+    const dt = new Date(y, m - 1, d);
+    if (offsetDays) dt.setDate(dt.getDate() + offsetDays);
+    return dt;
   }
 
   get monthName(): string {
@@ -65,8 +67,39 @@ export class CastCrewDetailComponent implements OnInit {
     return getIsoWeek(this.dateObj());
   }
 
+  private dayLabelFor(offsetDays: number): string {
+    const d = this.dateObj(offsetDays);
+    return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
+  }
+
   get dayLabel(): string {
-    return `${this.monthName} ${this.dayNumber}`;
+    return this.dayLabelFor(0);
+  }
+
+  get prevDayLabel(): string {
+    return this.dayLabelFor(-1);
+  }
+
+  get nextDayLabel(): string {
+    return this.dayLabelFor(1);
+  }
+
+  // ----- Day navigation -----
+  // Navigating re-uses this component, so the route.params subscription in
+  // getCastCrew() re-filters the already-loaded people — no refetch.
+
+  onDateChangeNext(): void {
+    this.navigateToDay(1);
+  }
+
+  onDateChangePrevious(): void {
+    this.navigateToDay(-1);
+  }
+
+  private navigateToDay(offsetDays: number): void {
+    const next = this.dateObj(offsetDays);
+    this.dateService.selectedDate = next;
+    this.router.navigate(['/castcrew', toIsoDate(next)]);
   }
 
   // ----- Person card helpers -----

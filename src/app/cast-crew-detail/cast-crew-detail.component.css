@@ -5,7 +5,36 @@
 
 /* Header */
 .fe-bday__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   padding: 40px var(--page-x) 0;
+}
+
+.fe-bday__head-left {
+  min-width: 0;
+}
+
+.fe-bday__daynav {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.fe-textbtn {
+  min-height: 34px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.fe-textbtn:hover {
+  border-color: var(--border-strong);
 }
 
 .fe-breadcrumb {
@@ -190,6 +219,8 @@
 /* Responsive */
 @media (max-width: 900px) {
   .fe-bday__header {
+    flex-direction: column;
+    gap: 16px;
     padding: 24px 20px 0;
   }
   .fe-h1 {
